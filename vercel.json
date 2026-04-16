@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/reconquista_v4.html"
+      "destination": "/reconquista_v4"
     }
   ]
 }
