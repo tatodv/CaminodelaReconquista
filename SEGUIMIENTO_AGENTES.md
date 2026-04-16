@@ -14,6 +14,7 @@
 - Se sumaron microinteracciones de footer, CTA, tooltips de pins y destaque permanente de Spotify.
 - Se agrego una via de accesibilidad para `prefers-reduced-motion` que desactiva la experiencia animada y deja el contenido estatico.
 - Se agrego `vercel.json` para que la raiz `/` del deploy sirva `reconquista_v4.html` sin renombrar el archivo original.
+- Se ajusto la rewrite de Vercel para que respete `cleanUrls` y apunte a `/reconquista_v4` en lugar de `/reconquista_v4.html`.
 
 ### Verificaciones
 - Sintaxis del script inline verificada extrayendolo a un archivo temporal y ejecutando `node --check`.
