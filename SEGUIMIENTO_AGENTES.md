@@ -13,10 +13,11 @@
 - Se rehizo el comportamiento mobile del split para mantener mapa sticky de `40vh` y texto debajo.
 - Se sumaron microinteracciones de footer, CTA, tooltips de pins y destaque permanente de Spotify.
 - Se agrego una via de accesibilidad para `prefers-reduced-motion` que desactiva la experiencia animada y deja el contenido estatico.
+- Se agrego `vercel.json` para que la raiz `/` del deploy sirva `reconquista_v4.html` sin renombrar el archivo original.
 
 ### Verificaciones
 - Sintaxis del script inline verificada extrayendolo a un archivo temporal y ejecutando `node --check`.
 
 ### Pendientes / notas
 - Los links de Spotify siguen con `href="#"` porque el archivo original no traia una URL final.
-- El repo local no estaba inicializado en esta carpeta; se deja preparado para conectarlo al remoto.
+- El repo local no estaba inicializado en esta carpeta; ya quedo conectado al remoto.
