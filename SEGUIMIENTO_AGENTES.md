@@ -27,3 +27,21 @@
 ### Pendientes / notas
 - Los links de Spotify siguen con `href="#"` porque el archivo original no traia una URL final.
 - El repo local no estaba inicializado en esta carpeta; ya quedo conectado al remoto.
+
+---
+
+## Contexto del proyecto (para nuevas conversaciones)
+
+### Estructura
+- `reconquista_v4.html` — unica pagina, todo el proyecto (HTML/CSS/JS inline)
+- `material/` — assets SVG: `logo_sm.svg`, `logo_tigre.svg`, `logo-s-camino.svg`, `mapa_CdlR.svg`
+- `vercel.json` — deploy en Vercel, `/` sirve `reconquista_v4` con cleanUrls
+
+### Estado actual (2026-04-16)
+- Experiencia scroll-driven, mobile-first, con mapa SVG real y narrativa de hitos
+- Hero: zoom de logo, camino en S animado, transicion crossfade a mapa
+- Mapa: split sticky 40vh mobile, zoom/pan animado por RAF, tooltips en hotspots
+- `prefers-reduced-motion`: contenido estatico sin animaciones
+
+### Pendientes
+- URLs reales de Spotify (actualmente `href="#"`)
