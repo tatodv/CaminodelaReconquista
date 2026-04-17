@@ -246,7 +246,7 @@ p, span, a, div {
 /* ═══════════════════════════════════
    CAMINO EN S — muy rápido, 80vh
 ═══════════════════════════════════ */
-#s-camino { position: relative; height: 105vh; background: var(--carbon); }
+#s-camino { position: relative; height: 160vh; background: var(--carbon); }
 
 #camino-pin {
   position: sticky; top: 0; height: 100vh;
@@ -400,10 +400,11 @@ p, span, a, div {
   color: rgba(250,243,233,0.35); z-index: 3; pointer-events: none;
 }
 #mapa-slide-panel {
-  position: absolute; bottom: -100%; left: 0; right: 0;
-  height: 100%; z-index: 4;
-  background: var(--mapa-fondo) url('material/mapa_CdlR.svg') center center / cover no-repeat;
-  transform: translate3d(0, 100%, 0);
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: var(--mapa-fondo) url('material/mapa_CdlR.svg')
+    center center / cover no-repeat;
 }
 #mapa-slide-panel::before {
   content: '';
@@ -1340,7 +1341,10 @@ window.addEventListener('DOMContentLoaded', () => {
       ...withWillChange([caminoWrap, caminoSvg, caminoFrase])
     }
   })
-    .to(caminoWrap, { opacity: 1, scale: 1, y: 0, ease: 'power2.out', duration: 0.4 }, 0.06)
+    .fromTo(caminoWrap,
+      { opacity: 0, scale: 0.82, y: 30 },
+      { opacity: 1, scale: 1, y: 0, ease: 'power2.out', duration: 0.4 },
+    0.06)
     .to(words, { opacity: 1, y: 0, stagger: 0.04, ease: 'power2.out', duration: 0.22 }, 0.32);
 
   gsap.fromTo('#expl-contenido',
@@ -1371,7 +1375,10 @@ window.addEventListener('DOMContentLoaded', () => {
   })
     .to('#mapa-entrada-bg', { opacity: 1, duration: 0.4, ease: 'none' }, 0)
     .to('#entrada-label', { opacity: 0, y: -18, duration: 0.22, ease: 'none' }, 0.02)
-    .to('#mapa-slide-panel', { yPercent: -100, duration: 1, ease: 'power3.inOut' }, 0);
+    .fromTo('#mapa-slide-panel',
+      { yPercent: 100 },
+      { yPercent: 0, duration: 1, ease: 'power3.inOut' },
+    0);
 
   ScrollTrigger.create({
     trigger: '#narrativa-split',
