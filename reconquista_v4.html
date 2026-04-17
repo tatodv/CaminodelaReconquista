@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Camino de la Reconquista</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"></noscript>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap"></noscript>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -53,6 +53,8 @@ p, span, a, div {
   font-family: inherit;
 }
 
+::selection { background: var(--naranja); color: white; }
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -76,6 +78,7 @@ p, span, a, div {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: clamp(1.2rem, 3vw, 2rem);
+  padding-bottom: clamp(80px, 12vh, 110px);
 }
 
 #hero-bg {
@@ -169,6 +172,7 @@ p, span, a, div {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   padding: clamp(1rem, 3vw, 1.8rem) clamp(1.2rem, 5vw, 3rem);
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -253,13 +257,13 @@ p, span, a, div {
 #camino-s-wrap {
   position: absolute;
   left: 50%;
-  bottom: -18vh;
-  width: min(72vw, 820px);
+  bottom: 0;
+  width: min(60vw, 600px);
   z-index: 2;
   opacity: 0;
-  transform: translate3d(-50%, 18%, 0) scale(0.72);
-  transform-origin: center 76%;
-  filter: drop-shadow(0 -10px 30px rgba(255,255,255,0.12));
+  transform: translate(-50%, 12%) scale(0.82);
+  transform-origin: center bottom;
+  filter: drop-shadow(0 -8px 28px rgba(255,255,255,0.1));
 }
 #camino-s-svg {
   width: 100%;
@@ -279,12 +283,13 @@ p, span, a, div {
   z-index: 3;
 }
 #camino-frase p {
-  font-size: clamp(2rem, 5.2vw, 4.25rem);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 4vw, 2.2rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   color: var(--crema);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-  font-weight: 700;
-  font-family: 'Source Sans 3', sans-serif;
 }
 .word {
   display: inline-block;
@@ -329,6 +334,7 @@ p, span, a, div {
   font-weight: 800; line-height: 1.06;
   color: var(--carbon); margin-bottom: 1.6rem;
 }
+.expl-titulo em { font-style: italic; font-weight: 700; }
 .expl-div { width: 40px; height: 2px; background: var(--naranja); margin-bottom: 1.6rem; }
 .expl-texto {
   font-size: clamp(0.9rem, 2vw, 1.05rem);
@@ -491,6 +497,7 @@ p, span, a, div {
   font-size: clamp(1.1rem,2.5vw,1.6rem);
   font-weight: 800; line-height: 1.16; color: var(--carbon); margin-bottom: 0.9rem;
 }
+.hito-nombre em { font-style: italic; font-weight: 700; }
 .hito-sep { width: 32px; height: 2px; background: var(--naranja); margin-bottom: 1rem; }
 .hito-desc {
   font-size: clamp(0.84rem,1.6vw,0.97rem);
@@ -504,16 +511,18 @@ p, span, a, div {
 }
 #mapa-inner {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
+  width: 100%;
   height: 100%;
-  transform-origin: 0 0;
+  transform-origin: center center;
   --overlay-inverse-scale: 1;
 }
 #mapa-svg {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: cover;
+  object-position: center;
 }
 
 #mapa-hotspots {
@@ -609,6 +618,7 @@ p, span, a, div {
 #s-cierre {
   background: var(--carbon);
   padding: clamp(6rem,10vw,9rem) clamp(1.5rem,4vw,2rem);
+  padding-bottom: max(5rem, calc(3rem + env(safe-area-inset-bottom, 0px)));
   display: flex; flex-direction: column;
   align-items: center; text-align: center;
   gap: clamp(1.2rem,2.5vw,1.8rem);
@@ -670,17 +680,20 @@ p, span, a, div {
   #hero-footer {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0.85rem;
+    justify-content: flex-end;
+    gap: 0;
+    padding: 0 1.2rem max(1.2rem, env(safe-area-inset-bottom, 1.2rem));
   }
-  .hero-footer-logos,
+  .hero-footer-logos {
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 0.75rem;
+  }
   .hero-footer-redes {
     justify-content: center;
     width: 100%;
-  }
-  .hero-footer-redes {
-    padding-top: 0.9rem;
-    border-top: 1px solid rgba(224,216,204,0.65);
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(224,216,204,0.5);
   }
   #narrativa-split {
     grid-template-columns: 1fr;
@@ -722,6 +735,24 @@ p, span, a, div {
   #camino-s-wrap {
     width: min(108vw, 620px);
     bottom: -8vh;
+  }
+  #hero-titulo .t1 {
+    font-size: clamp(1.4rem, 7.5vw, 1.9rem);
+    letter-spacing: 0.06em;
+  }
+  #hero-titulo .t2 {
+    font-size: clamp(2.1rem, 11.5vw, 2.8rem);
+  }
+  #hero-titulo .t3 {
+    font-size: clamp(0.8rem, 3.8vw, 1rem);
+    max-width: 24ch;
+    line-height: 1.45;
+  }
+  #logo-zoom-wrap {
+    width: clamp(88px, 24vw, 130px);
+  }
+  #hero-pin {
+    gap: clamp(0.5rem, 1.8vh, 1rem);
   }
 }
 
@@ -862,7 +893,7 @@ body.reduced-motion #mapa-slide-panel {
   </svg>
   <div id="expl-contenido">
     <span class="expl-kicker">Agosto de 1806 · Pago de la Costa y de las Conchas</span>
-    <h2 class="expl-titulo">Viví la historia<br>donde sucedió</h2>
+    <h2 class="expl-titulo">Viví la historia<br><em>donde sucedió</em></h2>
     <div class="expl-div"></div>
     <p class="expl-texto">
       <strong>En 1806, los vecinos se unieron para recuperar Buenos Aires.</strong>
@@ -951,7 +982,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const $ = id => document.getElementById(id);
   const $$ = selector => Array.from(document.querySelectorAll(selector));
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MAP_ASPECT = 1920 / 1080;
 
   /* Configuracion editable de hitos, textos y foco del mapa real */
   const HITOS_DATA = [
@@ -962,9 +992,9 @@ window.addEventListener('DOMContentLoaded', () => {
       titulo: 'Museo José Hernández<br>Chacra Pueyrredón',
       descripcion: 'Primer hito de la nacionalidad. En la sala "Combate de Perdriel" se narra el enfrentamiento donde Juan Martín de Pueyrredón sublevó la campaña, concentrando gauchos que luego participarían en la Reconquista de Buenos Aires.',
       tooltip: 'Municipio de San Martín',
-      focusX: 28.77,
-      focusY: 70.31,
-      scale: 1.72
+      focusX: 38,
+      focusY: 78,
+      scale: 1.8
     },
     {
       numero: 2,
@@ -972,9 +1002,9 @@ window.addEventListener('DOMContentLoaded', () => {
       titulo: 'Chacra de los Márquez',
       descripcion: 'Punto de encuentro estratégico. Luego de la derrota de Perdriel, las milicias se reagrupan aquí aguardando la llegada de Santiago de Liniers y Pueyrredón, que organizaban las acciones militares desde Montevideo.',
       tooltip: 'Municipio de San Isidro',
-      focusX: 31.40,
-      focusY: 49.04,
-      scale: 1.86
+      focusX: 42,
+      focusY: 57,
+      scale: 1.6
     },
     {
       numero: 3,
@@ -982,9 +1012,9 @@ window.addEventListener('DOMContentLoaded', () => {
       titulo: 'Plaza D. M. Cazón y<br>Museo de la Reconquista',
       descripcion: 'Aquí sentís la emoción del desembarco de las tropas. El Museo de la Reconquista alberga los lugares donde comenzó la gesta y da vida a sus protagonistas: los chacareros que cambiaron la historia del Río de la Plata.',
       tooltip: 'Municipio de Tigre',
-      focusX: 25.88,
-      focusY: 10.48,
-      scale: 2.16
+      focusX: 32,
+      focusY: 14,
+      scale: 2.2
     },
     {
       numero: 4,
@@ -992,9 +1022,9 @@ window.addEventListener('DOMContentLoaded', () => {
       titulo: 'Plaza Mitre, Catedral<br>y Quinta Los Ombúes',
       descripcion: 'Un paseo por la memoria de nuestra independencia. La Catedral de San Isidro y la histórica Quinta Los Ombúes conforman un escenario de profunda identidad bonaerense, testigo de los días que forjaron la nación.',
       tooltip: 'Municipio de San Isidro',
-      focusX: 41.53,
-      focusY: 32.05,
-      scale: 1.96
+      focusX: 62,
+      focusY: 38,
+      scale: 1.8
     },
     {
       numero: 5,
@@ -1002,9 +1032,9 @@ window.addEventListener('DOMContentLoaded', () => {
       titulo: 'Plaza Adolfo Vienni',
       descripcion: 'Las huellas de las tropas patriotas en su marcha hacia la recuperación de Buenos Aires. Desde aquí las milicias avanzaban rumbo a Chacarita, Corrales de Miserere y finalmente el Retiro.',
       tooltip: 'Municipio de Vicente López',
-      focusX: 42.77,
-      focusY: 63.43,
-      scale: 1.88
+      focusX: 65,
+      focusY: 63,
+      scale: 1.8
     },
     {
       numero: 6,
@@ -1012,9 +1042,9 @@ window.addEventListener('DOMContentLoaded', () => {
       titulo: 'Plaza Central',
       descripcion: 'El cierre del relato histórico de la Reconquista. El 12 de agosto de 1806, el general Beresford se rindió ante Liniers en la Plaza de Mayo. Este hito fundacional marcó el nacimiento de nuestra conciencia como pueblo.',
       tooltip: 'Municipio de San Martín',
-      focusX: 35.52,
-      focusY: 78.10,
-      scale: 1.72
+      focusX: 50,
+      focusY: 82,
+      scale: 1.7
     }
   ];
 
@@ -1041,20 +1071,23 @@ window.addEventListener('DOMContentLoaded', () => {
   let pendingProgress = 0;
   let activeIndex = -1;
   let currentScale = 1;
-  let mapFrame = { width: 0, height: 0, stickyWidth: 0, stickyHeight: 0 };
 
   function renderHitos() {
-    hitosContainer.innerHTML = HITOS_DATA.map((hito, index) => `
+    hitosContainer.innerHTML = HITOS_DATA.map((hito, index) => {
+      const partes = hito.titulo.split('<br>');
+      const tituloHTML = partes.length > 1 ? `${partes[0]}<br><em>${partes[1]}</em>` : hito.titulo;
+      return `
       <article class="hito-bloque${index === 0 ? ' is-active' : ''}" data-h="${index}">
         <div class="hito-inner">
           <div class="hito-num ${hito.estiloNumero || ''}">${hito.numero}</div>
           <div class="hito-muni">${hito.municipio}</div>
-          <h3 class="hito-nombre">${hito.titulo}</h3>
+          <h3 class="hito-nombre">${tituloHTML}</h3>
           <div class="hito-sep"></div>
           <p class="hito-desc">${hito.descripcion}</p>
         </div>
       </article>
-    `).join('');
+    `;
+    }).join('');
 
     mapaHotspots.innerHTML = HITOS_DATA.map((hito, index) => `
       <button class="mapa-hotspot" type="button" data-hito="${index}" aria-label="${hito.tooltip}" style="left:${hito.focusX}%; top:${hito.focusY}%">
@@ -1114,30 +1147,15 @@ window.addEventListener('DOMContentLoaded', () => {
     svgR.style.opacity = `${gsap.utils.clamp(0, 1, 1 - Math.max(0, normalized - 0.28) * 1.4)}`;
   }
 
-  function syncMapFrame() {
-    const stickyRect = mapaSticky.getBoundingClientRect();
-    const height = stickyRect.height || window.innerHeight;
-    const width = height * MAP_ASPECT;
-    mapFrame = {
-      width,
-      height,
-      stickyWidth: stickyRect.width || window.innerWidth,
-      stickyHeight: height
-    };
-    mapaInner.style.width = `${width}px`;
-    mapaInner.style.height = `${height}px`;
-  }
-
   function getMapTransform(hito) {
-    const isMobile = window.innerWidth <= 680;
-    const targetX = isMobile ? mapFrame.stickyWidth * 0.5 : mapFrame.stickyWidth * 0.56;
-    const targetY = isMobile ? mapFrame.stickyHeight * 0.48 : mapFrame.stickyHeight * 0.52;
-    const focusX = mapFrame.width * (hito.focusX / 100);
-    const focusY = mapFrame.height * (hito.focusY / 100);
-
+    const rect = mapaSticky.getBoundingClientRect();
+    const cw = rect.width || window.innerWidth * 0.5;
+    const ch = rect.height || window.innerHeight;
+    const px = cw * (hito.focusX / 100);
+    const py = ch * (hito.focusY / 100);
     return {
-      x: targetX - focusX * hito.scale,
-      y: targetY - focusY * hito.scale,
+      x: cw * 0.5 - px * hito.scale,
+      y: ch * 0.5 - py * hito.scale,
       scale: hito.scale
     };
   }
@@ -1192,6 +1210,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (hasChanged) pulsePin(focusRing);
 
+    if (window.innerWidth <= 680) {
+      return;
+    }
+
     const nextMap = getMapTransform(current);
     gsap.to(mapaInner, {
       x: nextMap.x,
@@ -1218,7 +1240,6 @@ window.addEventListener('DOMContentLoaded', () => {
   if (reduceStateClass) document.body.classList.add(reduceStateClass);
 
   ScrollTrigger.config({ ignoreMobileResize: true });
-  ScrollTrigger.addEventListener('refreshInit', syncMapFrame);
 
   hotspotNodes.forEach((hotspot, index) => {
     hotspot.addEventListener('click', () => {
@@ -1236,8 +1257,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }, { threshold: 0.6 });
   hitoBlocks.forEach(block => observer.observe(block));
-
-  syncMapFrame();
 
   if (prefersReducedMotion) {
     focusRing.style.opacity = '1';
@@ -1321,8 +1340,8 @@ window.addEventListener('DOMContentLoaded', () => {
       ...withWillChange([caminoWrap, caminoSvg, caminoFrase])
     }
   })
-    .to(caminoWrap, { opacity: 1, scale: 1, ease: 'power3.out', duration: 0.34 }, 0.08)
-    .to(words, { opacity: 1, y: 0, stagger: 0.045, ease: 'power2.out', duration: 0.24 }, 0.28);
+    .to(caminoWrap, { opacity: 1, scale: 1, y: 0, ease: 'power2.out', duration: 0.4 }, 0.06)
+    .to(words, { opacity: 1, y: 0, stagger: 0.04, ease: 'power2.out', duration: 0.22 }, 0.32);
 
   gsap.fromTo('#expl-contenido',
     { opacity: 0, y: 40 },
@@ -1380,7 +1399,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', () => {
     heroScales = getHeroScales();
-    syncMapFrame();
     activateHito(activeIndex < 0 ? 0 : activeIndex);
     ScrollTrigger.refresh();
   });
