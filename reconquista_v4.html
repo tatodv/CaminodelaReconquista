@@ -257,12 +257,12 @@ p, span, a, div {
 #camino-s-wrap {
   position: absolute;
   left: 50%;
-  bottom: 0;
-  width: min(55vw, 500px);
+  top: 50%;
+  width: min(55vw, 480px);
   z-index: 2;
   opacity: 0;
-  transform: translate(-50%, 8%) scale(0.85);
-  transform-origin: center bottom;
+  transform: translate(-50%, -40%) scale(0.85);
+  transform-origin: center center;
 }
 #camino-s-svg {
   width: 100%;
@@ -382,7 +382,7 @@ p, span, a, div {
    MAPA ENTRADA
 ═══════════════════════════════════ */
 #mapa-entrada {
-  position: relative; height: 100vh;
+  position: relative; height: 60vh;
   overflow: hidden; background: var(--carbon);
 }
 #mapa-entrada-bg {
@@ -754,6 +754,9 @@ p, span, a, div {
     position: sticky;
     top: 0;
   }
+  #mapa-svg {
+    object-position: 42% 62%;
+  }
 
   /* El texto NO usa margin-top negativo en mobile */
   #col-texto {
@@ -787,9 +790,8 @@ p, span, a, div {
     right: 1.5rem;
   }
   #camino-s-wrap {
-    width: min(72vw, 360px);
-    bottom: 0;
-    transform: translate(-50%, 6%) scale(0.85);
+    width: min(70vw, 340px);
+    transform: translate(-50%, -40%) scale(0.85);
   }
   #camino-frase {
     top: 12vh;
@@ -1282,7 +1284,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (hasChanged) pulsePin(focusRing);
 
-    // En mobile: solo activar clases, sin zoom/pan
     if (window.innerWidth <= 680) {
       hitoBlocks.forEach((block, i) => {
         block.classList.toggle('is-active', i === index);
@@ -1290,6 +1291,21 @@ window.addEventListener('DOMContentLoaded', () => {
       hotspotNodes.forEach(node => {
         node.classList.toggle('is-active',
           Number(node.dataset.hito) === index);
+      });
+      // Zoom sutil centrado en el pin activo
+      const current = HITOS_DATA[index];
+      const mobileScale = Math.min(current.scale, 1.4);
+      const rect = document.getElementById('mapa-fondo-wrap')
+                     .getBoundingClientRect();
+      const px = rect.width * (current.focusX / 100);
+      const py = rect.height * (current.focusY / 100);
+      gsap.to(mapaInner, {
+        x: rect.width * 0.5 - px * mobileScale,
+        y: rect.height * 0.5 - py * mobileScale,
+        scale: mobileScale,
+        duration: 0.9,
+        ease: 'power2.inOut',
+        overwrite: true
       });
       return;
     }
@@ -1421,8 +1437,9 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   })
     .fromTo(caminoWrap,
-      { opacity: 0, scale: 0.82, y: 30 },
-      { opacity: 1, scale: 1, y: 0, ease: 'power2.out', duration: 0.4 },
+      { opacity: 0, y: '-40%', scale: 0.85 },
+      { opacity: 1, y: '-50%', scale: 1,
+        ease: 'power2.out', duration: 0.4 },
     0.06)
     .to(words, { opacity: 1, y: 0, stagger: 0.04, ease: 'power2.out', duration: 0.22 }, 0.32);
 
@@ -1456,7 +1473,7 @@ window.addEventListener('DOMContentLoaded', () => {
     .to('#entrada-label', { opacity: 0, y: -18, duration: 0.22, ease: 'none' }, 0.02)
     .fromTo('#mapa-slide-panel',
       { yPercent: 100 },
-      { yPercent: 0, duration: 1, ease: 'power3.inOut' },
+      { yPercent: 0, duration: 0.7, ease: 'power2.inOut' },
     0);
 
   ScrollTrigger.create({
