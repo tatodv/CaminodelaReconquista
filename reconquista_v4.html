@@ -258,17 +258,17 @@ p, span, a, div {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: min(60vw, 600px);
+  width: min(55vw, 500px);
   z-index: 2;
   opacity: 0;
-  transform: translate(-50%, 12%) scale(0.82);
+  transform: translate(-50%, 8%) scale(0.85);
   transform-origin: center bottom;
-  filter: drop-shadow(0 -8px 28px rgba(255,255,255,0.1));
 }
 #camino-s-svg {
   width: 100%;
+  height: auto;
   display: block;
-  filter: brightness(0) invert(1) opacity(0.88);
+  filter: drop-shadow(0 -12px 40px rgba(255,255,255,0.15));
 }
 
 #camino-frase {
@@ -403,8 +403,9 @@ p, span, a, div {
   position: absolute;
   inset: 0;
   z-index: 4;
-  background: var(--mapa-fondo) url('material/mapa_CdlR.svg')
-    center center / cover no-repeat;
+  background: var(--mapa-fondo)
+    url('material/mapa_CdlR.svg')
+    center 35% / cover no-repeat;
 }
 #mapa-slide-panel::before {
   content: '';
@@ -704,26 +705,32 @@ p, span, a, div {
   }
   #col-der {
     order: -1;
-    z-index: 3;
-  }
-  #mapa-sticky {
-    height: 40vh;
     position: sticky;
     top: 0;
     z-index: 10;
+    height: 40vh;
+  }
+  #mapa-sticky {
+    height: 40vh;
+    position: relative;
+    overflow: hidden;
   }
   #mapa-inner {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     transform: none !important;
   }
   #mapa-svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 30%;
+    object-position: 40% 50%;
+  }
+  #mapa-hotspots,
+  #mapa-focus-ring {
+    display: none;
   }
   #col-izq {
     z-index: 1;
@@ -739,23 +746,14 @@ p, span, a, div {
     left: 2.2rem;
     right: 1.5rem;
   }
-  #camino-frase {
-    width: min(92vw, 12ch);
-    top: 3.5rem;
-  }
-  #camino-frase p {
-    font-size: clamp(2.1rem, 11vw, 3rem);
-  }
   #camino-s-wrap {
-    width: min(75vw, 420px);
-    bottom: auto;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.82);
+    width: min(72vw, 360px);
+    bottom: 0;
+    transform: translate(-50%, 6%) scale(0.85);
   }
   #camino-frase {
-    top: 15vh;
-    width: min(85vw, 28ch);
+    top: 12vh;
+    width: min(88vw, 26ch);
   }
   #hero-titulo .t1 {
     font-size: clamp(1.4rem, 7.5vw, 1.9rem);
@@ -894,12 +892,17 @@ body.reduced-motion #mapa-slide-panel {
 <section id="s-camino">
   <div id="camino-pin">
     <div id="camino-s-wrap">
-      <img id="camino-s-svg" src="material/logo-s-camino.svg" alt="" loading="lazy" decoding="async">
+      <svg id="camino-s-svg"
+           viewBox="0 0 1180.9 1424.92"
+           xmlns="http://www.w3.org/2000/svg"
+           preserveAspectRatio="xMidYMid meet">
+        <path d="M805.79,1424.01c-4.77-12.73-6.68-29.24-1.75-41.93,16.33-42.06,41.11-81.71,45.37-132.13,17.83-210.77-221.35-279.18-309.44-356.09-94.72-82.66-11.69-154.66,53.56-183.21,10.87-4.76,8.7-21.48-3.02-22.74-.1-.01-.2-.02-.29-.03-62.95-6.68-242.45,90.1-253.31,200.91-10.89,111.14,98.4,165.3,143.1,216.98,141.43,163.51-86.06,292.24-191.23,315.81-4.9.97-6.68,1.43-16.96,3.34h534.03c.09-.26-.04-.84-.06-.9Z"
+              fill="white"/>
+      </svg>
     </div>
     <div id="camino-frase">
       <p>Un recorrido histórico y cultural que revive la gesta de 1806 y la defensa frente a las invasiones inglesas.</p>
     </div>
-
   </div>
 </section>
 
@@ -1232,7 +1235,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (hasChanged) pulsePin(focusRing);
 
     if (window.innerWidth <= 680) {
-      gsap.set(mapaInner, { x: 0, y: 0, scale: 1 });
+      hitoBlocks.forEach((block, blockIndex) => {
+        block.classList.toggle('is-active', blockIndex === index);
+      });
       return;
     }
 
