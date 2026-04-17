@@ -418,120 +418,54 @@ p, span, a, div {
 
 
 /* ═══════════════════════════════════
-   NARRATIVA SPLIT
+   NARRATIVA — MAPA PANTALLA COMPLETA
 ═══════════════════════════════════ */
+
+/* Contenedor principal: altura total del scroll narrativo */
 #narrativa-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas: "texto mapa";
+  position: relative;
+  /* La altura total la define el texto: 6 hitos × 100vh */
 }
 
-/* Texto izquierda */
-#col-izq {
-  grid-area: texto;
-  background: var(--crema);
-  position: relative;
-}
-#col-der {
-  grid-area: mapa;
-  position: relative;
-}
-#split-progress {
-  position: absolute;
+/* Mapa: posición fija que cubre toda la pantalla */
+#mapa-fondo-wrap {
+  position: sticky;
   top: 0;
-  left: clamp(0.8rem, 2vw, 1.4rem);
-  width: 2px;
-  height: 100%;
-  background: rgba(224, 216, 204, 0.9);
-  transform-origin: top center;
-}
-#split-progress-fill {
+  left: 0;
   width: 100%;
-  height: 100%;
-  background: var(--naranja);
-  transform-origin: top center;
-  transform: scaleY(0);
-}
-#hitos-lista {
-  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--mapa-fondo);
+  z-index: 0;
 }
 
-.hito-bloque {
-  min-height: 100vh;
-  display: flex; align-items: center;
-  padding: clamp(4rem,8vw,6rem) clamp(1.5rem,4vw,4rem) clamp(4rem,8vw,6rem) clamp(2.6rem,6vw,7rem);
-  position: relative;
-}
-.hito-bloque::after {
-  content: ''; position: absolute;
-  bottom: 0; left: clamp(2.6rem,6vw,7rem); right: clamp(1.5rem,4vw,4rem);
-  height: 1px; background: var(--crema-borde);
-}
-.hito-bloque:last-child::after { display: none; }
-.hito-inner {
-  max-width: 400px;
-  opacity: 0.42;
-  transform: translate3d(0, 20px, 0);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-.hito-bloque.is-active .hito-inner {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-.hito-num {
-  width: clamp(30px,5vw,36px); height: clamp(30px,5vw,36px);
-  border-radius: 50%; background: var(--naranja); color: white;
-  font-family: 'Source Sans 3', sans-serif; font-size: clamp(0.72rem,1.5vw,0.82rem); font-weight: 700;
-  display: inline-flex; align-items: center; justify-content: center;
-  margin-bottom: 1.1rem;
-}
-.hito-num.open {
-  background: transparent; border: 2px solid var(--naranja); color: var(--naranja);
-}
-.hito-muni {
-  font-family: 'Source Sans 3', sans-serif; font-size: clamp(0.58rem,1.4vw,0.66rem);
-  letter-spacing: 0.4em; text-transform: uppercase;
-  color: var(--naranja); margin-bottom: 0.45rem;
-  font-weight: 700;
-}
-.hito-nombre {
-  font-size: clamp(1.1rem,2.5vw,1.6rem);
-  font-weight: 800; line-height: 1.16; color: var(--carbon); margin-bottom: 0.9rem;
-}
-.hito-nombre em { font-style: italic; font-weight: 700; }
-.hito-sep { width: 32px; height: 2px; background: var(--naranja); margin-bottom: 1rem; }
-.hito-desc {
-  font-size: clamp(0.84rem,1.6vw,0.97rem);
-  color: var(--gris); line-height: 1.95;
-}
-
-/* Mapa derecha sticky */
-#mapa-sticky {
-  position: sticky; top: 0; height: 100vh;
-  overflow: hidden; background: var(--mapa-fondo);
-}
 #mapa-inner {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   transform-origin: center center;
+  will-change: transform;
   --overlay-inverse-scale: 1;
 }
+
 #mapa-svg {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
-  object-position: center;
+  object-position: center 40%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
 }
 
+/* Hotspots sobre el mapa */
 #mapa-hotspots {
   position: absolute;
   inset: 0;
   z-index: 5;
 }
+
 .mapa-hotspot {
   position: absolute;
   width: 3rem;
@@ -543,75 +477,192 @@ p, span, a, div {
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
+  z-index: 6;
 }
-.mapa-hotspot:focus-visible {
-  outline: 2px solid var(--naranja);
-  outline-offset: 2px;
-}
-.mapa-hotspot::before {
-  content: '';
-  position: absolute;
-  inset: 0.75rem;
-  border-radius: 50%;
-}
+
 .mapa-tooltip {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 0.45rem);
-  transform: translateX(-50%) translateY(8px) scale(var(--overlay-inverse-scale, 1));
-  transform-origin: bottom center;
-  padding: 0.35rem 0.55rem;
+  transform: translateX(-50%) translateY(8px);
+  padding: 0.35rem 0.7rem;
   border-radius: 999px;
   background: rgba(63,60,58,0.92);
   color: var(--crema);
   font-family: 'Source Sans 3', sans-serif;
   font-size: 0.62rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
+
 .mapa-hotspot:hover .mapa-tooltip,
 .mapa-hotspot:focus-visible .mapa-tooltip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(var(--overlay-inverse-scale, 1));
+  transform: translateX(-50%) translateY(0);
 }
 
-/* Anillo activo sobre el mapa */
+/* Anillo de foco */
 #mapa-focus-ring {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: clamp(30px, 4vw, 44px);
-  height: clamp(30px, 4vw, 44px);
+  width: clamp(32px, 4vw, 48px);
+  height: clamp(32px, 4vw, 48px);
   border-radius: 50%;
-  border: 2px solid rgba(250,243,233,0.92);
+  border: 2px solid rgba(250,243,233,0.9);
   transform: translate(-50%, -50%) scale(var(--overlay-inverse-scale, 1));
   transform-origin: center center;
-  box-shadow: 0 0 0 6px rgba(244,119,79,0.22);
+  box-shadow: 0 0 0 6px rgba(244,119,79,0.2);
   z-index: 6;
   pointer-events: none;
   opacity: 0;
 }
+
 #mapa-focus-ring::after {
   content: '';
   position: absolute;
   inset: 5px;
   border-radius: 50%;
-  background: rgba(244,119,79,0.18);
+  background: rgba(244,119,79,0.15);
 }
-#mapa-focus-ring .pin-ripple {
+
+.pin-ripple {
   position: absolute;
   inset: 50% auto auto 50%;
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid rgba(244,119,79,0.68);
+  border: 2px solid rgba(244,119,79,0.65);
   transform: translate(-50%, -50%) scale(0.6);
   opacity: 0;
   pointer-events: none;
+}
+
+/* Columna de texto: flota sobre el mapa */
+#col-texto {
+  position: relative;
+  z-index: 10;
+  margin-top: -100vh;
+  width: min(44vw, 520px);
+  margin-left: 0;
+}
+
+/* Línea de progreso vertical */
+#split-progress {
+  position: absolute;
+  top: 0;
+  left: clamp(1rem, 2.5vw, 1.6rem);
+  width: 2px;
+  height: 100%;
+  background: rgba(224,216,204,0.5);
+  z-index: 2;
+}
+
+#split-progress-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--naranja);
+  transform-origin: top center;
+  transform: scaleY(0);
+}
+
+/* Bloque de cada hito */
+.hito-bloque {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: clamp(3rem,6vw,5rem) clamp(2rem,4vw,3.5rem)
+           clamp(3rem,6vw,5rem) clamp(3rem,5vw,5rem);
+  position: relative;
+}
+
+.hito-bloque::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: clamp(3rem,5vw,5rem);
+  right: clamp(2rem,4vw,3.5rem);
+  height: 1px;
+  background: rgba(224,216,204,0.4);
+}
+
+.hito-bloque:last-child::after { display: none; }
+
+/* Card de texto con glassmorphism sutil */
+.hito-inner {
+  max-width: 380px;
+  background: rgba(250,243,233,0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(224,216,204,0.6);
+  border-radius: 4px;
+  padding: clamp(1.5rem,3vw,2.2rem);
+  opacity: 0.35;
+  transform: translate3d(-16px, 0, 0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.hito-bloque.is-active .hito-inner {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Números de hitos */
+.hito-num {
+  width: clamp(28px,4vw,34px);
+  height: clamp(28px,4vw,34px);
+  border-radius: 50%;
+  background: var(--naranja);
+  color: white;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: clamp(0.68rem,1.3vw,0.78rem);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.hito-num.open {
+  background: transparent;
+  border: 2px solid var(--naranja);
+  color: var(--naranja);
+}
+
+.hito-muni {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: clamp(0.55rem,1.2vw,0.62rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--naranja);
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  display: block;
+}
+
+.hito-nombre {
+  font-size: clamp(1rem,2.2vw,1.4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--carbon);
+  margin-bottom: 0.8rem;
+}
+
+.hito-nombre em { font-style: italic; font-weight: 700; }
+
+.hito-sep {
+  width: 28px;
+  height: 2px;
+  background: var(--naranja);
+  margin-bottom: 0.9rem;
+}
+
+.hito-desc {
+  font-size: clamp(0.8rem,1.4vw,0.9rem);
+  color: var(--gris);
+  line-height: 1.9;
 }
 
 /* ═══════════════════════════════════
@@ -697,53 +748,42 @@ p, span, a, div {
     padding-top: 0.75rem;
     border-top: 1px solid rgba(224,216,204,0.5);
   }
-  #narrativa-split {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "mapa"
-      "texto";
-  }
-  #col-der {
-    order: -1;
+  /* En mobile el mapa es sticky de 45vh */
+  #mapa-fondo-wrap {
+    height: 45vh;
     position: sticky;
     top: 0;
-    z-index: 10;
-    height: 40vh;
   }
-  #mapa-sticky {
-    height: 40vh;
-    position: relative;
-    overflow: hidden;
-  }
-  #mapa-inner {
-    position: absolute !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    transform: none !important;
-  }
-  #mapa-svg {
+
+  /* El texto NO usa margin-top negativo en mobile */
+  #col-texto {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 40% 50%;
+    margin-top: 0;
+    background: var(--crema);
   }
-  #mapa-hotspots,
-  #mapa-focus-ring {
-    display: none;
+
+  .hito-bloque {
+    min-height: auto;
+    padding: 2.5rem 1.5rem 2.5rem 2rem;
   }
-  #col-izq {
-    z-index: 1;
+
+  /* En mobile las cards no tienen glass — fondo sólido */
+  .hito-inner {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    max-width: 100%;
   }
+
   #split-progress {
     left: 1rem;
   }
-  .hito-bloque {
-    min-height: auto;
-    padding: 3rem 1.5rem 3rem 2.2rem;
-  }
+
   .hito-bloque::after {
-    left: 2.2rem;
+    left: 2rem;
     right: 1.5rem;
   }
   #camino-s-wrap {
@@ -783,7 +823,7 @@ body.reduced-motion #mapa-entrada {
 }
 body.reduced-motion #hero-pin,
 body.reduced-motion #camino-pin,
-body.reduced-motion #mapa-sticky {
+body.reduced-motion #mapa-fondo-wrap {
   position: relative;
   height: auto;
   min-height: 100vh;
@@ -952,26 +992,32 @@ body.reduced-motion #mapa-slide-panel {
 
 
 <!-- ═══════════════════════════════════
-     5 · NARRATIVA SPLIT
+     5 · NARRATIVA — MAPA PANTALLA COMPLETA
 ═══════════════════════════════════ -->
 <div id="narrativa-split">
-  <div id="col-izq">
-    <div id="split-progress" aria-hidden="true"><div id="split-progress-fill"></div></div>
+
+  <!-- MAPA: fondo fijo pantalla completa -->
+  <div id="mapa-fondo-wrap">
+    <div id="mapa-inner">
+      <img id="mapa-svg"
+           src="material/mapa_CdlR.svg"
+           alt="Mapa del Camino de la Reconquista"
+           decoding="async">
+      <div id="mapa-hotspots"></div>
+      <div id="mapa-focus-ring" aria-hidden="true">
+        <div class="pin-ripple"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEXTO: columna scrolleable sobre el mapa -->
+  <div id="col-texto">
+    <div id="split-progress" aria-hidden="true">
+      <div id="split-progress-fill"></div>
+    </div>
     <div id="hitos-lista"></div>
   </div>
 
-  <div id="col-der">
-    <div id="mapa-sticky">
-      <div id="mapa-inner">
-        <img id="mapa-svg" src="material/mapa_CdlR.svg" alt="Mapa del Camino de la Reconquista" loading="lazy" decoding="async">
-        <div id="mapa-hotspots"></div>
-        <div id="mapa-focus-ring" aria-hidden="true">
-          <div class="pin-ripple"></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
 </div>
 
 
@@ -1085,7 +1131,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const caminoSvg = $('camino-s-svg');
   const caminoFrase = $('camino-frase');
   const splitFill = $('split-progress-fill');
-  const mapaSticky = $('mapa-sticky');
+  const mapaFondoWrap = document.getElementById('mapa-fondo-wrap');
   const mapaInner = $('mapa-inner');
   const mapaHotspots = $('mapa-hotspots');
   const focusRing = $('mapa-focus-ring');
@@ -1172,9 +1218,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function getMapTransform(hito) {
-    const rect = mapaSticky.getBoundingClientRect();
-    const cw = rect.width || window.innerWidth * 0.5;
-    const ch = rect.height || window.innerHeight;
+    const el = document.getElementById('mapa-fondo-wrap');
+    const rect = el ? el.getBoundingClientRect() :
+                 { width: window.innerWidth, height: window.innerHeight };
+    const cw = rect.width;
+    const ch = rect.height;
     const px = cw * (hito.focusX / 100);
     const py = ch * (hito.focusY / 100);
     return {
@@ -1234,9 +1282,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (hasChanged) pulsePin(focusRing);
 
+    // En mobile: solo activar clases, sin zoom/pan
     if (window.innerWidth <= 680) {
-      hitoBlocks.forEach((block, blockIndex) => {
-        block.classList.toggle('is-active', blockIndex === index);
+      hitoBlocks.forEach((block, i) => {
+        block.classList.toggle('is-active', i === index);
+      });
+      hotspotNodes.forEach(node => {
+        node.classList.toggle('is-active',
+          Number(node.dataset.hito) === index);
       });
       return;
     }
@@ -1412,7 +1465,10 @@ window.addEventListener('DOMContentLoaded', () => {
     end: 'bottom bottom',
     scrub: 0.55,
     onUpdate: self => queueNarrativeFrame(self.progress),
-    ...withWillChange([mapaInner, splitFill, focusRing])
+    onEnter: () => setWillChange(mapaInner, 'transform'),
+    onLeave: () => setWillChange(mapaInner, ''),
+    onEnterBack: () => setWillChange(mapaInner, 'transform'),
+    onLeaveBack: () => setWillChange(mapaInner, '')
   });
 
   gsap.from('#s-cierre > *', {
