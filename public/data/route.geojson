@@ -1,0 +1,43 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "camino-reconquista-route",
+        "name": "Camino de la Reconquista",
+        "source": "Generated from uploaded KMZ points in sequence order",
+        "note": "The uploaded KMZ contained 6 point placemarks and no LineString geometry. This route is a fallback polyline connecting the points in order. Replace it with the real route GeoJSON if available."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -58.572071,
+            -34.5621147
+          ],
+          [
+            -58.5560961,
+            -34.5138382
+          ],
+          [
+            -58.587582,
+            -34.4172205
+          ],
+          [
+            -58.5091162,
+            -34.4671456
+          ],
+          [
+            -58.4999754,
+            -34.5460215
+          ],
+          [
+            -58.5376772,
+            -34.5770261
+          ]
+        ]
+      }
+    }
+  ]
+}
