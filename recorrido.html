@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camino de la Reconquista | Recorrido interactivo</title>
+    <meta
+      name="description"
+      content="Experiencia scrollytelling del Camino de la Reconquista: mapa vivo, narrativa por hitos y audio contextual para recorrer la historia."
+    >
+    <meta name="theme-color" content="#111111">
+    <link rel="icon" href="/material/logo-r-cuerpo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    >
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      >
+    </noscript>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+    >
+    <link rel="stylesheet" href="/styles/recorrido.css">
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    ></script>
+    <script
+      defer
+      src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"
+    ></script>
+    <script type="module" src="/scripts/recorrido/app.js"></script>
+  </head>
+  <body>
+    <div class="paper-noise" aria-hidden="true"></div>
+
+    <header class="site-bar">
+      <a class="brand" href="/">
+        <span class="brand__mark">R</span>
+        <span class="brand__label">Camino de la Reconquista</span>
+      </a>
+
+      <div class="site-bar__actions">
+        <button
+          class="ghost-button"
+          id="timeline-open"
+          type="button"
+          aria-controls="timeline-panel"
+          aria-expanded="false"
+        >
+          Linea de tiempo
+        </button>
+        <a class="ghost-button ghost-button--accent" href="#experience-shell">
+          Iniciar recorrido
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero__content">
+          <p class="hero__eyebrow">Recorrido editorial · mapa vivo · audio por paradas</p>
+          <h1 class="hero__title">
+            Una travesia historica que avanza con el scroll y devuelve escala, paisaje y memoria a la Reconquista.
+          </h1>
+          <p class="hero__lede">
+            Cada gesto en pantalla activa un nuevo tramo del camino: el mapa se mueve, la ruta se revela y el relato cambia de foco para acompanar a turistas, visitantes y curiosos durante el recorrido real.
+          </p>
+
+          <div class="hero__actions">
+            <a class="hero-button hero-button--primary" href="#experience-shell">
+              Entrar al recorrido
+            </a>
+            <button
+              class="hero-button hero-button--ghost"
+              id="hero-timeline-button"
+              type="button"
+              aria-controls="timeline-panel"
+              aria-expanded="false"
+            >
+              Ver todos los puntos
+            </button>
+          </div>
+
+          <div class="hero__stats">
+            <div class="hero-stat">
+              <strong>06</strong>
+              <span>hitos narrados</span>
+            </div>
+            <div class="hero-stat">
+              <strong>05</strong>
+              <span>municipios enlazados</span>
+            </div>
+            <div class="hero-stat">
+              <strong>Mapa + audio</strong>
+              <span>lectura y uso en movimiento</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero__aside">
+          <div class="hero-preview">
+            <div class="hero-preview__image"></div>
+            <div class="hero-preview__card">
+              <span class="hero-preview__label">Camino de la Reconquista</span>
+              <strong>Scroll como linea de tiempo</strong>
+              <p>
+                El trayecto se despliega punto por punto con foco en claridad, orientacion y una lectura serena del territorio.
+              </p>
+            </div>
+            <div class="hero-preview__caption">
+              <span>Desktop editorial</span>
+              <span>Mobile first</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="experience-shell" id="experience-shell">
+        <div class="map-stage">
+          <div class="map-stage__overlay map-stage__overlay--top">
+            <div class="chapter-chip">
+              <span id="chapter-count">01/06</span>
+              <span class="chapter-chip__divider"></span>
+              <span id="chapter-municipality">San Martin</span>
+            </div>
+
+            <button class="ghost-button ghost-button--small" id="map-reset" type="button">
+              Vista general
+            </button>
+          </div>
+
+          <div class="map-stage__surface">
+            <div id="map" class="map-canvas" aria-label="Mapa interactivo del Camino de la Reconquista"></div>
+            <div class="map-stage__wash" aria-hidden="true"></div>
+            <div class="map-stage__status" id="map-status" data-state="loading">
+              Cargando mapa historico...
+            </div>
+          </div>
+
+          <div class="map-stage__overlay map-stage__overlay--bottom">
+            <div class="map-panel">
+              <div class="map-panel__intro">
+                <span class="map-panel__eyebrow">Recorrido historico</span>
+                <h2 id="active-title">San Martin, el punto de partida</h2>
+                <p id="active-place">Museo Historico Jose Hernandez - Chacra Pueyrredon</p>
+              </div>
+
+              <div class="route-meter">
+                <div class="route-meter__labels">
+                  <span id="progress-status">Inicio del recorrido</span>
+                  <span>1806 · Norte del Rio de la Plata</span>
+                </div>
+                <div class="route-meter__track">
+                  <div class="route-meter__fill" id="route-progress-fill"></div>
+                </div>
+              </div>
+
+              <div class="map-panel__actions">
+                <a
+                  class="ghost-button ghost-button--small"
+                  id="maps-link"
+                  href="https://www.google.com/maps"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Abrir en mapas
+                </a>
+                <button
+                  class="ghost-button ghost-button--small"
+                  id="timeline-toggle-bottom"
+                  type="button"
+                  aria-controls="timeline-panel"
+                  aria-expanded="false"
+                >
+                  Linea de tiempo
+                </button>
+              </div>
+            </div>
+
+            <div class="audio-panel">
+              <div class="audio-panel__meta">
+                <span class="audio-panel__eyebrow">Podcast del punto</span>
+                <strong id="audio-title">Audio del punto</strong>
+                <p id="audio-point-label">Selecciona un punto del recorrido</p>
+                <span class="audio-panel__note" id="audio-note">
+                  Los archivos finales pueden cargarse mas adelante sin tocar la interfaz.
+                </span>
+              </div>
+
+              <div class="audio-panel__controls">
+                <button class="hero-button hero-button--compact" id="audio-toggle" type="button">
+                  Audio pronto
+                </button>
+
+                <div class="audio-panel__scrubber">
+                  <span id="audio-current">00:00</span>
+                  <input
+                    id="audio-seek"
+                    type="range"
+                    min="0"
+                    max="1000"
+                    value="0"
+                    step="1"
+                    aria-label="Linea de tiempo del audio"
+                  >
+                  <span id="audio-duration">--:--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mobile-sheet">
+            <div class="mobile-sheet__handle" aria-hidden="true"></div>
+            <div class="mobile-sheet__media">
+              <img
+                id="mobile-image"
+                src="/public/images/points/punto1.svg"
+                data-fallback-src="/public/images/points/punto1.svg"
+                alt="Ilustracion del punto activo"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+
+            <div class="mobile-sheet__body">
+              <div class="mobile-sheet__topline">
+                <span id="mobile-count">01/06</span>
+                <span id="mobile-municipality">San Martin</span>
+              </div>
+              <h2 id="mobile-title">San Martin, el punto de partida</h2>
+              <p id="mobile-place">Museo Historico Jose Hernandez - Chacra Pueyrredon</p>
+              <p id="mobile-description">
+                El recorrido se actualiza en tiempo real a medida que avanzas por cada parada.
+              </p>
+
+              <div class="mobile-sheet__actions">
+                <button class="hero-button hero-button--compact" id="mobile-audio-toggle" type="button">
+                  Audio pronto
+                </button>
+                <a
+                  class="hero-button hero-button--ghost mobile-sheet__link"
+                  id="mobile-maps-link"
+                  href="https://www.google.com/maps"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Como llegar
+                </a>
+              </div>
+
+              <div class="mobile-audio">
+                <span class="mobile-audio__note" id="mobile-audio-note">
+                  Los archivos de audio pueden sumarse mas adelante desde la carpeta /public/audio.
+                </span>
+                <div class="mobile-audio__scrubber">
+                  <span id="mobile-audio-current">00:00</span>
+                  <input
+                    id="mobile-audio-seek"
+                    type="range"
+                    min="0"
+                    max="1000"
+                    value="0"
+                    step="1"
+                    aria-label="Linea de tiempo del audio en mobile"
+                  >
+                  <span id="mobile-audio-duration">--:--</span>
+                </div>
+              </div>
+
+              <div class="mobile-sheet__nav">
+                <button class="ghost-button ghost-button--small" id="mobile-prev" type="button">
+                  Anterior
+                </button>
+                <button class="ghost-button ghost-button--small" id="mobile-next" type="button">
+                  Siguiente
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-sections" id="story-sections"></div>
+      </section>
+
+      <section class="overview">
+        <div class="overview__header">
+          <p class="overview__eyebrow">Lector resumido</p>
+          <h2>Linea de tiempo completa para volver sobre cada parada.</h2>
+          <p>
+            Pensada como una segunda capa de navegacion: util para planificar la visita, revisar el trayecto o saltar a un punto especifico sin perder el hilo del mapa.
+          </p>
+        </div>
+
+        <div class="overview__grid" id="overview-list"></div>
+      </section>
+
+      <section class="closing">
+        <div class="closing-card">
+          <p class="closing-card__eyebrow">Cierre editorial</p>
+          <h2>Una pagina para leer el paisaje como documento historico, no solo como trayecto.</h2>
+          <p>
+            La nueva ruta se suma al sitio actual sin reemplazarlo. Funciona como experiencia premium de lectura en movimiento y queda lista para incorporar audios, fotos finales y nuevos hitos cuando el proyecto los publique.
+          </p>
+
+          <div class="closing-card__actions">
+            <a class="hero-button hero-button--primary" href="#experience-shell">
+              Volver al recorrido
+            </a>
+            <a class="hero-button hero-button--ghost" href="/">
+              Volver a la landing actual
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="timeline-backdrop" id="timeline-backdrop" hidden></div>
+    <aside
+      class="timeline-panel"
+      id="timeline-panel"
+      hidden
+      aria-modal="true"
+      aria-label="Linea de tiempo del recorrido"
+    >
+      <div class="timeline-panel__header">
+        <div>
+          <p class="timeline-panel__eyebrow">Todos los hitos</p>
+          <h2>Linea de tiempo del Camino</h2>
+        </div>
+        <button class="ghost-button ghost-button--small" id="timeline-close" type="button">
+          Cerrar
+        </button>
+      </div>
+
+      <div class="timeline-panel__body" id="timeline-list"></div>
+    </aside>
+
+    <audio id="shared-audio" preload="metadata"></audio>
+  </body>
+</html>
