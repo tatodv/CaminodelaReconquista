@@ -3,9 +3,16 @@
 ## Overview
 The new experience lives in `recorrido.html`, which resolves to `/recorrido` in production because the project already uses Vercel `cleanUrls`.
 
-The existing homepage route remains untouched:
-- `/` still rewrites to `reconquista_v4`
-- `/recorrido` is a new additive page
+The production Vercel project serves `public/` as its output directory, so deployable copies also live under:
+- `public/index.html`
+- `public/recorrido.html`
+- `public/styles/recorrido.css`
+- `public/scripts/recorrido/`
+
+Routes:
+- `/` rewrites to the premium scrollytelling experience
+- `/recorrido` is the clean URL for the new page
+- `/reconquista_v4` remains available as the previous landing
 
 ## Architecture
 Because the repository is a static Vercel site, the implementation uses modular static assets instead of introducing a framework or build system.
@@ -145,6 +152,8 @@ To enable a point audio:
 2. Update the matching item in `podcast.json`
 3. Set `available` to `true`
 4. Optionally set `duration`
+
+In production, Vercel serves `public/audio/` at `/audio/`, so JSON paths should use `/audio/file-name.mp3`.
 
 ### Update illustrations or photography
 The current implementation uses the available SVG point illustrations.

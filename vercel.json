@@ -5,7 +5,15 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/reconquista_v4"
+      "destination": "/recorrido.html"
+    },
+    {
+      "source": "/recorrido",
+      "destination": "/recorrido.html"
+    },
+    {
+      "source": "/reconquista_v4",
+      "destination": "/reconquista_v4.html"
     }
   ]
 }
