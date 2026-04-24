@@ -1,9 +1,47 @@
 const VIEWBOX = {
-  width: 1000,
-  height: 760,
-  paddingX: 115,
-  paddingY: 92,
+  width: 1920,
+  height: 1080,
+  paddingX: 0,
+  paddingY: 0,
 };
+
+const MAP_ANCHORS = new Map([
+  [1, { x: 704, y: 614 }],
+  [2, { x: 766, y: 368 }],
+  [3, { x: 637, y: 78 }],
+  [4, { x: 1010, y: 246 }],
+  [5, { x: 1038, y: 570 }],
+  [6, { x: 866, y: 710 }],
+]);
+
+const MAP_ROUTE_POINTS = [
+  { x: 704, y: 614 },
+  { x: 634, y: 558 },
+  { x: 681, y: 438 },
+  { x: 718, y: 380 },
+  { x: 766, y: 368 },
+  { x: 813, y: 327 },
+  { x: 750, y: 288 },
+  { x: 693, y: 181 },
+  { x: 637, y: 78 },
+  { x: 660, y: 118 },
+  { x: 760, y: 205 },
+  { x: 789, y: 165 },
+  { x: 815, y: 194 },
+  { x: 830, y: 248 },
+  { x: 950, y: 300 },
+  { x: 1010, y: 246 },
+  { x: 1014, y: 286 },
+  { x: 1034, y: 318 },
+  { x: 1022, y: 340 },
+  { x: 1040, y: 386 },
+  { x: 1108, y: 535 },
+  { x: 1136, y: 552 },
+  { x: 1038, y: 570 },
+  { x: 986, y: 688 },
+  { x: 932, y: 806 },
+  { x: 866, y: 710 },
+];
 
 function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value));
@@ -58,16 +96,6 @@ function createRoutePath(projectedRoute) {
     .join(" ");
 }
 
-function createRoadPath(seed, offsetX = 0, offsetY = 0) {
-  return seed
-    .map((point, index) => {
-      const x = point[0] + offsetX;
-      const y = point[1] + offsetY;
-      return `${index === 0 ? "M" : "L"} ${x} ${y}`;
-    })
-    .join(" ");
-}
-
 function getPointProgress(index, total) {
   if (total <= 1) {
     return 1;
@@ -76,16 +104,11 @@ function getPointProgress(index, total) {
   return index / (total - 1);
 }
 
-function createMapMarkup(points, projectedPoints, routePath) {
-  const roadSeeds = [
-    [[65, 640], [190, 548], [318, 516], [454, 444], [612, 398], [804, 320], [946, 242]],
-    [[108, 220], [254, 290], [366, 378], [520, 500], [650, 598], [838, 676]],
-    [[52, 458], [174, 432], [320, 426], [482, 386], [652, 340], [898, 344]],
-    [[248, 80], [316, 206], [380, 330], [444, 468], [500, 672]],
-    [[620, 70], [608, 174], [644, 284], [706, 430], [724, 624]],
-    [[808, 112], [764, 204], [742, 324], [768, 482], [848, 640]],
-  ];
+function getDisplayPoint(point, fallbackPoint) {
+  return MAP_ANCHORS.get(Number(point.order)) || fallbackPoint;
+}
 
+function createMapMarkup(points, projectedPoints, routePath) {
   return [
     '<div class="story-map" role="img" aria-label="Mapa simple animado del Camino de la Reconquista">',
     '  <div class="story-map__viewport">',
@@ -100,31 +123,22 @@ function createMapMarkup(points, projectedPoints, routePath) {
     '          <stop offset="72%" stop-color="#f07843" stop-opacity="0.09"></stop>',
     '          <stop offset="100%" stop-color="#f07843" stop-opacity="0"></stop>',
     "        </radialGradient>",
+    '        <linearGradient id="mapDepth" x1="0%" y1="0%" x2="100%" y2="0%">',
+    '          <stop offset="0%" stop-color="#f3eadf" stop-opacity="0.08"></stop>',
+    '          <stop offset="58%" stop-color="#918a80" stop-opacity="0.16"></stop>',
+    '          <stop offset="77%" stop-color="#1c292d" stop-opacity="0.42"></stop>',
+    '          <stop offset="100%" stop-color="#112027" stop-opacity="0.76"></stop>',
+    "        </linearGradient>",
     "      </defs>",
-    '      <rect class="story-map__land" width="1000" height="760"></rect>',
-    '      <path class="story-map__river" d="M775 0 C720 130 790 205 770 335 C752 448 830 550 790 760 L1000 760 L1000 0 Z"></path>',
-    '      <g class="story-map__roads">',
-    ...roadSeeds.flatMap((seed, index) => [
-      `        <path d="${createRoadPath(seed)}"></path>`,
-      `        <path d="${createRoadPath(seed, index % 2 ? 46 : -38, index % 2 ? 20 : -24)}"></path>`,
-    ]),
-    "      </g>",
-    '      <g class="story-map__place-labels">',
-    '        <text x="175" y="620">San Mart&iacute;n</text>',
-    '        <text x="370" y="520">Villa Adelina</text>',
-    '        <text x="505" y="430">Boulogne</text>',
-    '        <text x="610" y="335">San Isidro</text>',
-    '        <text x="470" y="185">San Fernando</text>',
-    '        <text x="345" y="118">Tigre</text>',
-    '        <text x="735" y="508">Olivos</text>',
-    '        <text x="706" y="590">Vicente L&oacute;pez</text>',
-    "      </g>",
+    '      <image class="story-map__base-image" href="/material/current-map-reference.jpg" x="0" y="0" width="1920" height="1080" preserveAspectRatio="xMidYMid slice"></image>',
+    '      <rect class="story-map__paper-wash" width="1920" height="1080"></rect>',
+    '      <rect class="story-map__depth" width="1920" height="1080"></rect>',
     `      <path class="story-map__route-base" d="${routePath}"></path>`,
     `      <path class="story-map__route-glow" d="${routePath}"></path>`,
     `      <path class="story-map__route-progress" d="${routePath}"></path>`,
     '      <g class="story-map__focuses">',
     ...projectedPoints.map((point, index) => (
-      `        <circle class="story-map__focus" data-map-focus="${index}" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="54"></circle>`
+      `        <circle class="story-map__focus" data-map-focus="${index}" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="90"></circle>`
     )),
     "      </g>",
     '      <g class="story-map__points">',
@@ -132,9 +146,9 @@ function createMapMarkup(points, projectedPoints, routePath) {
       const projected = projectedPoints[index];
       return [
         `        <g class="story-map__point" data-map-point="${index}" transform="translate(${projected.x.toFixed(1)} ${projected.y.toFixed(1)})">`,
-        '          <circle class="story-map__point-ring" r="21"></circle>',
-        '          <circle class="story-map__point-core" r="16"></circle>',
-        `          <text class="story-map__point-number" y="5">${point.order}</text>`,
+        '          <circle class="story-map__point-ring" r="37"></circle>',
+        '          <circle class="story-map__point-core" r="28"></circle>',
+        `          <text class="story-map__point-number" y="8">${point.order}</text>`,
         `          <text class="story-map__point-label" x="30" y="4">${point.municipality}</text>`,
         "        </g>",
       ].join("");
@@ -168,9 +182,14 @@ export async function createMapController({
   const projectedPoints = points.map((point) =>
     projectCoordinate(point.coordinates, bounds),
   );
-  const routePath = createRoutePath(projectedRoute);
+  const displayPoints = points.map((point, index) =>
+    getDisplayPoint(point, projectedPoints[index]),
+  );
+  const routePath = createRoutePath(
+    MAP_ROUTE_POINTS.length > 0 ? MAP_ROUTE_POINTS : projectedRoute,
+  );
 
-  container.innerHTML = createMapMarkup(points, projectedPoints, routePath);
+  container.innerHTML = createMapMarkup(points, displayPoints, routePath);
 
   const viewport = container.querySelector(".story-map__viewport");
   const progressPath = container.querySelector(".story-map__route-progress");
@@ -195,7 +214,7 @@ export async function createMapController({
   let userScale = 1;
 
   function applyCamera(index, instant = false) {
-    const point = projectedPoints[index] || projectedPoints[0];
+    const point = displayPoints[index] || displayPoints[0];
     const compact = isCompactViewport();
     const baseScale = compact ? 1.62 : 1.34;
     const scale = baseScale * userScale;
@@ -239,7 +258,9 @@ export async function createMapController({
 
   function setActivePoint(index, options = {}) {
     activeIndex = clamp(index, 0, points.length - 1);
-    setRouteProgress(Math.max(progress, getPointProgress(activeIndex, points.length)));
+    if (typeof options.progress === "number") {
+      setRouteProgress(options.progress);
+    }
     updatePointState();
     applyCamera(activeIndex, options.instant);
   }

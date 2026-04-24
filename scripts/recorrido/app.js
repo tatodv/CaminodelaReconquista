@@ -36,6 +36,14 @@ function getProgressStatus(index, total) {
   return `Tramo ${padNumber(index + 1)} de ${padNumber(total)}`;
 }
 
+function getRouteProgressForStep(index, total, localProgress = 0) {
+  if (total <= 1) {
+    return 1;
+  }
+
+  return Math.min(1, Math.max(0, (index + localProgress) / (total - 1)));
+}
+
 function createIntroMarkup(total) {
   return [
     '<article class="story-step story-step--intro is-active" data-step-label="0" aria-labelledby="story-title-intro">',
@@ -379,7 +387,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateStoryState(index);
     updateTimelineState(index);
     updateMobileState(point, index);
-    mapController.setActivePoint(index, { instant: options.instantMap });
+    const nextRouteProgress =
+      typeof options.routeProgress === "number"
+        ? options.routeProgress
+        : getRouteProgressForStep(index, totalPoints);
+
+    updateRouteProgress(nextRouteProgress);
+    mapController.setActivePoint(index, {
+      instant: options.instantMap,
+      progress: nextRouteProgress,
+    });
     audioController.setTrack(point);
   }
 
@@ -503,15 +520,16 @@ window.addEventListener("DOMContentLoaded", async () => {
       end: "bottom 52%",
       onEnter: () => updatePrimaryState(index),
       onEnterBack: () => updatePrimaryState(index),
-    });
-  });
+      onUpdate: (scrollTrigger) => {
+        if (Number(document.body.dataset.activeIndex) !== index) {
+          return;
+        }
 
-  window.ScrollTrigger.create({
-    trigger: "#experience-shell",
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 0.4,
-    onUpdate: (scrollTrigger) => updateRouteProgress(scrollTrigger.progress),
+        updateRouteProgress(
+          getRouteProgressForStep(index, totalPoints, scrollTrigger.progress),
+        );
+      },
+    });
   });
 
   const prefersReducedMotion = window.matchMedia(

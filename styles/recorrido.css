@@ -2497,42 +2497,23 @@ body {
   opacity: 0.9;
 }
 
-.story-map__land {
-  fill: #c7c0b6;
-}
-
-.story-map__river {
-  fill: #29353b;
+.story-map__base-image {
+  filter: grayscale(1) contrast(1.06) brightness(0.74) sepia(0.12);
   opacity: 0.92;
 }
 
-.story-map__roads path {
-  fill: none;
-  stroke: rgba(56, 58, 55, 0.28);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.1;
+.story-map__paper-wash {
+  fill: rgba(244, 236, 224, 0.15);
+  mix-blend-mode: screen;
 }
 
-.story-map__roads path:nth-child(3n) {
-  stroke-width: 1.15;
-  opacity: 0.58;
+.story-map__depth {
+  fill: url("#mapDepth");
+  opacity: 0.94;
 }
 
-.story-map__place-labels text,
 .story-map__point-label {
-  fill: rgba(245, 238, 228, 0.8);
-  paint-order: stroke;
-  stroke: rgba(34, 35, 33, 0.34);
-  stroke-width: 3px;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-}
-
-.story-map__place-labels text:nth-child(-n + 6) {
-  fill: rgba(60, 57, 53, 0.42);
-  stroke: rgba(235, 228, 218, 0.44);
+  display: none;
 }
 
 .story-map__route-base,
@@ -2544,20 +2525,20 @@ body {
 }
 
 .story-map__route-base {
-  stroke: rgba(48, 47, 44, 0.28);
-  stroke-width: 6;
+  stroke: rgba(34, 32, 29, 0.42);
+  stroke-width: 8;
 }
 
 .story-map__route-glow {
-  stroke: rgba(255, 183, 122, 0.72);
-  stroke-width: 16;
+  stroke: rgba(255, 163, 97, 0.78);
+  stroke-width: 24;
   filter: url("#routeGlow");
   opacity: 0.7;
 }
 
 .story-map__route-progress {
   stroke: #ff7a3f;
-  stroke-width: 6;
+  stroke-width: 8;
 }
 
 .story-map__focus {
@@ -2574,7 +2555,7 @@ body {
 }
 
 .story-map__point {
-  opacity: 0.52;
+  opacity: 0.82;
   transform-box: fill-box;
   transform-origin: center;
   transition: opacity 0.24s ease, transform 0.24s ease;
@@ -2590,22 +2571,39 @@ body {
 }
 
 .story-map__point-ring {
-  fill: rgba(255, 246, 236, 0.2);
-  stroke: rgba(255, 246, 236, 0.75);
-  stroke-width: 2;
-}
-
-.story-map__point-core {
-  fill: #f07843;
-  stroke: rgba(255, 240, 224, 0.95);
+  fill: rgba(35, 32, 29, 0.12);
+  stroke: rgba(255, 246, 236, 0.56);
   stroke-width: 3;
 }
 
+.story-map__point-core {
+  fill: rgba(82, 76, 70, 0.72);
+  stroke: rgba(245, 236, 225, 0.72);
+  stroke-width: 4;
+}
+
 .story-map__point-number {
-  fill: #fff7ef;
+  fill: rgba(255, 247, 239, 0.74);
   text-anchor: middle;
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 900;
+}
+
+.story-map__point.is-complete .story-map__point-ring,
+.story-map__point.is-active .story-map__point-ring {
+  fill: rgba(255, 246, 236, 0.16);
+  stroke: rgba(255, 246, 236, 0.9);
+}
+
+.story-map__point.is-complete .story-map__point-core,
+.story-map__point.is-active .story-map__point-core {
+  fill: #f07843;
+  stroke: rgba(255, 240, 224, 0.95);
+}
+
+.story-map__point.is-complete .story-map__point-number,
+.story-map__point.is-active .story-map__point-number {
+  fill: #fff7ef;
 }
 
 .story-map__point-label {

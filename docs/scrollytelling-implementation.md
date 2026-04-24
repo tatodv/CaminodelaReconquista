@@ -57,11 +57,11 @@ Main entry points:
 `scripts/recorrido/map.js`
 - Renders a simple editorial SVG map inspired by the Codrops storytelling map pattern
 - Adds:
-  - abstract roads and river shape
+  - calibrated local base artwork from `/material/current-map-reference.jpg`
   - base route line
   - animated progress route line using `stroke-dashoffset`
   - point markers and active pulse focus
-- Projects GeoJSON coordinates into an SVG viewBox
+- Uses calibrated anchor positions that match the local map artwork, with GeoJSON projection kept as fallback
 - Handles route reveal progress and active-point camera transitions without external map tiles
 
 ### Audio controller
@@ -97,7 +97,7 @@ When a step crosses the active zone:
 - the audio controller swaps to the active point metadata
 
 ### Route reveal
-A second ScrollTrigger tracks the overall progress of `#experience-shell`.
+Each story-step ScrollTrigger drives the route reveal for its own segment.
 
 That progress value drives:
 - the desktop route meter bar
