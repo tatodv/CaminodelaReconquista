@@ -1,44 +1,9 @@
-const MAP_STYLE = {
-  version: 8,
-  glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
-  sources: {
-    "osm-raster": {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxzoom: 19,
-    },
-  },
-  layers: [
-    {
-      id: "background",
-      type: "background",
-      paint: {
-        "background-color": "#1d1b19",
-      },
-    },
-    {
-      id: "osm-raster",
-      type: "raster",
-      source: "osm-raster",
-      paint: {
-        "raster-opacity": 0.74,
-        "raster-saturation": -0.96,
-        "raster-contrast": 0.34,
-        "raster-brightness-min": 0.04,
-        "raster-brightness-max": 0.62,
-      },
-    },
-  ],
+const VIEWBOX = {
+  width: 1000,
+  height: 760,
+  paddingX: 115,
+  paddingY: 92,
 };
-
-function once(target, eventName) {
-  return new Promise((resolve) => {
-    target.once(eventName, resolve);
-  });
-}
 
 function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value));
@@ -48,371 +13,267 @@ function isCompactViewport() {
   return window.matchMedia("(max-width: 899px)").matches;
 }
 
-function createRouteGradient(progress, opacity = 1) {
-  const clamped = clamp(progress, 0, 1);
-  const start = Math.max(0, clamped - 0.012);
-  const end = Math.min(1, clamped + 0.01);
-  const solid = `rgba(221, 120, 71, ${opacity})`;
-  const glow = `rgba(255, 221, 181, ${opacity})`;
-  const transparent = "rgba(221, 120, 71, 0)";
-
-  return [
-    "interpolate",
-    ["linear"],
-    ["line-progress"],
-    0,
-    solid,
-    start,
-    solid,
-    clamped,
-    glow,
-    end,
-    transparent,
-    1,
-    transparent,
-  ];
+function getRouteCoordinates(route) {
+  return Array.isArray(route?.geometry?.coordinates)
+    ? route.geometry.coordinates
+    : [];
 }
 
-function buildFocusBounds(maplibregl, points, index) {
-  const current = points[index];
-  const previous = points[Math.max(0, index - 1)];
-  const next = points[Math.min(points.length - 1, index + 1)];
-  const candidates = [previous, current, next].filter(Boolean);
-  const bounds = new maplibregl.LngLatBounds(
-    current.coordinates,
-    current.coordinates,
-  );
+function getCoordinateBounds(points, routeCoordinates) {
+  const coordinates = [
+    ...points.map((point) => point.coordinates),
+    ...routeCoordinates,
+  ].filter((coordinate) => Array.isArray(coordinate) && coordinate.length >= 2);
 
-  candidates.forEach((candidate) => bounds.extend(candidate.coordinates));
-
-  return bounds;
-}
-
-function getCameraForPoint(map, maplibregl, points, index) {
-  const compact = isCompactViewport();
-  const bounds = buildFocusBounds(maplibregl, points, index);
-  const camera = map.cameraForBounds(bounds, {
-    padding: compact
-      ? { top: 96, right: 28, bottom: 320, left: 28 }
-      : { top: 96, right: 96, bottom: 150, left: 96 },
-    maxZoom: compact ? 12.9 : 12.45,
-    offset: compact ? [0, -22] : [0, 0],
-  });
+  const lons = coordinates.map((coordinate) => Number(coordinate[0]));
+  const lats = coordinates.map((coordinate) => Number(coordinate[1]));
 
   return {
-    ...camera,
-    bearing: 0,
-    pitch: compact ? 0 : 0,
-    duration: 1200,
-    essential: true,
+    minLon: Math.min(...lons),
+    maxLon: Math.max(...lons),
+    minLat: Math.min(...lats),
+    maxLat: Math.max(...lats),
   };
 }
 
-function createActiveMarker(maplibregl) {
-  const markerElement = document.createElement("div");
-  markerElement.className = "map-pulse-marker";
-  markerElement.setAttribute("aria-hidden", "true");
-  markerElement.innerHTML = [
-    '<span class="map-pulse-marker__glow"></span>',
-    '<span class="map-pulse-marker__core"></span>',
-  ].join("");
+function projectCoordinate(coordinate, bounds) {
+  const lon = Number(coordinate[0]);
+  const lat = Number(coordinate[1]);
+  const lonRange = bounds.maxLon - bounds.minLon || 1;
+  const latRange = bounds.maxLat - bounds.minLat || 1;
+  const usableWidth = VIEWBOX.width - VIEWBOX.paddingX * 2;
+  const usableHeight = VIEWBOX.height - VIEWBOX.paddingY * 2;
+  const x = VIEWBOX.paddingX + ((lon - bounds.minLon) / lonRange) * usableWidth;
+  const y = VIEWBOX.paddingY + ((bounds.maxLat - lat) / latRange) * usableHeight;
 
-  return new maplibregl.Marker({
-    element: markerElement,
-    anchor: "center",
-  });
+  return {
+    x,
+    y,
+  };
+}
+
+function createRoutePath(projectedRoute) {
+  return projectedRoute
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
+    .join(" ");
+}
+
+function createRoadPath(seed, offsetX = 0, offsetY = 0) {
+  return seed
+    .map((point, index) => {
+      const x = point[0] + offsetX;
+      const y = point[1] + offsetY;
+      return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+}
+
+function getPointProgress(index, total) {
+  if (total <= 1) {
+    return 1;
+  }
+
+  return index / (total - 1);
+}
+
+function createMapMarkup(points, projectedPoints, routePath) {
+  const roadSeeds = [
+    [[65, 640], [190, 548], [318, 516], [454, 444], [612, 398], [804, 320], [946, 242]],
+    [[108, 220], [254, 290], [366, 378], [520, 500], [650, 598], [838, 676]],
+    [[52, 458], [174, 432], [320, 426], [482, 386], [652, 340], [898, 344]],
+    [[248, 80], [316, 206], [380, 330], [444, 468], [500, 672]],
+    [[620, 70], [608, 174], [644, 284], [706, 430], [724, 624]],
+    [[808, 112], [764, 204], [742, 324], [768, 482], [848, 640]],
+  ];
+
+  return [
+    '<div class="story-map" role="img" aria-label="Mapa simple animado del Camino de la Reconquista">',
+    '  <div class="story-map__viewport">',
+    `    <svg class="story-map__svg" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">`,
+    "      <defs>",
+    '        <filter id="routeGlow" x="-50%" y="-50%" width="200%" height="200%">',
+    '          <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>',
+    '          <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>',
+    "        </filter>",
+    '        <radialGradient id="focusGradient" cx="50%" cy="50%" r="50%">',
+    '          <stop offset="0%" stop-color="#f07843" stop-opacity="0.32"></stop>',
+    '          <stop offset="72%" stop-color="#f07843" stop-opacity="0.09"></stop>',
+    '          <stop offset="100%" stop-color="#f07843" stop-opacity="0"></stop>',
+    "        </radialGradient>",
+    "      </defs>",
+    '      <rect class="story-map__land" width="1000" height="760"></rect>',
+    '      <path class="story-map__river" d="M775 0 C720 130 790 205 770 335 C752 448 830 550 790 760 L1000 760 L1000 0 Z"></path>',
+    '      <g class="story-map__roads">',
+    ...roadSeeds.flatMap((seed, index) => [
+      `        <path d="${createRoadPath(seed)}"></path>`,
+      `        <path d="${createRoadPath(seed, index % 2 ? 46 : -38, index % 2 ? 20 : -24)}"></path>`,
+    ]),
+    "      </g>",
+    '      <g class="story-map__place-labels">',
+    '        <text x="175" y="620">San Mart&iacute;n</text>',
+    '        <text x="370" y="520">Villa Adelina</text>',
+    '        <text x="505" y="430">Boulogne</text>',
+    '        <text x="610" y="335">San Isidro</text>',
+    '        <text x="470" y="185">San Fernando</text>',
+    '        <text x="345" y="118">Tigre</text>',
+    '        <text x="735" y="508">Olivos</text>',
+    '        <text x="706" y="590">Vicente L&oacute;pez</text>',
+    "      </g>",
+    `      <path class="story-map__route-base" d="${routePath}"></path>`,
+    `      <path class="story-map__route-glow" d="${routePath}"></path>`,
+    `      <path class="story-map__route-progress" d="${routePath}"></path>`,
+    '      <g class="story-map__focuses">',
+    ...projectedPoints.map((point, index) => (
+      `        <circle class="story-map__focus" data-map-focus="${index}" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="54"></circle>`
+    )),
+    "      </g>",
+    '      <g class="story-map__points">',
+    ...points.map((point, index) => {
+      const projected = projectedPoints[index];
+      return [
+        `        <g class="story-map__point" data-map-point="${index}" transform="translate(${projected.x.toFixed(1)} ${projected.y.toFixed(1)})">`,
+        '          <circle class="story-map__point-ring" r="21"></circle>',
+        '          <circle class="story-map__point-core" r="16"></circle>',
+        `          <text class="story-map__point-number" y="5">${point.order}</text>`,
+        `          <text class="story-map__point-label" x="30" y="4">${point.municipality}</text>`,
+        "        </g>",
+      ].join("");
+    }),
+    "      </g>",
+    "    </svg>",
+    "  </div>",
+    '  <div class="story-map__controls" aria-hidden="true">',
+    '    <span>+</span>',
+    '    <span>-</span>',
+    "  </div>",
+    '  <div class="story-map__dots" aria-hidden="true">',
+    ...points.map((_, index) => `<span data-map-dot="${index}"></span>`),
+    "  </div>",
+    "</div>",
+  ].join("");
 }
 
 export async function createMapController({
   containerId,
   points,
   route,
-  pointsFeatureCollection,
   statusElement,
 }) {
-  const map = new window.maplibregl.Map({
-    container: containerId,
-    style: MAP_STYLE,
-    center: points[0].coordinates,
-    zoom: 10.35,
-    attributionControl: false,
-    cooperativeGestures: false,
-    dragPan: !isCompactViewport(),
-    scrollZoom: false,
-    touchZoomRotate: false,
-    doubleClickZoom: false,
-    pitchWithRotate: false,
-  });
-
-  map.addControl(
-    new window.maplibregl.AttributionControl({ compact: true }),
-    "bottom-right",
+  const container = document.getElementById(containerId);
+  const routeCoordinates = getRouteCoordinates(route);
+  const bounds = getCoordinateBounds(points, routeCoordinates);
+  const projectedRoute = routeCoordinates.map((coordinate) =>
+    projectCoordinate(coordinate, bounds),
   );
-
-  if (!isCompactViewport()) {
-    map.addControl(
-      new window.maplibregl.NavigationControl({ showCompass: false }),
-      "top-right",
-    );
-  }
-
-  const activeMarker = createActiveMarker(window.maplibregl);
-  let activeIndex = 0;
-  let progress = 0;
-
-  map.on("error", () => {
-    if (statusElement) {
-      statusElement.textContent =
-        "No se pudo cargar el mapa en vivo. El relato sigue disponible.";
-      statusElement.dataset.state = "error";
-    }
-  });
-
-  await once(map, "load");
-
-  map.addSource("route", {
-    type: "geojson",
-    data: route,
-    lineMetrics: true,
-  });
-
-  map.addSource("points", {
-    type: "geojson",
-    data: pointsFeatureCollection,
-  });
-
-  map.addLayer({
-    id: "route-base",
-    type: "line",
-    source: "route",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "rgba(62, 59, 57, 0.28)",
-      "line-opacity": 0.78,
-      "line-width": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        9,
-        4,
-        13,
-        7,
-      ],
-    },
-  });
-
-  map.addLayer({
-    id: "route-progress-glow",
-    type: "line",
-    source: "route",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-width": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        9,
-        10,
-        13,
-        17,
-      ],
-      "line-blur": 3.6,
-      "line-gradient": createRouteGradient(0, 0.86),
-    },
-  });
-
-  map.addLayer({
-    id: "route-progress",
-    type: "line",
-    source: "route",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-width": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        9,
-        4,
-        13,
-        6.5,
-      ],
-      "line-gradient": createRouteGradient(0, 1),
-    },
-  });
-
-  map.addLayer({
-    id: "points-base",
-    type: "circle",
-    source: "points",
-    paint: {
-      "circle-radius": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        9,
-        11,
-        13,
-        14,
-      ],
-      "circle-color": "#ece5da",
-      "circle-stroke-width": 2,
-      "circle-stroke-color": "rgba(20, 18, 16, 0.72)",
-      "circle-opacity": 0.78,
-    },
-  });
-
-  map.addLayer({
-    id: "points-complete",
-    type: "circle",
-    source: "points",
-    filter: ["<=", ["get", "order"], 1],
-    paint: {
-      "circle-radius": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        9,
-        11,
-        13,
-        14,
-      ],
-      "circle-color": "#dd7847",
-      "circle-stroke-width": 3,
-      "circle-stroke-color": "#f6d6c1",
-    },
-  });
-
-  map.addLayer({
-    id: "point-labels",
-    type: "symbol",
-    source: "points",
-    layout: {
-      "text-field": ["to-string", ["get", "order"]],
-      "text-font": ["Open Sans Bold"],
-      "text-size": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        9,
-        10,
-        13,
-        12,
-      ],
-      "text-allow-overlap": true,
-      "text-ignore-placement": true,
-    },
-    paint: {
-      "text-color": "#fff4ec",
-      "text-halo-color": "rgba(16, 14, 12, 0.52)",
-      "text-halo-width": 1,
-    },
-  });
-
-  const overviewBounds = new window.maplibregl.LngLatBounds(
-    points[0].coordinates,
-    points[0].coordinates,
+  const projectedPoints = points.map((point) =>
+    projectCoordinate(point.coordinates, bounds),
   );
-  points.forEach((point) => overviewBounds.extend(point.coordinates));
-  map.fitBounds(overviewBounds, {
-    padding: isCompactViewport()
-      ? { top: 90, right: 24, bottom: 210, left: 24 }
-      : { top: 90, right: 90, bottom: 140, left: 90 },
-    duration: 0,
-  });
+  const routePath = createRoutePath(projectedRoute);
 
-  activeMarker.setLngLat(points[0].coordinates).addTo(map);
+  container.innerHTML = createMapMarkup(points, projectedPoints, routePath);
+
+  const viewport = container.querySelector(".story-map__viewport");
+  const progressPath = container.querySelector(".story-map__route-progress");
+  const glowPath = container.querySelector(".story-map__route-glow");
+  const pointNodes = Array.from(container.querySelectorAll("[data-map-point]"));
+  const focusNodes = Array.from(container.querySelectorAll("[data-map-focus]"));
+  const dotNodes = Array.from(container.querySelectorAll("[data-map-dot]"));
+  const routeLength = progressPath.getTotalLength();
+
+  [progressPath, glowPath].forEach((path) => {
+    path.style.strokeDasharray = routeLength;
+    path.style.strokeDashoffset = routeLength;
+  });
 
   if (statusElement) {
     statusElement.textContent = "Mapa listo";
     statusElement.dataset.state = "ready";
   }
 
-  function updateCompleteFilter() {
-    const completedOrder = Math.max(
-      1,
-      Math.floor(progress * (points.length - 1)) + 1,
-    );
+  let activeIndex = 0;
+  let progress = 0;
+  let userScale = 1;
 
-    if (map.getLayer("points-complete")) {
-      map.setFilter("points-complete", [
-        "<=",
-        ["get", "order"],
-        completedOrder,
-      ]);
-    }
+  function applyCamera(index, instant = false) {
+    const point = projectedPoints[index] || projectedPoints[0];
+    const compact = isCompactViewport();
+    const baseScale = compact ? 1.62 : 1.34;
+    const scale = baseScale * userScale;
+    const xPercent = (point.x / VIEWBOX.width) * 100;
+    const yPercent = (point.y / VIEWBOX.height) * 100;
+    const pullX = clamp(50 - xPercent, -16, 16);
+    const pullY = clamp(48 - yPercent, -12, 12);
+
+    viewport.style.transitionDuration = instant ? "0ms" : "950ms";
+    viewport.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+    viewport.style.transform = `translate(${pullX}%, ${pullY}%) scale(${scale})`;
+  }
+
+  function updatePointState() {
+    const completedIndex = Math.floor(progress * Math.max(points.length - 1, 1));
+
+    pointNodes.forEach((node, index) => {
+      node.classList.toggle("is-active", index === activeIndex);
+      node.classList.toggle("is-complete", index <= completedIndex);
+    });
+
+    focusNodes.forEach((node, index) => {
+      node.classList.toggle("is-active", index === activeIndex);
+    });
+
+    dotNodes.forEach((node, index) => {
+      node.classList.toggle("is-active", index === activeIndex);
+      node.classList.toggle("is-complete", index <= completedIndex);
+    });
   }
 
   function setRouteProgress(nextProgress) {
     progress = clamp(nextProgress, 0, 1);
+    const visibleLength = routeLength * progress;
+    const offset = routeLength - visibleLength;
 
-    if (map.getLayer("route-progress")) {
-      map.setPaintProperty(
-        "route-progress",
-        "line-gradient",
-        createRouteGradient(progress, 1),
-      );
-    }
-
-    if (map.getLayer("route-progress-glow")) {
-      map.setPaintProperty(
-        "route-progress-glow",
-        "line-gradient",
-        createRouteGradient(progress, 0.86),
-      );
-    }
-
-    updateCompleteFilter();
+    progressPath.style.strokeDashoffset = offset;
+    glowPath.style.strokeDashoffset = offset;
+    updatePointState();
   }
 
   function setActivePoint(index, options = {}) {
     activeIndex = clamp(index, 0, points.length - 1);
-    const point = points[activeIndex];
-    const markerElement = activeMarker.getElement();
-    const camera = getCameraForPoint(map, window.maplibregl, points, activeIndex);
-
-    activeMarker.setLngLat(point.coordinates);
-    markerElement.classList.remove("is-pulsing");
-    window.requestAnimationFrame(() => markerElement.classList.add("is-pulsing"));
-
-    if (options.instant) {
-      map.jumpTo({
-        center: camera.center,
-        zoom: camera.zoom,
-        bearing: camera.bearing,
-        pitch: camera.pitch,
-      });
-      return;
-    }
-
-    map.easeTo(camera);
+    setRouteProgress(Math.max(progress, getPointProgress(activeIndex, points.length)));
+    updatePointState();
+    applyCamera(activeIndex, options.instant);
   }
 
   function resetOverview() {
-    map.fitBounds(overviewBounds, {
-      padding: isCompactViewport()
-        ? { top: 90, right: 24, bottom: 210, left: 24 }
-        : { top: 90, right: 90, bottom: 140, left: 90 },
-      duration: 1100,
-      essential: true,
-    });
+    userScale = 1;
+    viewport.style.transitionDuration = "950ms";
+    viewport.style.transformOrigin = "50% 50%";
+    viewport.style.transform = "translate(0, 0) scale(1)";
   }
 
   function resize() {
-    map.resize();
-    setActivePoint(activeIndex, { instant: true });
+    applyCamera(activeIndex, true);
   }
 
+  container
+    .querySelector(".story-map__controls span:first-child")
+    ?.addEventListener("click", () => {
+      userScale = clamp(userScale + 0.12, 0.9, 1.38);
+      applyCamera(activeIndex);
+    });
+
+  container
+    .querySelector(".story-map__controls span:nth-child(2)")
+    ?.addEventListener("click", () => {
+      userScale = clamp(userScale - 0.12, 0.9, 1.38);
+      applyCamera(activeIndex);
+    });
+
+  resetOverview();
+  setRouteProgress(0);
+  updatePointState();
+
   return {
-    map,
     setRouteProgress,
     setActivePoint,
     resetOverview,
