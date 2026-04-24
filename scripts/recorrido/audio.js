@@ -51,9 +51,9 @@ export function createAudioController({ audioElement, onStateChange }) {
       state.available === nextAvailable;
 
     if (sameTrack) {
-      state.pointTitle = point.title;
-      state.title = point.audio.title;
-      state.note = point.audio.note;
+      state.pointTitle = point?.title || "";
+      state.title = point?.audio?.title || "";
+      state.note = point?.audio?.note || "";
       emit();
       return;
     }

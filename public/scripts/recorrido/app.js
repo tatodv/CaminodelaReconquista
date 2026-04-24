@@ -1,6 +1,6 @@
 import { loadExperienceData, padNumber } from "./data.js";
 import { createAudioController, formatTime } from "./audio.js";
-import { createMapController } from "./map.js";
+import { createMapController, createMapSnapshotMarkup } from "./map.js";
 
 function escapeHtml(value) {
   return String(value)
@@ -9,6 +9,10 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function clamp(value, minimum, maximum) {
+  return Math.min(maximum, Math.max(minimum, value));
 }
 
 function debounce(callback, wait = 160) {
@@ -20,76 +24,114 @@ function debounce(callback, wait = 160) {
   };
 }
 
-function getProgressLabel(index, total) {
-  return `${padNumber(index + 1)}/${padNumber(total)}`;
+function getCounterLabel(index, total) {
+  return `${index + 1}/${total}`;
 }
 
-function getProgressStatus(index, total) {
-  if (index === 0) {
-    return "Inicio del recorrido";
-  }
-
-  if (index === total - 1) {
-    return "Cierre del recorrido";
-  }
-
-  return `Tramo ${padNumber(index + 1)} de ${padNumber(total)}`;
-}
-
-function getRouteProgressForStep(index, total, localProgress = 0) {
+function getRouteProgressForStep(index, total, localProgress = 0.5) {
   if (total <= 1) {
     return 1;
   }
 
-  return Math.min(1, Math.max(0, (index + localProgress) / (total - 1)));
+  if (index >= total - 1) {
+    return 1;
+  }
+
+  const segment = 1 / (total - 1);
+  return clamp(index * segment + segment * clamp(localProgress, 0, 1), 0, 1);
 }
 
-function createIntroMarkup(total) {
+function getSnapshotProgress(index, total) {
+  if (index < 0) {
+    return 1;
+  }
+
+  return getRouteProgressForStep(index, total, 0.52);
+}
+
+function getStepLocalProgress(step) {
+  if (!step) {
+    return 0;
+  }
+
+  const rect = step.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const rawProgress = (viewportHeight - rect.top) / (rect.height + viewportHeight);
+
+  return clamp(rawProgress, 0, 1);
+}
+
+function getProgressStatus(index, total) {
+  if (index === 0) {
+    return "Primer tramo del recorrido";
+  }
+
+  if (index === total - 1) {
+    return "Llegada y cierre del recorrido";
+  }
+
+  return `Tramo ${index + 1} de ${total}`;
+}
+
+function createIntroMarkup(total, snapshotMarkup) {
   return [
-    '<article class="story-step story-step--intro is-active" data-step-label="0" aria-labelledby="story-title-intro">',
-    '  <div class="story-step__anchor" aria-hidden="true">',
-    `    <span class="story-step__anchor-count">00/${padNumber(total)}</span>`,
-    '    <span class="story-step__anchor-muni">Inicio</span>',
-    "  </div>",
+    '<article class="story-step story-step--intro is-active" data-intro="true" aria-labelledby="story-title-intro">',
+    '  <span class="story-step__marker story-step__marker--intro" aria-hidden="true"><span>i</span></span>',
     '  <div class="story-card story-card--intro">',
-    '    <div class="story-card__topline">',
-    '      <span class="story-card__count">Introduccion</span>',
-    "    </div>",
-    '    <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
-    '    <div class="story-card__divider"></div>',
-    '    <p class="story-card__description">En este recorrido seguimos los pasos de los vecinos que en 1806 decidieron unirse para recuperar su tierra tras la ocupacion inglesa. A lo largo de estos hitos repasamos como se gesto la recuperacion de la capital del Virreinato, cuyo dominio britanico duro desde el 27 de junio hasta el 12 de agosto de ese mismo ano.</p>',
-    '    <div class="story-card__actions">',
-    '      <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
+    '    <div class="story-card__copy">',
+    '      <p class="story-card__kicker">Introduccion</p>',
+    '      <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
+    '      <p class="story-card__description">En este recorrido seguimos los pasos de los vecinos que en 1806 decidieron unirse para recuperar su tierra tras la ocupacion inglesa. A lo largo de estos hitos repasamos como se gesto la recuperacion de la capital del Virreinato, cuyo dominio britanico duro desde el 27 de junio hasta el 12 de agosto de ese mismo ano.</p>',
+    '      <div class="story-card__actions">',
+    '        <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
+    "      </div>",
     "    </div>",
     "  </div>",
+    `  <div class="story-mobile-map">${snapshotMarkup}</div>`,
     "</article>",
   ].join("");
 }
 
-function createStoryMarkup(point, index, total) {
+function createProgressRail(activeIndex, total) {
   return [
-    `<article class="story-step" id="step-${point.order}" data-index="${index}" data-step-label="${padNumber(point.order)}" aria-labelledby="story-title-${point.id}">`,
-    '  <div class="story-step__anchor" aria-hidden="true">',
-    `    <span class="story-step__anchor-count">${getProgressLabel(index, total)}</span>`,
-    `    <span class="story-step__anchor-muni">${escapeHtml(point.municipality)}</span>`,
-    "  </div>",
+    '<div class="story-step__rail" aria-hidden="true">',
+    ...Array.from({ length: total }, (_, index) => {
+      const classes = [
+        "story-step__rail-dot",
+        index === activeIndex ? "is-active" : "",
+        index < activeIndex ? "is-past" : "",
+      ].filter(Boolean).join(" ");
+
+      return `<span class="${classes}">${index + 1}</span>`;
+    }),
+    "</div>",
+  ].join("");
+}
+
+function createStoryMarkup(point, index, total, snapshotMarkup) {
+  return [
+    `<article class="story-step" id="step-${point.order}" data-index="${index}" aria-labelledby="story-title-${point.id}">`,
+    `  <span class="story-step__marker" aria-hidden="true"><span>${point.order}</span></span>`,
+    `  ${createProgressRail(index, total)}`,
     '  <div class="story-card">',
-    '    <div class="story-card__topline">',
-    `      <span class="story-card__count">${getProgressLabel(index, total)}</span>`,
-    `      <span class="story-card__municipality">${escapeHtml(point.municipality)}</span>`,
+    '    <div class="story-card__copy">',
+    '      <div class="story-card__topline">',
+    `        <span class="story-card__ordinal">${padNumber(point.order)}</span>`,
+    `        <span class="story-card__kicker">Punto ${point.order}</span>`,
+    "      </div>",
+    `      <h2 class="story-card__title" id="story-title-${point.id}">${escapeHtml(point.title)}</h2>`,
+    `      <p class="story-card__place">${escapeHtml(point.place)}</p>`,
+    `      <p class="story-card__description">${escapeHtml(point.description)}</p>`,
+    '      <div class="story-card__actions">',
+    `        <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar explicacion del punto ${point.order}</button>`,
+    `        <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Como llegar</a>`,
+    "      </div>",
     "    </div>",
-    `    <h2 class="story-card__title" id="story-title-${point.id}">${escapeHtml(point.title)}</h2>`,
-    '    <div class="story-card__divider"></div>',
-    `    <p class="story-card__place">${escapeHtml(point.place)}</p>`,
-    `    <p class="story-card__description">${escapeHtml(point.description)}</p>`,
     '    <figure class="story-card__figure">',
-    `      <img src="${escapeHtml(point.image)}" data-fallback-src="${escapeHtml(point.fallbackImage)}" alt="Ilustracion de ${escapeHtml(point.place)}" loading="lazy" decoding="async">`,
+    `      <img src="${escapeHtml(point.image)}" alt="Ilustracion de ${escapeHtml(point.place)}" width="1536" height="1024" loading="lazy" decoding="async">`,
     "    </figure>",
-    '    <div class="story-card__actions">',
-    `      <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar explicacion del punto ${point.order}</button>`,
-    `      <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Abrir en mapas</a>`,
-    "    </div>",
     "  </div>",
+    `  <div class="story-mobile-map">${snapshotMarkup}</div>`,
     "</article>",
   ].join("");
 }
@@ -100,9 +142,9 @@ function createListMarkup(points, className) {
       return [
         `<button class="${className}" type="button" data-jump-index="${index}">`,
         `  <span class="${className}__count">${padNumber(point.order)}</span>`,
-        "  <span class=\"timeline-item__body\">",
+        `  <span class="${className}__body">`,
         `    <strong class="${className}__title">${escapeHtml(point.title)}</strong>`,
-        `    <span class="${className}__meta">${escapeHtml(point.place)} · ${escapeHtml(point.municipality)}</span>`,
+        `    <span class="${className}__meta">${escapeHtml(point.place)} | ${escapeHtml(point.municipality)}</span>`,
         "  </span>",
         "</button>",
       ].join("");
@@ -110,23 +152,11 @@ function createListMarkup(points, className) {
     .join("");
 }
 
-function applyImageFallbacks(root) {
-  root.querySelectorAll("img[data-fallback-src]").forEach((image) => {
-    image.addEventListener("error", () => {
-      if (!image.dataset.fallbackSrc) {
-        return;
-      }
-
-      if (image.getAttribute("src") === image.dataset.fallbackSrc) {
-        return;
-      }
-
-      image.src = image.dataset.fallbackSrc;
-    });
-  });
-}
-
 function setButtonBusy(button, label, disabled) {
+  if (!button) {
+    return;
+  }
+
   button.textContent = label;
   button.disabled = disabled;
 }
@@ -201,7 +231,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     timelineOpenButtons: [
       document.getElementById("timeline-open"),
       document.getElementById("timeline-toggle-bottom"),
-      document.getElementById("hero-timeline-button"),
     ].filter(Boolean),
     timelineClose: document.getElementById("timeline-close"),
     mapStatus: document.getElementById("map-status"),
@@ -211,16 +240,32 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadExperienceData();
   const totalPoints = data.points.length;
+  const introSnapshot = createMapSnapshotMarkup({
+    points: data.points,
+    route: data.route,
+    activeIndex: 0,
+    progress: 1,
+    idPrefix: "snapshot-intro",
+  });
 
   dom.storySections.innerHTML = [
-    createIntroMarkup(totalPoints),
-    data.points.map((point, index) => createStoryMarkup(point, index, totalPoints)).join(""),
+    createIntroMarkup(totalPoints, introSnapshot),
+    data.points.map((point, index) => {
+      const snapshot = createMapSnapshotMarkup({
+        points: data.points,
+        route: data.route,
+        activeIndex: index,
+        progress: getSnapshotProgress(index, totalPoints),
+        idPrefix: `snapshot-${index}`,
+      });
+
+      return createStoryMarkup(point, index, totalPoints, snapshot);
+    }).join(""),
   ].join("");
   dom.overviewList.innerHTML = createListMarkup(data.points, "overview-card");
   dom.timelineList.innerHTML = createListMarkup(data.points, "timeline-item");
-  document.body.dataset.activeIndex = "0";
+  document.body.dataset.activeIndex = "intro";
 
-  applyImageFallbacks(document);
 
   const chapterButtons = Array.from(
     dom.storySections.querySelectorAll("[data-audio-point]"),
@@ -231,13 +276,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     button.dataset.available = String(point.audio.available);
   });
 
-  if (!window.gsap || !window.ScrollTrigger) {
-    dom.mapStatus.textContent =
-      "Faltan dependencias del navegador para animar el recorrido. El relato sigue disponible.";
-    dom.mapStatus.dataset.state = "error";
-    return;
-  }
-
   const audioController = createAudioController({
     audioElement: dom.audioElement,
     onStateChange: syncAudioUi,
@@ -247,16 +285,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     containerId: "map",
     points: data.points,
     route: data.route,
-    pointsFeatureCollection: data.pointsFeatureCollection,
     statusElement: dom.mapStatus,
   });
-
-  window.gsap.registerPlugin(window.ScrollTrigger);
 
   const state = {
     activeIndex: -1,
     routeProgress: 0,
   };
+
+  const storySteps = Array.from(document.querySelectorAll(".story-step[data-index]"));
+  const introStep = document.querySelector(".story-step--intro");
 
   function getActivePoint() {
     return data.points[state.activeIndex];
@@ -327,6 +365,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function updateIntroState() {
+    if (state.activeIndex === -1 && document.body.dataset.activeIndex === "intro") {
+      return;
+    }
+
     state.activeIndex = -1;
     document.body.dataset.activeIndex = "intro";
 
@@ -334,33 +376,33 @@ window.addEventListener("DOMContentLoaded", async () => {
       step.classList.toggle("is-active", step.classList.contains("story-step--intro"));
     });
 
-    dom.chapterCount.textContent = `00/${padNumber(totalPoints)}`;
-    dom.chapterMunicipality.textContent = "Inicio";
+    dom.chapterCount.textContent = `0/${totalPoints}`;
+    dom.chapterMunicipality.textContent = "Vista general";
     dom.activeTitle.textContent = "Bienvenidos al Camino de la Reconquista";
     dom.activePlace.textContent = "Una lectura guiada por los hitos de 1806";
-    dom.progressStatus.textContent = "Inicio del recorrido";
+    dom.progressStatus.textContent = "Vista general del recorrido";
+    dom.mapsLink.href = "https://www.google.com/maps";
     dom.routeProgressFill.style.transform = "scaleX(0)";
-    mapController.setRouteProgress(0);
+    mapController.setActivePoint(0, { instant: true, progress: 0 });
+    mapController.resetOverview();
     updateTimelineState(-1);
 
-    dom.mobileCount.textContent = `00/${padNumber(totalPoints)}`;
-    dom.mobileMunicipality.textContent = "Inicio";
+    dom.mobileCount.textContent = `0/${totalPoints}`;
+    dom.mobileMunicipality.textContent = "Vista general";
     dom.mobileTitle.textContent = "Bienvenidos al Camino de la Reconquista";
     dom.mobilePlace.textContent = "Una lectura guiada por los hitos de 1806";
     dom.mobileDescription.textContent =
       "Avanza para recorrer los seis puntos principales de la Reconquista.";
-
-    mapController.resetOverview();
+    audioController.setTrack(null);
   }
 
   function updateMobileState(point, index) {
-    dom.mobileCount.textContent = getProgressLabel(index, totalPoints);
+    dom.mobileCount.textContent = getCounterLabel(index, totalPoints);
     dom.mobileMunicipality.textContent = point.municipality;
     dom.mobileTitle.textContent = point.title;
     dom.mobilePlace.textContent = point.place;
     dom.mobileDescription.textContent = point.description;
     dom.mobileImage.src = point.image;
-    dom.mobileImage.dataset.fallbackSrc = point.fallbackImage;
     dom.mobileImage.alt = `Ilustracion de ${point.place}`;
     dom.mobileMapsLink.href = point.mapUrl;
     dom.mobilePrev.disabled = index === 0;
@@ -376,8 +418,17 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     state.activeIndex = index;
     const point = getActivePoint();
+    const activeStep = storySteps[index];
+    const localProgress =
+      typeof options.localProgress === "number"
+        ? options.localProgress
+        : getStepLocalProgress(activeStep);
+    const nextRouteProgress =
+      typeof options.routeProgress === "number"
+        ? options.routeProgress
+        : getRouteProgressForStep(index, totalPoints, localProgress);
 
-    dom.chapterCount.textContent = getProgressLabel(index, totalPoints);
+    dom.chapterCount.textContent = getCounterLabel(index, totalPoints);
     dom.chapterMunicipality.textContent = point.municipality;
     dom.activeTitle.textContent = point.title;
     dom.activePlace.textContent = point.place;
@@ -387,11 +438,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     updateStoryState(index);
     updateTimelineState(index);
     updateMobileState(point, index);
-    const nextRouteProgress =
-      typeof options.routeProgress === "number"
-        ? options.routeProgress
-        : getRouteProgressForStep(index, totalPoints);
-
     updateRouteProgress(nextRouteProgress);
     mapController.setActivePoint(index, {
       instant: options.instantMap,
@@ -418,23 +464,91 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  function scrollToStep(index) {
+  function scrollToStep(index, behavior = "smooth") {
     const step = document.querySelector(`.story-step[data-index="${index}"]`);
     if (!step) {
       return;
     }
 
-    step.scrollIntoView({ behavior: "smooth", block: "start" });
+    step.scrollIntoView({ behavior, block: "center" });
   }
 
   function handleStepSelection(index) {
     closeTimeline();
-    updatePrimaryState(index);
+    updatePrimaryState(index, { force: true });
     scrollToStep(index);
   }
 
   function handleSeek(inputElement) {
     audioController.seekByRatio(Number(inputElement.value) / 1000);
+  }
+
+  function syncRouteProgressToScroll() {
+    if (state.activeIndex < 0) {
+      return;
+    }
+
+    const activeStep = storySteps[state.activeIndex];
+    const localProgress = getStepLocalProgress(activeStep);
+    updateRouteProgress(getRouteProgressForStep(state.activeIndex, totalPoints, localProgress));
+  }
+
+  function getCenteredVisibleStep() {
+    const steps = [introStep, ...storySteps].filter(Boolean);
+    const viewportCenter = (window.innerHeight || document.documentElement.clientHeight) / 2;
+
+    return steps.reduce((best, step) => {
+      const rect = step.getBoundingClientRect();
+      const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+
+      if (!isVisible) {
+        return best;
+      }
+
+      const stepCenter = rect.top + rect.height / 2;
+      const distance = Math.abs(stepCenter - viewportCenter);
+
+      if (!best || distance < best.distance) {
+        return { step, distance };
+      }
+
+      return best;
+    }, null)?.step;
+  }
+
+  function activateStep(step, options = {}) {
+    if (!step) {
+      return;
+    }
+
+    if (step.dataset.intro === "true") {
+      updateIntroState();
+      return;
+    }
+
+    const index = Number(step.dataset.index);
+
+    if (!Number.isFinite(index)) {
+      return;
+    }
+
+    updatePrimaryState(index, options);
+  }
+
+  let scrollFrame = 0;
+  function requestScrollSync() {
+    if (scrollFrame) {
+      return;
+    }
+
+    scrollFrame = window.requestAnimationFrame(() => {
+      scrollFrame = 0;
+      syncRouteProgressToScroll();
+
+      if (!("IntersectionObserver" in window)) {
+        activateStep(getCenteredVisibleStep());
+      }
+    });
   }
 
   dom.storySections.addEventListener("click", (event) => {
@@ -499,101 +613,49 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  const introStep = document.querySelector(".story-step--intro");
-  if (introStep) {
-    window.ScrollTrigger.create({
-      trigger: introStep,
-      start: "top 52%",
-      end: "bottom 52%",
-      onEnter: updateIntroState,
-      onEnterBack: updateIntroState,
+  if ("IntersectionObserver" in window) {
+    const activeObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          activateStep(entry.target, {
+            routeProgress:
+              entry.target.dataset.intro === "true"
+                ? 0
+                : getRouteProgressForStep(
+                    Number(entry.target.dataset.index),
+                    totalPoints,
+                    getStepLocalProgress(entry.target),
+                  ),
+          });
+        });
+      },
+      {
+        root: null,
+        rootMargin: "-45% 0px -45% 0px",
+        threshold: 0,
+      },
+    );
+
+    [introStep, ...storySteps].filter(Boolean).forEach((step) => {
+      activeObserver.observe(step);
     });
   }
 
-  const storySteps = Array.from(document.querySelectorAll(".story-step[data-index]"));
-  storySteps.forEach((step) => {
-    const index = Number(step.dataset.index);
-
-    window.ScrollTrigger.create({
-      trigger: step,
-      start: "top 52%",
-      end: "bottom 52%",
-      onEnter: () => updatePrimaryState(index),
-      onEnterBack: () => updatePrimaryState(index),
-      onUpdate: (scrollTrigger) => {
-        if (Number(document.body.dataset.activeIndex) !== index) {
-          return;
-        }
-
-        updateRouteProgress(
-          getRouteProgressForStep(index, totalPoints, scrollTrigger.progress),
-        );
-      },
-    });
-  });
-
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
-
-  if (!prefersReducedMotion) {
-    const hero = document.querySelector(".hero");
-    const shouldAnimateHero =
-      hero && window.getComputedStyle(hero).display !== "none";
-
-    if (shouldAnimateHero) {
-      window.gsap
-        .timeline({ defaults: { ease: "power3.out" } })
-        .from(".hero-logo__mark", { scale: 0.88, opacity: 0, duration: 0.9 })
-        .from(".hero-logo__title", { y: 22, duration: 0.75 }, "-=0.45")
-        .from(".hero-scroll", { y: -8, opacity: 0, duration: 0.55 }, "-=0.2");
-
-      window.gsap.to(".hero-logo", {
-        yPercent: -8,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.35,
-        },
-      });
-    }
-
-    window.gsap.utils.toArray(".overview-card").forEach((card, index) => {
-      window.gsap.from(card, {
-        y: 18,
-        opacity: 0,
-        duration: 0.45,
-        delay: index * 0.03,
-        scrollTrigger: {
-          trigger: card,
-          start: "top 86%",
-        },
-      });
-    });
-
-    window.gsap.from(".closing-card > *", {
-      y: 24,
-      opacity: 0,
-      duration: 0.55,
-      stagger: 0.08,
-      scrollTrigger: {
-        trigger: ".closing-card",
-        start: "top 78%",
-      },
-    });
-  }
+  window.addEventListener("scroll", requestScrollSync, { passive: true });
 
   const handleResize = debounce(() => {
     mapController.resize();
-    window.ScrollTrigger.refresh();
+    activateStep(getCenteredVisibleStep(), { force: true, instantMap: true });
+    requestScrollSync();
   }, 120);
 
   window.addEventListener("resize", handleResize);
 
-  updateRouteProgress(0);
-  updatePrimaryState(0, { force: true, instantMap: true });
+  updatePrimaryState(0, { force: true, instantMap: true, routeProgress: 0 });
   updateIntroState();
   syncAudioUi(audioController.getState());
 });

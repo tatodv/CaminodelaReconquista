@@ -25,14 +25,6 @@
       >
     </noscript>
     <link rel="stylesheet" href="/styles/recorrido.css">
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-    ></script>
     <script type="module" src="/scripts/recorrido/app.js"></script>
   </head>
   <body>
@@ -94,9 +86,7 @@
 
         <div class="hero-footer" aria-label="Organizadores y redes">
           <div class="hero-footer__logos">
-            <img src="/material/logo_sm.svg" alt="Municipalidad de San Mart&iacute;n">
-            <span class="hero-footer__divider" aria-hidden="true"></span>
-            <img src="/material/logo_tigre.svg" alt="Municipio de Tigre">
+            <img src="/material/logos-10.svg" alt="Instituciones participantes del Camino de la Reconquista">
           </div>
 
           <div class="hero-footer__socials">
@@ -126,7 +116,7 @@
             <div class="chapter-chip">
               <span id="chapter-count">01/06</span>
               <span class="chapter-chip__divider"></span>
-              <span id="chapter-municipality">San Martin</span>
+              <span id="chapter-municipality">San Mart&iacute;n</span>
             </div>
 
             <button class="ghost-button ghost-button--small" id="map-reset" type="button">
@@ -138,22 +128,22 @@
             <div id="map" class="map-canvas" aria-label="Mapa interactivo del Camino de la Reconquista"></div>
             <div class="map-stage__wash" aria-hidden="true"></div>
             <div class="map-stage__status" id="map-status" data-state="loading">
-              Cargando mapa historico...
+              Cargando mapa hist&oacute;rico...
             </div>
           </div>
 
           <div class="map-stage__overlay map-stage__overlay--bottom">
             <div class="map-panel">
               <div class="map-panel__intro">
-                <span class="map-panel__eyebrow">Recorrido historico</span>
-                <h2 id="active-title">San Martin, el punto de partida</h2>
-                <p id="active-place">Museo Historico Jose Hernandez - Chacra Pueyrredon</p>
+                <span class="map-panel__eyebrow">Recorrido hist&oacute;rico</span>
+                <h2 id="active-title">San Mart&iacute;n, el punto de partida</h2>
+                <p id="active-place">Museo Hist&oacute;rico Jos&eacute; Hern&aacute;ndez - Chacra Pueyrred&oacute;n</p>
               </div>
 
               <div class="route-meter">
                 <div class="route-meter__labels">
                   <span id="progress-status">Inicio del recorrido</span>
-                  <span>1806 · Norte del Rio de la Plata</span>
+                  <span>1806 &middot; Norte del R&iacute;o de la Plata</span>
                 </div>
                 <div class="route-meter__track">
                   <div class="route-meter__fill" id="route-progress-fill"></div>
@@ -177,7 +167,7 @@
                   aria-controls="timeline-panel"
                   aria-expanded="false"
                 >
-                  Linea de tiempo
+                  L&iacute;nea de tiempo
                 </button>
               </div>
             </div>
@@ -220,7 +210,7 @@
               <img
                 id="mobile-image"
                 src="/images/points/punto1.svg"
-                data-fallback-src="/public/images/points/punto1.svg"
+                data-fallback-src="/images/points/punto1.svg"
                 alt="Ilustracion del punto activo"
                 loading="lazy"
                 decoding="async"
@@ -230,10 +220,10 @@
             <div class="mobile-sheet__body">
               <div class="mobile-sheet__topline">
                 <span id="mobile-count">01/06</span>
-                <span id="mobile-municipality">San Martin</span>
+                <span id="mobile-municipality">San Mart&iacute;n</span>
               </div>
-              <h2 id="mobile-title">San Martin, el punto de partida</h2>
-              <p id="mobile-place">Museo Historico Jose Hernandez - Chacra Pueyrredon</p>
+              <h2 id="mobile-title">San Mart&iacute;n, el punto de partida</h2>
+              <p id="mobile-place">Museo Hist&oacute;rico Jos&eacute; Hern&aacute;ndez - Chacra Pueyrred&oacute;n</p>
               <p id="mobile-description">
                 El recorrido se actualiza en tiempo real a medida que avanzas por cada parada.
               </p>
@@ -249,7 +239,7 @@
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  Como llegar
+                  C&oacute;mo llegar
                 </a>
               </div>
 
@@ -287,37 +277,76 @@
         <div class="story-sections" id="story-sections"></div>
       </section>
 
+      <section class="closing" id="closing">
+        <div class="closing__intro">
+          <p class="closing__eyebrow">Cierre</p>
+          <h2>El Camino continu&oacute;</h2>
+          <p>
+            El Camino de la Reconquista es el testimonio vivo de un pueblo que forj&oacute; su propio destino. Cada parada conserva una marca del avance, la espera y la victoria que cambi&oacute; la memoria del R&iacute;o de la Plata.
+          </p>
+
+          <div class="closing__actions">
+            <a class="hero-button hero-button--primary" href="#experience-shell">
+              Volver al recorrido
+            </a>
+            <a class="hero-button hero-button--ghost" href="https://open.spotify.com/" target="_blank" rel="noreferrer noopener">
+              Escuchar podcast
+            </a>
+          </div>
+        </div>
+
+        <figure class="closing__panorama">
+          <img src="/material/muestra_landing_CdlR-03.jpg" alt="Escena historica panoramica del Camino de la Reconquista" loading="lazy" decoding="async">
+        </figure>
+
+        <article class="podcast-card">
+          <p class="podcast-card__eyebrow">Podcast completo</p>
+          <h3>Camino de la Reconquista</h3>
+          <p>
+            Un viaje sonoro por los lugares, las batallas y los protagonistas que hicieron posible cada tramo del recorrido.
+          </p>
+          <div class="podcast-card__meta">
+            <span>6 episodios</span>
+            <span>24:19 min</span>
+          </div>
+          <a class="podcast-card__button" href="https://open.spotify.com/" target="_blank" rel="noreferrer noopener">
+            Reproducir todos
+          </a>
+        </article>
+      </section>
+
       <section class="overview" id="overview">
         <div class="overview__header">
-          <p class="overview__eyebrow">Lector resumido</p>
-          <h2>Linea de tiempo completa para volver sobre cada parada.</h2>
+          <p class="overview__eyebrow">Lectura recomendada</p>
+          <h2>L&iacute;nea de tiempo completa para volver sobre cada parada.</h2>
           <p>
-            Pensada como una segunda capa de navegacion: util para planificar la visita, revisar el trayecto o saltar a un punto especifico sin perder el hilo del mapa.
+            Recorre de manera visual y cronologica cada uno de los hitos del recorrido, desde 1806 hasta la Reconquista de Buenos Aires.
           </p>
         </div>
 
         <div class="overview__grid" id="overview-list"></div>
       </section>
-
-      <section class="closing" id="closing">
-        <div class="closing-card">
-          <p class="closing-card__eyebrow">Cierre editorial</p>
-          <h2>Una pagina para leer el paisaje como documento historico, no solo como trayecto.</h2>
-          <p>
-            La nueva ruta se suma al sitio actual sin reemplazarlo. Funciona como experiencia premium de lectura en movimiento y queda lista para incorporar audios, fotos finales y nuevos hitos cuando el proyecto los publique.
-          </p>
-
-          <div class="closing-card__actions">
-            <a class="hero-button hero-button--primary" href="#experience-shell">
-              Volver al recorrido
-            </a>
-            <a class="hero-button hero-button--ghost" href="/">
-              Volver a la landing actual
-            </a>
-          </div>
-        </div>
-      </section>
     </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__brand">
+        <span class="site-footer__mark">
+          <img src="/material/logo-r-cuerpo.svg" alt="" aria-hidden="true">
+        </span>
+        <span>Camino de la Reconquista</span>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="Pie de pagina">
+        <a href="#experience-shell">El recorrido</a>
+        <a href="#overview">Historia</a>
+        <a href="#overview">Personajes</a>
+        <a href="#closing">Podcast</a>
+        <a href="#overview">Galer&iacute;a</a>
+        <a href="#closing">Contacto</a>
+      </nav>
+
+      <p class="site-footer__meta">Municipalidad de San Mart&iacute;n | Educaci&oacute;n | Cultura | Turismo</p>
+    </footer>
 
     <div class="timeline-backdrop" id="timeline-backdrop" hidden></div>
     <aside
@@ -325,12 +354,12 @@
       id="timeline-panel"
       hidden
       aria-modal="true"
-      aria-label="Linea de tiempo del recorrido"
+      aria-label="L&iacute;nea de tiempo del recorrido"
     >
       <div class="timeline-panel__header">
         <div>
           <p class="timeline-panel__eyebrow">Todos los hitos</p>
-          <h2>Linea de tiempo del Camino</h2>
+          <h2>L&iacute;nea de tiempo del Camino</h2>
         </div>
         <button class="ghost-button ghost-button--small" id="timeline-close" type="button">
           Cerrar

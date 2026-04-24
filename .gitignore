@@ -1,0 +1,17 @@
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Claude Code local
+.claude/
+SEGUIMIENTO_AGENTES.md
+
+# Debug screenshots (prefijo _ en material/)
+material/_*.png
+material/_*.jpg
+
+# Node (no usado hoy, pero por si aparece)
+node_modules/
+npm-debug.log
