@@ -6,12 +6,12 @@
       "properties": {
         "id": 1,
         "order": 1,
-        "slug": "1-museo-historico-jose-hernandez-chacra-pueyrredon",
-        "rawName": "Punto1. Museo Histórico José Hernández-Chacra Pueyrredón",
-        "title": "San Martín, el punto de partida",
-        "place": "Museo Histórico José Hernández – Chacra Pueyrredón",
-        "municipality": "San Martín",
-        "description": "Primer hito de la nacionalidad. En la sala \"Combate de Perdriel\" se reconstruye el momento en que Juan Martín de Pueyrredón convocó a la campaña y reunió a los gauchos que luego participarían en la Reconquista de Buenos Aires.",
+        "slug": "1-los-caserios-de-perdriel",
+        "rawName": "Punto 1. Los Caserios de Perdriel",
+        "title": "Los Caser\u00edos de Perdriel",
+        "place": "Museo Jos\u00e9 Hern\u00e1ndez - Chacra Pueyrred\u00f3n",
+        "municipality": "San Mart\u00edn",
+        "description": "Nos situamos primero en lo que hoy es el Museo Jos\u00e9 Hern\u00e1ndez, en el partido de San Mart\u00edn. En 1806, estos terrenos pertenec\u00edan a Domingo Belgrano, el padre del creador de nuestra bandera. El comerciante Mart\u00edn de \u00c1lzaga alquil\u00f3 este lugar con un objetivo estrat\u00e9gico: reunir una tropa cercana a la ciudad de Buenos Aires para resistir y recuperar la capital.",
         "image": "/images/points/punto1.svg",
         "audio": "/audio/punto-1.mp3",
         "duration": null,
@@ -19,10 +19,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          -58.572071,
-          -34.5621147
-        ]
+        "coordinates": [-58.572071, -34.5621147]
       }
     },
     {
@@ -30,12 +27,12 @@
       "properties": {
         "id": 2,
         "order": 2,
-        "slug": "2-chacra-de-los-marquez",
-        "rawName": "Punto 2. Chacra de los Márquez",
-        "title": "Reencuentro de las milicias en la Chacra de los Márquez",
-        "place": "Chacra de los Márquez",
+        "slug": "2-chacra-de-la-familia-marquez",
+        "rawName": "Punto 2. Chacra de la familia Marquez",
+        "title": "La Chacra de la familia M\u00e1rquez",
+        "place": "Chacra de los M\u00e1rquez",
         "municipality": "San Isidro",
-        "description": "Punto de encuentro estratégico. Luego de la derrota de Perdriel, las milicias se reagrupan aquí mientras esperan la llegada de Santiago de Liniers y reorganizan el avance que definirá la recuperación de la ciudad.",
+        "description": "Tras la acci\u00f3n en Perdriel, los dispersos se reunieron en esta chacra, donde se les incorporaron otros voluntarios. Aqu\u00ed aguardaron la llegada de Santiago de Liniers, quien ven\u00eda con un destacamento militar directamente desde Colonia.",
         "image": "/images/points/punto2.svg",
         "audio": "/audio/punto-2.mp3",
         "duration": null,
@@ -43,10 +40,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          -58.5560961,
-          -34.5138382
-        ]
+        "coordinates": [-58.5560961, -34.5138382]
       }
     },
     {
@@ -54,12 +48,12 @@
       "properties": {
         "id": 3,
         "order": 3,
-        "slug": "3-plaza-cazon",
-        "rawName": "Punto 3. Plaza Cazón",
-        "title": "Desembarco en Tigre y memoria de la Reconquista",
-        "place": "Plaza D. M. Cazón y Museo de la Reconquista",
+        "slug": "3-el-desembarco-en-las-conchas",
+        "rawName": "Punto 3. El Desembarco en Las Conchas",
+        "title": "El Desembarco en Las Conchas",
+        "place": "Plaza D. M. Caz\u00f3n y Museo de la Reconquista",
         "municipality": "Tigre",
-        "description": "Aquí se revive la emoción del desembarco de las tropas. El Museo de la Reconquista conserva la memoria del inicio de la gesta y vuelve visibles a los protagonistas populares que cambiaron la historia del Río de la Plata.",
+        "description": "Retrocedamos un instante al desembarco de Santiago de Liniers, quien tra\u00eda tropas provenientes de Montevideo y hab\u00eda zarpado la noche anterior desde Colonia. Su intenci\u00f3n original era desembarcar en el puerto de Olivos, pero una fuerte sudestada no se lo permiti\u00f3. Por eso, el 4 de agosto fonde\u00f3 en el puerto de Las Conchas.",
         "image": "/images/points/punto3.svg",
         "audio": "/audio/punto-3.mp3",
         "duration": null,
@@ -67,10 +61,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          -58.587582,
-          -34.4172205
-        ]
+        "coordinates": [-58.587582, -34.4172205]
       }
     },
     {
@@ -78,12 +69,12 @@
       "properties": {
         "id": 4,
         "order": 4,
-        "slug": "4-catedral-de-san-isidro",
-        "rawName": "4. Catedral de San Isidro",
-        "title": "San Isidro, memoria e independencia",
-        "place": "Catedral de San Isidro",
+        "slug": "4-la-plaza-de-san-isidro",
+        "rawName": "Punto 4. La Plaza de San Isidro",
+        "title": "La Plaza de San Isidro",
+        "place": "Catedral y Quinta Los Omb\u00faes",
         "municipality": "San Isidro",
-        "description": "Un paseo por la memoria de nuestra independencia. La Catedral de San Isidro y su entorno resumen una identidad bonaerense forjada en los días en que la defensa del territorio empezó a convertirse en experiencia política compartida.",
+        "description": "Las tropas al mando de Liniers y Pueyrred\u00f3n, provenientes de Tigre, se concentraron en la Plaza de San Isidro. Fueron d\u00edas de mucha lluvia y tormenta, por lo que debieron hacer un alto para alimentarse y descansar antes de continuar hacia Buenos Aires.",
         "image": "/images/points/punto4.svg",
         "audio": "/audio/punto-4.mp3",
         "duration": null,
@@ -91,10 +82,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          -58.5091162,
-          -34.4671456
-        ]
+        "coordinates": [-58.5091162, -34.4671456]
       }
     },
     {
@@ -102,12 +90,12 @@
       "properties": {
         "id": 5,
         "order": 5,
-        "slug": "5-plaza-adolfo-vienni-vicente-lopez",
-        "rawName": "5. Plaza Adolfo Vienni (Vicente López)",
-        "title": "Huellas del avance patriota en Vicente López",
+        "slug": "5-el-avance-por-vicente-lopez",
+        "rawName": "Punto 5. El avance por Vicente Lopez",
+        "title": "El avance por Vicente L\u00f3pez",
         "place": "Plaza Adolfo Vienni",
-        "municipality": "Vicente López",
-        "description": "Este tramo permite seguir las huellas del avance patriota rumbo a Buenos Aires. Desde Vicente López se reconstruye la marcha de las milicias hacia Chacarita, Miserere y el Retiro, en vísperas de la recuperación definitiva.",
+        "municipality": "Vicente L\u00f3pez",
+        "description": "Las fuerzas de Liniers y Pueyrred\u00f3n se unen finalmente con las tropas que aguardaban en la Chacra de los M\u00e1rquez. En la zona de Boulogne, juntos emprendieron la marcha por el llamado Camino del Rey, un camino de tierra que conducir\u00eda hacia la ciudad de Buenos Aires.",
         "image": "/images/points/punto5.svg",
         "audio": "/audio/punto-5.mp3",
         "duration": null,
@@ -115,10 +103,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          -58.4999754,
-          -34.5460215
-        ]
+        "coordinates": [-58.4999754, -34.5460215]
       }
     },
     {
@@ -126,12 +111,12 @@
       "properties": {
         "id": 6,
         "order": 6,
-        "slug": "6-plaza-central-de-gral-san-martin",
-        "rawName": "Plaza central de gral San Martín",
-        "title": "Cierre del recorrido en San Martín",
-        "place": "Plaza Central de Gral. San Martín",
-        "municipality": "San Martín",
-        "description": "El cierre del recorrido invita a releer la Reconquista como una acción colectiva. Desde San Martín se vuelve sobre la rendición de Beresford ante Liniers el 12 de agosto de 1806 y sobre el nacimiento de una nueva conciencia política en el Río de la Plata.",
+        "slug": "6-la-victoria-final",
+        "rawName": "Punto 6. La Victoria Final",
+        "title": "La Victoria Final",
+        "place": "Plaza Central",
+        "municipality": "San Mart\u00edn",
+        "description": "El camino de la Reconquista es el testimonio vivo de un pueblo capaz de torcer la historia. Aquella defensa del territorio culmin\u00f3 con la rendici\u00f3n de Beresford el 12 de agosto de 1806 y dej\u00f3 una huella decisiva en la memoria colectiva del R\u00edo de la Plata.",
         "image": "/images/points/punto6.svg",
         "audio": "/audio/punto-6.mp3",
         "duration": null,
@@ -139,10 +124,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          -58.5376772,
-          -34.5770261
-        ]
+        "coordinates": [-58.5376772, -34.5770261]
       }
     }
   ]

@@ -29,7 +29,7 @@ Main entry points:
 
 ### Page shell
 `recorrido.html`
-- Defines the first-screen editorial scrollytelling stage
+- Defines the first-screen minimal centered-logo hero
 - Hosts the mobile bottom sheet
 - Hosts the timeline drawer and overview section
 - Exposes a shared `<audio>` element for the custom player
@@ -38,6 +38,7 @@ Main entry points:
 `styles/recorrido.css`
 - Editorial/paper visual system
 - Desktop museum-style split layout inspired by the reference mockups: left narrative rail, right map stage, bottom route/audio console
+- First viewport hero aligned with the early centered-logo versions
 - Mobile map-first layout with compact bottom controls, large tap targets, and timeline drawer access from the top-right menu
 - Map overlays, audio panel, timeline drawer, and section cards
 - Active marker pulse styling for MapLibre
@@ -45,9 +46,9 @@ Main entry points:
 ### Data normalization
 `scripts/recorrido/data.js`
 - Loads:
-  - `/public/data/points.geojson`
-  - `/public/data/route.geojson`
-  - `/public/data/podcast.json`
+  - `/data/points.geojson`, with `/public/data/points.geojson` as a local fallback
+  - `/data/route.geojson`, with `/public/data/route.geojson` as a local fallback
+  - `/data/podcast.json`, with `/public/data/podcast.json` as a local fallback
 - Normalizes points into a UI-friendly structure
 - Creates fallback illustration paths from the existing SVG assets
 - Builds the point GeoJSON used by MapLibre
@@ -75,7 +76,7 @@ Main entry points:
 
 ### Scrollytelling orchestration
 `scripts/recorrido/app.js`
-- Renders the story sections from normalized data
+- Renders the introduction step and story sections from normalized data
 - Renders the overview cards and timeline drawer
 - Syncs:
   - active chapter

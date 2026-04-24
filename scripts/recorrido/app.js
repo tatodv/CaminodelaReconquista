@@ -36,6 +36,28 @@ function getProgressStatus(index, total) {
   return `Tramo ${padNumber(index + 1)} de ${padNumber(total)}`;
 }
 
+function createIntroMarkup(total) {
+  return [
+    '<article class="story-step story-step--intro is-active" data-step-label="0" aria-labelledby="story-title-intro">',
+    '  <div class="story-step__anchor" aria-hidden="true">',
+    `    <span class="story-step__anchor-count">00/${padNumber(total)}</span>`,
+    '    <span class="story-step__anchor-muni">Inicio</span>',
+    "  </div>",
+    '  <div class="story-card story-card--intro">',
+    '    <div class="story-card__topline">',
+    '      <span class="story-card__count">Introduccion</span>',
+    "    </div>",
+    '    <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
+    '    <div class="story-card__divider"></div>',
+    '    <p class="story-card__description">En este recorrido seguimos los pasos de los vecinos que en 1806 decidieron unirse para recuperar su tierra tras la ocupacion inglesa. A lo largo de estos hitos repasamos como se gesto la recuperacion de la capital del Virreinato, cuyo dominio britanico duro desde el 27 de junio hasta el 12 de agosto de ese mismo ano.</p>',
+    '    <div class="story-card__actions">',
+    '      <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
+    "    </div>",
+    "  </div>",
+    "</article>",
+  ].join("");
+}
+
 function createStoryMarkup(point, index, total) {
   return [
     `<article class="story-step" id="step-${point.order}" data-index="${index}" data-step-label="${padNumber(point.order)}" aria-labelledby="story-title-${point.id}">`,
@@ -56,7 +78,7 @@ function createStoryMarkup(point, index, total) {
     `      <img src="${escapeHtml(point.image)}" data-fallback-src="${escapeHtml(point.fallbackImage)}" alt="Ilustracion de ${escapeHtml(point.place)}" loading="lazy" decoding="async">`,
     "    </figure>",
     '    <div class="story-card__actions">',
-    `      <button class="chapter-button" type="button" data-audio-point="${index}">${point.audio.available ? "Escuchar relato" : "Audio pronto"}</button>`,
+    `      <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar explicacion del punto ${point.order}</button>`,
     `      <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Abrir en mapas</a>`,
     "    </div>",
     "  </div>",
@@ -179,25 +201,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     audioElement: document.getElementById("shared-audio"),
   };
 
-  if (!window.gsap || !window.ScrollTrigger || !window.maplibregl) {
-    dom.mapStatus.textContent =
-      "Faltan dependencias del navegador para cargar la experiencia.";
-    dom.mapStatus.dataset.state = "error";
-    return;
-  }
-
   const data = await loadExperienceData();
   const totalPoints = data.points.length;
 
-  dom.storySections.innerHTML = data.points
-    .map((point, index) => createStoryMarkup(point, index, totalPoints))
-    .join("");
+  dom.storySections.innerHTML = [
+    createIntroMarkup(totalPoints),
+    data.points.map((point, index) => createStoryMarkup(point, index, totalPoints)).join(""),
+  ].join("");
   dom.overviewList.innerHTML = createListMarkup(data.points, "overview-card");
   dom.timelineList.innerHTML = createListMarkup(data.points, "timeline-item");
   document.body.dataset.activeIndex = "0";
-  dom.storySections
-    .querySelector('.story-step[data-index="0"]')
-    ?.classList.add("is-active");
 
   applyImageFallbacks(document);
 
@@ -206,11 +219,16 @@ window.addEventListener("DOMContentLoaded", async () => {
   );
   chapterButtons.forEach((button) => {
     const point = data.points[Number(button.dataset.audioPoint)];
-    button.dataset.defaultLabel = point.audio.available
-      ? "Escuchar relato"
-      : "Audio pronto";
+    button.dataset.defaultLabel = `Escuchar explicacion del punto ${point.order}`;
     button.dataset.available = String(point.audio.available);
   });
+
+  if (!window.gsap || !window.ScrollTrigger || !window.maplibregl) {
+    dom.mapStatus.textContent =
+      "Faltan dependencias del navegador para cargar el mapa vivo. El relato sigue disponible.";
+    dom.mapStatus.dataset.state = "error";
+    return;
+  }
 
   const audioController = createAudioController({
     audioElement: dom.audioElement,
@@ -288,12 +306,40 @@ window.addEventListener("DOMContentLoaded", async () => {
   function updateStoryState(index) {
     document.body.dataset.activeIndex = String(index);
 
+    dom.storySections
+      .querySelector(".story-step--intro")
+      ?.classList.remove("is-active");
+
     dom.storySections.querySelectorAll(".story-step").forEach((step) => {
       step.classList.toggle(
         "is-active",
         Number(step.dataset.index) === index,
       );
     });
+  }
+
+  function updateIntroState() {
+    document.body.dataset.activeIndex = "intro";
+
+    dom.storySections.querySelectorAll(".story-step").forEach((step) => {
+      step.classList.toggle("is-active", step.classList.contains("story-step--intro"));
+    });
+
+    dom.chapterCount.textContent = `00/${padNumber(totalPoints)}`;
+    dom.chapterMunicipality.textContent = "Inicio";
+    dom.activeTitle.textContent = "Bienvenidos al Camino de la Reconquista";
+    dom.activePlace.textContent = "Una lectura guiada por los hitos de 1806";
+    dom.progressStatus.textContent = "Inicio del recorrido";
+    dom.routeProgressFill.style.transform = "scaleX(0)";
+
+    dom.mobileCount.textContent = `00/${padNumber(totalPoints)}`;
+    dom.mobileMunicipality.textContent = "Inicio";
+    dom.mobileTitle.textContent = "Bienvenidos al Camino de la Reconquista";
+    dom.mobilePlace.textContent = "Una lectura guiada por los hitos de 1806";
+    dom.mobileDescription.textContent =
+      "Avanza para recorrer los seis puntos principales de la Reconquista.";
+
+    mapController.resetOverview();
   }
 
   function updateMobileState(point, index) {
@@ -431,8 +477,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  const storySteps = Array.from(document.querySelectorAll(".story-step"));
-  storySteps.forEach((step, index) => {
+  const introStep = document.querySelector(".story-step--intro");
+  if (introStep) {
+    window.ScrollTrigger.create({
+      trigger: introStep,
+      start: "top 52%",
+      end: "bottom 52%",
+      onEnter: updateIntroState,
+      onEnterBack: updateIntroState,
+    });
+  }
+
+  const storySteps = Array.from(document.querySelectorAll(".story-step[data-index]"));
+  storySteps.forEach((step) => {
+    const index = Number(step.dataset.index);
+
     window.ScrollTrigger.create({
       trigger: step,
       start: "top 52%",
@@ -462,19 +521,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (shouldAnimateHero) {
       window.gsap
         .timeline({ defaults: { ease: "power3.out" } })
-        .from(".hero__eyebrow", { y: 26, opacity: 0, duration: 0.8 })
-        .from(".hero__title", { y: 30, opacity: 0, duration: 0.9 }, "-=0.45")
-        .from(".hero__lede", { y: 24, opacity: 0, duration: 0.7 }, "-=0.45")
-        .from(".hero__actions > *", {
-          y: 18,
-          opacity: 0,
-          duration: 0.55,
-          stagger: 0.08,
-        }, "-=0.35")
-        .from(".hero__aside", { x: 42, opacity: 0, duration: 0.8 }, "-=0.6");
+        .from(".hero-logo__mark", { scale: 0.88, opacity: 0, duration: 0.9 })
+        .from(".hero-logo__title", { y: 22, opacity: 0, duration: 0.75 }, "-=0.45")
+        .from(".hero-scroll", { y: -8, opacity: 0, duration: 0.55 }, "-=0.2");
 
-      window.gsap.to(".hero__aside", {
-        yPercent: -6,
+      window.gsap.to(".hero-logo", {
+        yPercent: -8,
         ease: "none",
         scrollTrigger: {
           trigger: ".hero",
@@ -519,5 +571,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   updateRouteProgress(0);
   updatePrimaryState(0, { force: true, instantMap: true });
+  updateIntroState();
   syncAudioUi(audioController.getState());
 });
