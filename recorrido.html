@@ -48,9 +48,20 @@
 
     <header class="site-bar">
       <a class="brand" href="/">
-        <span class="brand__mark">R</span>
+        <span class="brand__mark">
+          <img src="/material/logo-r-cuerpo.svg" alt="" aria-hidden="true">
+        </span>
         <span class="brand__label">Camino de la Reconquista</span>
       </a>
+
+      <nav class="site-nav" aria-label="Principal">
+        <a class="site-nav__link is-active" href="#experience-shell">El recorrido</a>
+        <a class="site-nav__link" href="#overview">Historia</a>
+        <a class="site-nav__link" href="#overview">Personajes</a>
+        <a class="site-nav__link" href="#closing">Podcast</a>
+        <a class="site-nav__link" href="#overview">Galería</a>
+        <a class="site-nav__link" href="#closing">Contacto</a>
+      </nav>
 
       <div class="site-bar__actions">
         <button
@@ -60,7 +71,7 @@
           aria-controls="timeline-panel"
           aria-expanded="false"
         >
-          Linea de tiempo
+          Sobre el proyecto
         </button>
         <a class="ghost-button ghost-button--accent" href="#experience-shell">
           Iniciar recorrido
@@ -69,63 +80,21 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero__content">
-          <p class="hero__eyebrow">Recorrido editorial · mapa vivo · audio por paradas</p>
-          <h1 class="hero__title">
-            Una travesia historica que avanza con el scroll y devuelve escala, paisaje y memoria a la Reconquista.
+      <section class="hero hero--minimal" aria-labelledby="hero-title">
+        <div class="hero-logo">
+          <div class="hero-logo__mark" aria-hidden="true">
+            <img class="hero-logo__r" src="/material/logo-r-cuerpo.svg" alt="">
+            <img class="hero-logo__s" src="/material/logo-s-camino.svg" alt="">
+          </div>
+          <h1 class="hero-logo__title" id="hero-title">
+            Camino de la
+            <span>Reconquista</span>
           </h1>
-          <p class="hero__lede">
-            Cada gesto en pantalla activa un nuevo tramo del camino: el mapa se mueve, la ruta se revela y el relato cambia de foco para acompanar a turistas, visitantes y curiosos durante el recorrido real.
-          </p>
-
-          <div class="hero__actions">
-            <a class="hero-button hero-button--primary" href="#experience-shell">
-              Entrar al recorrido
-            </a>
-            <button
-              class="hero-button hero-button--ghost"
-              id="hero-timeline-button"
-              type="button"
-              aria-controls="timeline-panel"
-              aria-expanded="false"
-            >
-              Ver todos los puntos
-            </button>
-          </div>
-
-          <div class="hero__stats">
-            <div class="hero-stat">
-              <strong>06</strong>
-              <span>hitos narrados</span>
-            </div>
-            <div class="hero-stat">
-              <strong>05</strong>
-              <span>municipios enlazados</span>
-            </div>
-            <div class="hero-stat">
-              <strong>Mapa + audio</strong>
-              <span>lectura y uso en movimiento</span>
-            </div>
-          </div>
         </div>
 
-        <aside class="hero__aside">
-          <div class="hero-preview">
-            <div class="hero-preview__image"></div>
-            <div class="hero-preview__card">
-              <span class="hero-preview__label">Camino de la Reconquista</span>
-              <strong>Scroll como linea de tiempo</strong>
-              <p>
-                El trayecto se despliega punto por punto con foco en claridad, orientacion y una lectura serena del territorio.
-              </p>
-            </div>
-            <div class="hero-preview__caption">
-              <span>Desktop editorial</span>
-              <span>Mobile first</span>
-            </div>
-          </div>
-        </aside>
+        <a class="hero-scroll" href="#experience-shell" aria-label="Ir al recorrido">
+          <span>Scroll</span>
+        </a>
       </section>
 
       <section class="experience-shell" id="experience-shell">
@@ -295,7 +264,7 @@
         <div class="story-sections" id="story-sections"></div>
       </section>
 
-      <section class="overview">
+      <section class="overview" id="overview">
         <div class="overview__header">
           <p class="overview__eyebrow">Lector resumido</p>
           <h2>Linea de tiempo completa para volver sobre cada parada.</h2>
@@ -307,7 +276,7 @@
         <div class="overview__grid" id="overview-list"></div>
       </section>
 
-      <section class="closing">
+      <section class="closing" id="closing">
         <div class="closing-card">
           <p class="closing-card__eyebrow">Cierre editorial</p>
           <h2>Una pagina para leer el paisaje como documento historico, no solo como trayecto.</h2>
