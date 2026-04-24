@@ -108,7 +108,48 @@ function createProgressRail(activeIndex, total) {
   ].join("");
 }
 
+function getMicroStory(order) {
+  const stories = {
+    1: ["No fue una victoria militar.", "Fue la prueba de que podian resistir."],
+    2: ["No habia mando formal.", "Habia conviccion y espera organizada."],
+    3: ["La sudestada cambio el desembarco.", "La decision siguio en marcha."],
+    4: ["La lluvia impuso una pausa.", "Tambien reunio fuerzas."],
+    5: ["El Camino del Rey dejo de ser paso cotidiano.", "Se volvio marcha colectiva."],
+    6: ["La rendicion cerro la invasion.", "Ahi empezo una memoria compartida."],
+  };
+
+  return stories[order] || [];
+}
+
+function getImpactStory(order) {
+  const impacts = {
+    1: "Perdriel transformo la resistencia dispersa en una causa posible.",
+    2: "La espera en la chacra sostuvo la union entre voluntarios y fuerzas de Liniers.",
+    3: "Las Conchas convirtio un desvio obligado en el inicio efectivo del avance.",
+    4: "San Isidro permitio reagrupar hombres, alimento y decision antes de seguir.",
+    5: "El paso por Vicente Lopez unio las columnas y acerco la recuperacion de la ciudad.",
+    6: "La rendicion de Beresford dejo una marca decisiva en la memoria del Rio de la Plata.",
+  };
+
+  return impacts[order] || "";
+}
+
+function createMicroStoryMarkup(lines) {
+  if (!lines.length) {
+    return "";
+  }
+
+  return [
+    '      <aside class="story-card__micro" aria-label="Clave narrativa">',
+    ...lines.map((line) => `        <p>${escapeHtml(line)}</p>`),
+    "      </aside>",
+  ].join("");
+}
+
 function createStoryMarkup(point, index, total, snapshotMarkup) {
+  const microStory = getMicroStory(point.order);
+  const impactStory = getImpactStory(point.order);
+
   return [
     `<article class="story-step" id="step-${point.order}" data-index="${index}" aria-labelledby="story-title-${point.id}">`,
     `  <span class="story-step__marker" aria-hidden="true"><span>${point.order}</span></span>`,
@@ -120,8 +161,21 @@ function createStoryMarkup(point, index, total, snapshotMarkup) {
     `        <span class="story-card__kicker">Punto ${point.order}</span>`,
     "      </div>",
     `      <h2 class="story-card__title" id="story-title-${point.id}">${escapeHtml(point.title)}</h2>`,
-    `      <p class="story-card__place">${escapeHtml(point.place)}</p>`,
-    `      <p class="story-card__description">${escapeHtml(point.description)}</p>`,
+    '      <div class="story-card__block story-card__block--place">',
+    '        <p class="story-card__label">Lugar</p>',
+    `        <p class="story-card__place">${escapeHtml(point.place)}</p>`,
+    "      </div>",
+    '      <div class="story-card__block">',
+    '        <p class="story-card__label">Qu\u00e9 ocurri\u00f3</p>',
+    `        <p class="story-card__description">${escapeHtml(point.description)}</p>`,
+    "      </div>",
+    createMicroStoryMarkup(microStory),
+    impactStory ? [
+      '      <div class="story-card__block story-card__block--impact">',
+      '        <p class="story-card__label">Por qu\u00e9 importa</p>',
+      `        <p class="story-card__impact">${escapeHtml(impactStory)}</p>`,
+      "      </div>",
+    ].join("") : "",
     '      <div class="story-card__actions">',
     `        <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar explicacion del punto ${point.order}</button>`,
     `        <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Como llegar</a>`,
