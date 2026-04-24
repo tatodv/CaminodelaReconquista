@@ -223,9 +223,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     button.dataset.available = String(point.audio.available);
   });
 
-  if (!window.gsap || !window.ScrollTrigger || !window.maplibregl) {
+  if (!window.gsap || !window.ScrollTrigger) {
     dom.mapStatus.textContent =
-      "Faltan dependencias del navegador para cargar el mapa vivo. El relato sigue disponible.";
+      "Faltan dependencias del navegador para animar el recorrido. El relato sigue disponible.";
     dom.mapStatus.dataset.state = "error";
     return;
   }
@@ -246,7 +246,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   window.gsap.registerPlugin(window.ScrollTrigger);
 
   const state = {
-    activeIndex: 0,
+    activeIndex: -1,
     routeProgress: 0,
   };
 
@@ -319,6 +319,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function updateIntroState() {
+    state.activeIndex = -1;
     document.body.dataset.activeIndex = "intro";
 
     dom.storySections.querySelectorAll(".story-step").forEach((step) => {
@@ -331,6 +332,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     dom.activePlace.textContent = "Una lectura guiada por los hitos de 1806";
     dom.progressStatus.textContent = "Inicio del recorrido";
     dom.routeProgressFill.style.transform = "scaleX(0)";
+    mapController.setRouteProgress(0);
+    updateTimelineState(-1);
 
     dom.mobileCount.textContent = `00/${padNumber(totalPoints)}`;
     dom.mobileMunicipality.textContent = "Inicio";
@@ -357,7 +360,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function updatePrimaryState(index, options = {}) {
-    if (state.activeIndex === index && !options.force) {
+    const isIntroActive = document.body.dataset.activeIndex === "intro";
+
+    if (state.activeIndex === index && !options.force && !isIntroActive) {
       return;
     }
 
@@ -522,7 +527,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       window.gsap
         .timeline({ defaults: { ease: "power3.out" } })
         .from(".hero-logo__mark", { scale: 0.88, opacity: 0, duration: 0.9 })
-        .from(".hero-logo__title", { y: 22, opacity: 0, duration: 0.75 }, "-=0.45")
+        .from(".hero-logo__title", { y: 22, duration: 0.75 }, "-=0.45")
         .from(".hero-scroll", { y: -8, opacity: 0, duration: 0.55 }, "-=0.2");
 
       window.gsap.to(".hero-logo", {

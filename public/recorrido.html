@@ -6,7 +6,7 @@
     <title>Camino de la Reconquista | Recorrido interactivo</title>
     <meta
       name="description"
-      content="Experiencia scrollytelling del Camino de la Reconquista: mapa vivo, narrativa por hitos y audio contextual para recorrer la historia."
+      content="Experiencia scrollytelling del Camino de la Reconquista: mapa animado, narrativa por hitos y audio contextual para recorrer la historia."
     >
     <meta name="theme-color" content="#111111">
     <link rel="icon" href="/material/logo-r-cuerpo.svg" type="image/svg+xml">
@@ -24,10 +24,6 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
       >
     </noscript>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
-    >
     <link rel="stylesheet" href="/styles/recorrido.css">
     <script
       defer
@@ -36,10 +32,6 @@
     <script
       defer
       src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-    ></script>
-    <script
-      defer
-      src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"
     ></script>
     <script type="module" src="/scripts/recorrido/app.js"></script>
   </head>
@@ -90,11 +82,42 @@
             Camino de la
             <span>Reconquista</span>
           </h1>
+          <p class="hero-logo__subtitle">
+            La revoluci&oacute;n de los chacareros
+            <span>en el Pago de la Costa y de las Conchas.</span>
+          </p>
         </div>
 
         <a class="hero-scroll" href="#experience-shell" aria-label="Ir al recorrido">
           <span>Scroll</span>
         </a>
+
+        <div class="hero-footer" aria-label="Organizadores y redes">
+          <div class="hero-footer__logos">
+            <img src="/material/logo_sm.svg" alt="Municipalidad de San Mart&iacute;n">
+            <span class="hero-footer__divider" aria-hidden="true"></span>
+            <img src="/material/logo_tigre.svg" alt="Municipio de Tigre">
+          </div>
+
+          <div class="hero-footer__socials">
+            <a href="https://www.facebook.com/sanmartingob" target="_blank" rel="noreferrer noopener" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/sanmartingob/" target="_blank" rel="noreferrer noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1"/></svg>
+            </a>
+            <a href="https://www.youtube.com/@sanmartingob" target="_blank" rel="noreferrer noopener" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.5 6.4a2.8 2.8 0 0 0-2-2C18.8 4 12 4 12 4s-6.8 0-8.5.4a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1 12a29 29 0 0 0 .5 5.6 2.8 2.8 0 0 0 2 2C5.2 20 12 20 12 20s6.8 0 8.5-.4a2.8 2.8 0 0 0 2-2A29 29 0 0 0 23 12a29 29 0 0 0-.5-5.6Z"/><path d="m10 15 5.5-3L10 9v6Z"/></svg>
+            </a>
+            <a href="https://www.tiktok.com/@sanmartingob" target="_blank" rel="noreferrer noopener" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 6.7a4.8 4.8 0 0 1-3.8-4.3V2h-3.5v13.7a2.9 2.9 0 1 1-2.9-3.3c.3 0 .6 0 .8.1V9a6.4 6.4 0 1 0 5.6 6.3V8.7a8.2 8.2 0 0 0 4.8 1.5V6.8c-.4 0-.7 0-1-.1Z"/></svg>
+            </a>
+            <a class="hero-footer__podcast" href="https://open.spotify.com/" target="_blank" rel="noreferrer noopener" aria-label="Podcast en Spotify">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.6.6 0 0 1-.9.2c-2.3-1.4-5.3-1.8-8.8-1a.6.6 0 0 1-.3-1.2c3.8-.9 7.1-.5 9.7 1.1.3.2.4.6.3.9Zm1.2-2.7a.8.8 0 0 1-1.1.3c-2.7-1.7-6.8-2.1-10-1.2a.8.8 0 0 1-.4-1.5c3.6-1.1 8.1-.6 11.2 1.3.4.2.5.7.3 1.1Zm.1-2.8c-3.2-1.9-8.5-2.1-11.6-1.2a.9.9 0 1 1-.5-1.8c3.5-1.1 9.4-.9 13.1 1.4a.9.9 0 1 1-1 1.6Z"/></svg>
+              <span>Podcast</span>
+            </a>
+          </div>
+        </div>
       </section>
 
       <section class="experience-shell" id="experience-shell">

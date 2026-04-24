@@ -41,7 +41,7 @@ Main entry points:
 - First viewport hero aligned with the early centered-logo versions
 - Mobile map-first layout with compact bottom controls, large tap targets, and timeline drawer access from the top-right menu
 - Map overlays, audio panel, timeline drawer, and section cards
-- Active marker pulse styling for MapLibre
+- Active marker pulse styling for the custom SVG map
 
 ### Data normalization
 `scripts/recorrido/data.js`
@@ -51,18 +51,18 @@ Main entry points:
   - `/data/podcast.json`, with `/public/data/podcast.json` as a local fallback
 - Normalizes points into a UI-friendly structure
 - Creates fallback illustration paths from the existing SVG assets
-- Builds the point GeoJSON used by MapLibre
+- Builds the point GeoJSON kept available for map-driven UI and future exports
 
 ### Map controller
 `scripts/recorrido/map.js`
-- Boots MapLibre with a muted raster OpenStreetMap base
+- Renders a simple editorial SVG map inspired by the Codrops storytelling map pattern
 - Adds:
+  - abstract roads and river shape
   - base route line
-  - animated progress route line
-  - point layers
-  - active pulse marker
-- Calculates per-point camera framing from adjacent coordinates
-- Handles route reveal progress and active-point camera transitions
+  - animated progress route line using `stroke-dashoffset`
+  - point markers and active pulse focus
+- Projects GeoJSON coordinates into an SVG viewBox
+- Handles route reveal progress and active-point camera transitions without external map tiles
 
 ### Audio controller
 `scripts/recorrido/audio.js`
@@ -101,8 +101,8 @@ A second ScrollTrigger tracks the overall progress of `#experience-shell`.
 
 That progress value drives:
 - the desktop route meter bar
-- the MapLibre `line-gradient` for the orange route reveal
-- the completed-point layer filter
+- the custom SVG route stroke reveal
+- completed-point and right-side dot states
 
 ### Entrance motion
 The summary sections use lightweight GSAP entrance animations.
@@ -168,12 +168,12 @@ No package-manager dependencies were added.
 
 Pinned CDN dependencies used by the new route:
 - `gsap@3.12.5`
-- `maplibre-gl@4.7.1`
 
 Why:
 - keeps the current static architecture intact
 - avoids introducing a build pipeline into a repo that does not currently use one
 - keeps the feature easy to deploy on the existing Vercel setup
+- avoids live map tile dependencies for the core storytelling view
 
 ## Notes About Current Assets
 Current repo state required a graceful fallback strategy:
