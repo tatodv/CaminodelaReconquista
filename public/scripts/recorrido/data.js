@@ -35,7 +35,11 @@ function stripPublicPrefix(path) {
 }
 
 function getPremiumIllustration(order) {
-  return `/images/points/punto${order}.avif`;
+  return {
+    src: `/images/points/punto${order}.avif`,
+    src560: `/images/points/punto${order}-560.avif`,
+    src880: `/images/points/punto${order}-880.avif`,
+  };
 }
 
 function getPodcastIndex(podcastData) {
@@ -78,7 +82,8 @@ function normalizePoint(feature, podcastIndex) {
     municipality: properties.municipality || "",
     description:
       properties.description?.trim() || "Texto curatorial pendiente de carga.",
-    image: getPremiumIllustration(order),
+    image: getPremiumIllustration(order).src,
+    imageSet: getPremiumIllustration(order),
     coordinates,
     mapUrl: `https://www.google.com/maps/search/?api=1&query=${coordinates[1]},${coordinates[0]}`,
     audio: {

@@ -140,13 +140,9 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
   const preserveAspectRatio = options.staticProgress === true
     ? "xMidYMid meet"
     : "xMinYMid slice";
-  const progressStyle =
+  const dashAttrs =
     options.staticProgress === true
-      ? ` style="stroke-dasharray: 1; stroke-dashoffset: ${(1 - progress).toFixed(3)}"`
-      : "";
-  const glowStyle =
-    options.staticProgress === true
-      ? ` style="stroke-dasharray: 1; stroke-dashoffset: ${(1 - progress).toFixed(3)}"`
+      ? ` stroke-dasharray="1" stroke-dashoffset="${(1 - progress).toFixed(3)}"`
       : "";
   const pathLengthAttribute = options.staticProgress === true ? ' pathLength="1"' : "";
 
@@ -171,12 +167,12 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     '          <stop offset="100%" stop-color="#141a1b" stop-opacity="0.78"></stop>',
     "        </linearGradient>",
     "      </defs>",
-    '      <image class="story-map__base-image" href="/material/mapa_sinpuntos.svg" x="0" y="0" width="1920" height="1080" preserveAspectRatio="xMidYMid slice"></image>',
+    '      <image class="story-map__base-image" href="/material/mapa_sinpuntos.webp" x="0" y="0" width="1920" height="1080" preserveAspectRatio="xMidYMid slice"></image>',
     '      <rect class="story-map__paper-wash" width="1920" height="1080"></rect>',
     `      <rect class="story-map__depth" width="1920" height="1080" fill="url(#${idPrefix}-mapDepth)"></rect>`,
     `      <path class="story-map__route-base" d="${routePath}"></path>`,
-    `      <path class="story-map__route-glow" d="${routePath}"${pathLengthAttribute} filter="url(#${idPrefix}-routeGlow)"${glowStyle}></path>`,
-    `      <path class="story-map__route-progress" d="${routePath}"${pathLengthAttribute}${progressStyle}></path>`,
+    `      <path class="story-map__route-glow" d="${routePath}"${pathLengthAttribute} filter="url(#${idPrefix}-routeGlow)"${dashAttrs}></path>`,
+    `      <path class="story-map__route-progress" d="${routePath}"${pathLengthAttribute}${dashAttrs}></path>`,
     '      <g class="story-map__focuses">',
     ...displayPoints.map((point, index) => (
       `        <circle class="story-map__focus${index === activeIndex ? " is-active" : ""}" data-map-focus="${index}" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="94" fill="url(#${idPrefix}-focusGradient)"></circle>`
@@ -203,9 +199,9 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     "  </div>",
     interactive
       ? [
-          '  <div class="story-map__controls" aria-hidden="true">',
-          '    <span>+</span>',
-          '    <span>-</span>',
+          '  <div class="story-map__controls">',
+          '    <button class="story-map__control" type="button" data-map-zoom="in" aria-label="Acercar mapa">+</button>',
+          '    <button class="story-map__control" type="button" data-map-zoom="out" aria-label="Alejar mapa">-</button>',
           "  </div>",
           '  <div class="story-map__dots" aria-hidden="true">',
           ...points.map((_, index) => `<span data-map-dot="${index}" class="${index === activeIndex ? "is-active" : ""}"></span>`),
@@ -276,7 +272,8 @@ export async function createMapController({
     const scale = baseScale * userScale;
     const xPercent = (point.x / VIEWBOX.width) * 100;
     const yPercent = (point.y / VIEWBOX.height) * 100;
-    const pullX = clamp(42 - xPercent, -3.8, 6.2);
+    const targetX = compact ? 42 : 34;
+    const pullX = clamp(targetX - xPercent, -12, 2.5);
     const pullY = clamp(50 - yPercent, -4.4, 4.4);
 
     viewport.style.transitionDuration = instant ? "0ms" : "900ms";
@@ -335,14 +332,14 @@ export async function createMapController({
   }
 
   container
-    .querySelector(".story-map__controls span:first-child")
+    .querySelector('[data-map-zoom="in"]')
     ?.addEventListener("click", () => {
       userScale = clamp(userScale + 0.12, 0.9, 1.42);
       applyCamera(activeIndex);
     });
 
   container
-    .querySelector(".story-map__controls span:nth-child(2)")
+    .querySelector('[data-map-zoom="out"]')
     ?.addEventListener("click", () => {
       userScale = clamp(userScale - 0.12, 0.9, 1.42);
       applyCamera(activeIndex);
