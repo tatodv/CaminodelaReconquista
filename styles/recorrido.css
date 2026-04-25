@@ -2023,13 +2023,6 @@ input[type="range"] {
     padding: 2.8rem 1rem;
   }
 
-  .closing,
-  .other-sites,
-  .protagonists,
-  .overview {
-    content-visibility: auto;
-    contain-intrinsic-size: 900px;
-  }
 
   .other-sites__list {
     grid-template-columns: 1fr;
