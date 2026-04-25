@@ -3,6 +3,13 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+    >
     <title>Camino de la Reconquista | Recorrido interactivo</title>
     <meta
       name="description"
@@ -15,19 +22,23 @@
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
-      media="print"
-      onload="this.media='all'"
     >
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
-      >
-    </noscript>
     <link rel="stylesheet" href="/styles/recorrido.css">
-    <script type="module" src="/scripts/recorrido/app.js"></script>
+    <link
+      rel="preload"
+      as="image"
+      href="/images/points/punto1-560.avif"
+      imagesrcset="/images/points/punto1-560.avif 560w, /images/points/punto1-880.avif 880w, /images/points/punto1.avif 1200w"
+      imagesizes="(max-width: 899px) 92vw, 44vw"
+      type="image/avif"
+      fetchpriority="high"
+    >
+    <link rel="preload" as="image" href="/material/mapa_sinpuntos.webp" type="image/webp">
+    <script src="/scripts/recorrido/bootstrap.js"></script>
+    <script type="module" src="/scripts/recorrido/app.js" defer></script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido</a>
     <div class="paper-noise" aria-hidden="true"></div>
 
     <header class="site-bar">
@@ -39,12 +50,11 @@
       </a>
 
       <nav class="site-nav" aria-label="Principal">
-        <a class="site-nav__link is-active" href="#experience-shell">El recorrido</a>
+        <a class="site-nav__link is-active" aria-current="page" href="#experience-shell">El recorrido</a>
         <a class="site-nav__link" href="#overview">Historia</a>
-        <a class="site-nav__link" href="#overview">Personajes</a>
+        <a class="site-nav__link" href="#protagonistas">Personajes</a>
+        <a class="site-nav__link" href="#otros-escenarios">Escenarios</a>
         <a class="site-nav__link" href="#closing">Podcast</a>
-        <a class="site-nav__link" href="#overview">Galería</a>
-        <a class="site-nav__link" href="#closing">Contacto</a>
       </nav>
 
       <div class="site-bar__actions">
@@ -63,7 +73,7 @@
       </div>
     </header>
 
-    <main>
+    <main id="main-content">
       <section class="hero hero--minimal" aria-labelledby="hero-title">
         <div class="hero-logo">
           <div class="hero-logo__mark" aria-hidden="true">
@@ -102,11 +112,18 @@
             <a href="https://www.tiktok.com/@sanmartingob" target="_blank" rel="noreferrer noopener" aria-label="TikTok">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 6.7a4.8 4.8 0 0 1-3.8-4.3V2h-3.5v13.7a2.9 2.9 0 1 1-2.9-3.3c.3 0 .6 0 .8.1V9a6.4 6.4 0 1 0 5.6 6.3V8.7a8.2 8.2 0 0 0 4.8 1.5V6.8c-.4 0-.7 0-1-.1Z"/></svg>
             </a>
-            <a class="hero-footer__podcast" href="https://open.spotify.com/" target="_blank" rel="noreferrer noopener" aria-label="Podcast en Spotify">
+            <span class="hero-footer__podcast" aria-label="Podcast pronto" role="img">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.6.6 0 0 1-.9.2c-2.3-1.4-5.3-1.8-8.8-1a.6.6 0 0 1-.3-1.2c3.8-.9 7.1-.5 9.7 1.1.3.2.4.6.3.9Zm1.2-2.7a.8.8 0 0 1-1.1.3c-2.7-1.7-6.8-2.1-10-1.2a.8.8 0 0 1-.4-1.5c3.6-1.1 8.1-.6 11.2 1.3.4.2.5.7.3 1.1Zm.1-2.8c-3.2-1.9-8.5-2.1-11.6-1.2a.9.9 0 1 1-.5-1.8c3.5-1.1 9.4-.9 13.1 1.4a.9.9 0 1 1-1 1.6Z"/></svg>
-              <span>Podcast</span>
-            </a>
+              <span>Pronto</span>
+            </span>
           </div>
+        </div>
+      </section>
+
+      <section class="narrative-passage" aria-label="Introducci&oacute;n narrativa">
+        <div class="narrative-passage__inner">
+          <p class="narrative-passage__line">El Camino de la Reconquista sigue una decisi&oacute;n colectiva:</p>
+          <p class="narrative-passage__line"><strong>recuperar la ciudad, paso a paso.</strong></p>
         </div>
       </section>
 
@@ -171,110 +188,107 @@
                 </button>
               </div>
             </div>
-
-            <div class="audio-panel">
-              <div class="audio-panel__meta">
-                <span class="audio-panel__eyebrow">Podcast del punto</span>
-                <strong id="audio-title">Audio del punto</strong>
-                <p id="audio-point-label">Selecciona un punto del recorrido</p>
-                <span class="audio-panel__note" id="audio-note">
-                  Los archivos finales pueden cargarse mas adelante sin tocar la interfaz.
-                </span>
-              </div>
-
-              <div class="audio-panel__controls">
-                <button class="hero-button hero-button--compact" id="audio-toggle" type="button">
-                  Audio pronto
-                </button>
-
-                <div class="audio-panel__scrubber">
-                  <span id="audio-current">00:00</span>
-                  <input
-                    id="audio-seek"
-                    type="range"
-                    min="0"
-                    max="1000"
-                    value="0"
-                    step="1"
-                    aria-label="Linea de tiempo del audio"
-                  >
-                  <span id="audio-duration">--:--</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="mobile-sheet">
-            <div class="mobile-sheet__handle" aria-hidden="true"></div>
-            <div class="mobile-sheet__media">
-              <img
-                id="mobile-image"
-                src="/images/points/punto1.svg"
-                data-fallback-src="/images/points/punto1.svg"
-                alt="Ilustracion del punto activo"
-                loading="lazy"
-                decoding="async"
-              >
-            </div>
-
-            <div class="mobile-sheet__body">
-              <div class="mobile-sheet__topline">
-                <span id="mobile-count">01/06</span>
-                <span id="mobile-municipality">San Mart&iacute;n</span>
-              </div>
-              <h2 id="mobile-title">San Mart&iacute;n, el punto de partida</h2>
-              <p id="mobile-place">Museo Hist&oacute;rico Jos&eacute; Hern&aacute;ndez - Chacra Pueyrred&oacute;n</p>
-              <p id="mobile-description">
-                El recorrido se actualiza en tiempo real a medida que avanzas por cada parada.
-              </p>
-
-              <div class="mobile-sheet__actions">
-                <button class="hero-button hero-button--compact" id="mobile-audio-toggle" type="button">
-                  Audio pronto
-                </button>
-                <a
-                  class="hero-button hero-button--ghost mobile-sheet__link"
-                  id="mobile-maps-link"
-                  href="https://www.google.com/maps"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  C&oacute;mo llegar
-                </a>
-              </div>
-
-              <div class="mobile-audio">
-                <span class="mobile-audio__note" id="mobile-audio-note">
-                  Los archivos de audio pueden sumarse mas adelante desde la carpeta /audio.
-                </span>
-                <div class="mobile-audio__scrubber">
-                  <span id="mobile-audio-current">00:00</span>
-                  <input
-                    id="mobile-audio-seek"
-                    type="range"
-                    min="0"
-                    max="1000"
-                    value="0"
-                    step="1"
-                    aria-label="Linea de tiempo del audio en mobile"
-                  >
-                  <span id="mobile-audio-duration">--:--</span>
-                </div>
-              </div>
-
-              <div class="mobile-sheet__nav">
-                <button class="ghost-button ghost-button--small" id="mobile-prev" type="button">
-                  Anterior
-                </button>
-                <button class="ghost-button ghost-button--small" id="mobile-next" type="button">
-                  Siguiente
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
         <div class="story-sections" id="story-sections"></div>
+      </section>
+
+      <section class="other-sites" id="otros-escenarios">
+        <div class="other-sites__header">
+          <p class="overview__eyebrow">Contexto adicional</p>
+          <h2>Otros escenarios vinculados</h2>
+          <p>
+            Algunos lugares no integran los seis hitos principales, pero ayudan a entender la organizaci&oacute;n, el avance y el desenlace de la Reconquista.
+          </p>
+        </div>
+
+        <ul class="other-sites__list" aria-label="Otros lugares vinculados a la Reconquista">
+          <li><strong>Luj&aacute;n</strong><span>Pueyrred&oacute;n sublev&oacute; la campa&ntilde;a y concentr&oacute; gauchos que combatieron en Perdriel.</span></li>
+          <li><strong>Montevideo</strong><span>Liniers y Ruiz Huidobro organizaron la flota y las tropas para expulsar a los brit&aacute;nicos.</span></li>
+          <li><strong>Chacarita</strong><span>Alto final para descansar, mejorar armas, celebrar misa de campa&ntilde;a y preparar el combate.</span></li>
+          <li><strong>Miserere</strong><span>Antesala de la victoria: all&iacute; se reunieron fuerzas militares y vecinos.</span></li>
+          <li><strong>Retiro</strong><span>Combate decisivo del 11 de agosto de 1806 en el avance sobre Buenos Aires.</span></li>
+          <li><strong>Plaza de Mayo</strong><span>Rendici&oacute;n de Beresford ante Santiago de Liniers el 12 de agosto de 1806.</span></li>
+        </ul>
+      </section>
+
+      <section class="protagonists" id="protagonistas" aria-labelledby="protagonists-title">
+        <div class="protagonists__header">
+          <p class="overview__eyebrow">Protagonistas</p>
+          <h2 id="protagonists-title">Los rostros de la Reconquista</h2>
+          <p>
+            La historia tambi&eacute;n se entiende por sus mandos: quienes organizaron la defensa del R&iacute;o de la Plata y quienes condujeron la ofensiva brit&aacute;nica.
+          </p>
+        </div>
+
+        <div class="protagonists__groups">
+          <section class="protagonists__group" aria-labelledby="defensores-title">
+            <h3 id="defensores-title">Defensores del R&iacute;o de la Plata</h3>
+            <ul class="portrait-list">
+              <li class="portrait">
+                <figure class="portrait__frame">
+                  <img src="/material/Personajes-41.webp" alt="Retrato de Santiago de Liniers" width="306" height="374" loading="lazy" decoding="async">
+                </figure>
+                <h4>Liniers</h4>
+                <p>Condujo la marcha desde Las Conchas y encabez&oacute; la recuperaci&oacute;n de Buenos Aires.</p>
+              </li>
+              <li class="portrait">
+                <figure class="portrait__frame">
+                  <img src="/material/Personajes-43.webp" alt="Retrato de Juan Mart&iacute;n de Pueyrred&oacute;n" width="306" height="374" loading="lazy" decoding="async">
+                </figure>
+                <h4>Pueyrred&oacute;n</h4>
+                <p>Organiz&oacute; voluntarios y sostuvo la resistencia rural en torno a Perdriel.</p>
+              </li>
+              <li class="portrait">
+                <figure class="portrait__frame">
+                  <img src="/material/Personajes-42.webp" alt="Retrato de Mart&iacute;n de &Aacute;lzaga" width="306" height="374" loading="lazy" decoding="async">
+                </figure>
+                <h4>&Aacute;lzaga</h4>
+                <p>Financi&oacute;, articul&oacute; redes urbanas y prepar&oacute; recursos para la defensa.</p>
+              </li>
+            </ul>
+          </section>
+
+          <section class="protagonists__group protagonists__group--british" aria-labelledby="britanicos-title">
+            <h3 id="britanicos-title">Mandos brit&aacute;nicos</h3>
+            <ul class="portrait-list portrait-list--compact">
+              <li class="portrait">
+                <figure class="portrait__frame">
+                  <img src="/material/Personajes-45.webp" alt="Retrato de William Carr Beresford" width="297" height="355" loading="lazy" decoding="async">
+                </figure>
+                <h4>Beresford</h4>
+                <p>Jefe de la fuerza que ocup&oacute; Buenos Aires y rindi&oacute; sus tropas el 12 de agosto de 1806.</p>
+              </li>
+              <li class="portrait">
+                <figure class="portrait__frame">
+                  <img src="/material/Personajes-44.webp" alt="Retrato de Home Riggs Popham" width="306" height="355" loading="lazy" decoding="async">
+                </figure>
+                <h4>Popham</h4>
+                <p>Comandante naval de la expedici&oacute;n brit&aacute;nica sobre el R&iacute;o de la Plata.</p>
+              </li>
+              <li class="portrait">
+                <figure class="portrait__frame">
+                  <img src="/material/Personajes-46.webp" alt="Retrato de Denis Pack" width="302" height="355" loading="lazy" decoding="async">
+                </figure>
+                <h4>Pack</h4>
+                <p>Oficial brit&aacute;nico que particip&oacute; en la ocupaci&oacute;n y en las operaciones sobre el R&iacute;o de la Plata.</p>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="overview" id="overview">
+        <div class="overview__header">
+          <p class="overview__eyebrow">Lectura recomendada</p>
+          <h2>L&iacute;nea de tiempo completa para volver sobre cada parada.</h2>
+          <p>
+            Recorre de manera visual y cronologica cada uno de los hitos del recorrido, desde 1806 hasta la Reconquista de Buenos Aires.
+          </p>
+        </div>
+
+        <div class="overview__grid" id="overview-list"></div>
       </section>
 
       <section class="closing" id="closing">
@@ -289,14 +303,21 @@
             <a class="hero-button hero-button--primary" href="#experience-shell">
               Volver al recorrido
             </a>
-            <a class="hero-button hero-button--ghost" href="https://open.spotify.com/" target="_blank" rel="noreferrer noopener">
-              Escuchar podcast
-            </a>
+            <button class="hero-button hero-button--ghost" type="button" disabled aria-disabled="true">
+              Podcast pronto
+            </button>
           </div>
         </div>
 
         <figure class="closing__panorama">
-          <img src="/material/muestra_landing_CdlR-03.jpg" alt="Escena historica panoramica del Camino de la Reconquista" loading="lazy" decoding="async">
+          <picture>
+            <source
+              type="image/avif"
+              srcset="/material/muestra_landing_CdlR-03-900.avif 900w, /material/muestra_landing_CdlR-03.avif 1600w"
+              sizes="(max-width: 899px) 92vw, 50vw"
+            >
+            <img src="/material/muestra_landing_CdlR-03.jpg" alt="Escena historica panoramica del Camino de la Reconquista" width="1600" height="900" loading="lazy" decoding="async">
+          </picture>
         </figure>
 
         <article class="podcast-card">
@@ -309,22 +330,10 @@
             <span>6 episodios</span>
             <span>24:19 min</span>
           </div>
-          <a class="podcast-card__button" href="https://open.spotify.com/" target="_blank" rel="noreferrer noopener">
-            Reproducir todos
-          </a>
+          <button class="podcast-card__button" type="button" disabled aria-disabled="true">
+            Disponible pronto
+          </button>
         </article>
-      </section>
-
-      <section class="overview" id="overview">
-        <div class="overview__header">
-          <p class="overview__eyebrow">Lectura recomendada</p>
-          <h2>L&iacute;nea de tiempo completa para volver sobre cada parada.</h2>
-          <p>
-            Recorre de manera visual y cronologica cada uno de los hitos del recorrido, desde 1806 hasta la Reconquista de Buenos Aires.
-          </p>
-        </div>
-
-        <div class="overview__grid" id="overview-list"></div>
       </section>
     </main>
 
@@ -339,10 +348,9 @@
       <nav class="site-footer__nav" aria-label="Pie de pagina">
         <a href="#experience-shell">El recorrido</a>
         <a href="#overview">Historia</a>
-        <a href="#overview">Personajes</a>
+        <a href="#protagonistas">Personajes</a>
+        <a href="#otros-escenarios">Escenarios</a>
         <a href="#closing">Podcast</a>
-        <a href="#overview">Galer&iacute;a</a>
-        <a href="#closing">Contacto</a>
       </nav>
 
       <p class="site-footer__meta">Municipalidad de San Mart&iacute;n | Educaci&oacute;n | Cultura | Turismo</p>
@@ -353,13 +361,14 @@
       class="timeline-panel"
       id="timeline-panel"
       hidden
+      role="dialog"
       aria-modal="true"
-      aria-label="L&iacute;nea de tiempo del recorrido"
+      aria-labelledby="timeline-title"
     >
       <div class="timeline-panel__header">
         <div>
           <p class="timeline-panel__eyebrow">Todos los hitos</p>
-          <h2>L&iacute;nea de tiempo del Camino</h2>
+          <h2 id="timeline-title">L&iacute;nea de tiempo del Camino</h2>
         </div>
         <button class="ghost-button ghost-button--small" id="timeline-close" type="button">
           Cerrar
