@@ -1,6 +1,6 @@
 import { loadExperienceData, padNumber } from "./data.js";
-import { createAudioController, formatTime } from "./audio.js";
-import { createMapController, createMapSnapshotMarkup } from "./map.js";
+import { createAudioController } from "./audio.js";
+import { createMapController } from "./map.js";
 
 function escapeHtml(value) {
   return String(value)
@@ -41,14 +41,6 @@ function getRouteProgressForStep(index, total, localProgress = 0.5) {
   return clamp(index * segment + segment * clamp(localProgress, 0, 1), 0, 1);
 }
 
-function getSnapshotProgress(index, total) {
-  if (index < 0) {
-    return 1;
-  }
-
-  return getRouteProgressForStep(index, total, 0.52);
-}
-
 function getStepLocalProgress(step) {
   if (!step) {
     return 0;
@@ -73,7 +65,7 @@ function getProgressStatus(index, total) {
   return `Tramo ${index + 1} de ${total}`;
 }
 
-function createIntroMarkup(total, snapshotMarkup) {
+function createIntroMarkup() {
   return [
     '<article class="story-step story-step--intro is-active" data-intro="true" aria-labelledby="story-title-intro">',
     '  <span class="story-step__marker story-step__marker--intro" aria-hidden="true"><span>i</span></span>',
@@ -87,7 +79,6 @@ function createIntroMarkup(total, snapshotMarkup) {
     "      </div>",
     "    </div>",
     "  </div>",
-    `  <div class="story-mobile-map">${snapshotMarkup}</div>`,
     "</article>",
   ].join("");
 }
@@ -110,12 +101,12 @@ function createProgressRail(activeIndex, total) {
 
 function getMicroStory(order) {
   const stories = {
-    1: ["No fue una victoria militar.", "Fue la prueba de que podian resistir."],
-    2: ["No habia mando formal.", "Habia conviccion y espera organizada."],
-    3: ["La sudestada cambio el desembarco.", "La decision siguio en marcha."],
-    4: ["La lluvia impuso una pausa.", "Tambien reunio fuerzas."],
-    5: ["El Camino del Rey dejo de ser paso cotidiano.", "Se volvio marcha colectiva."],
-    6: ["La rendicion cerro la invasion.", "Ahi empezo una memoria compartida."],
+    1: ["Derrota en el campo.", "Victoria moral para la resistencia."],
+    2: ["Una chacra se volvio cuartel.", "La campana sostuvo la marcha."],
+    3: ["La sudestada cambio el plan.", "Las Conchas abrio el camino."],
+    4: ["La lluvia detuvo la columna.", "San Isidro le devolvio fuerzas."],
+    5: ["El Fondo de la Legua unio pueblos.", "La marcha tomo rumbo final."],
+    6: ["Beresford capitula.", "La memoria empieza a caminar."],
   };
 
   return stories[order] || [];
@@ -123,12 +114,12 @@ function getMicroStory(order) {
 
 function getImpactStory(order) {
   const impacts = {
-    1: "Perdriel transformo la resistencia dispersa en una causa posible.",
-    2: "La espera en la chacra sostuvo la union entre voluntarios y fuerzas de Liniers.",
-    3: "Las Conchas convirtio un desvio obligado en el inicio efectivo del avance.",
-    4: "San Isidro permitio reagrupar hombres, alimento y decision antes de seguir.",
-    5: "El paso por Vicente Lopez unio las columnas y acerco la recuperacion de la ciudad.",
-    6: "La rendicion de Beresford dejo una marca decisiva en la memoria del Rio de la Plata.",
+    1: "Perdriel fue el bautismo de fuego: hizo visible que el pueblo podia organizarse.",
+    2: "La Chacra de los Marquez reunio alimentos, caballos, hombres y plan de marcha.",
+    3: "La casa de Goyechea y el puerto de Las Conchas funcionaron como comando inicial.",
+    4: "San Isidro sostuvo el relevo, el descanso y la moral antes del tramo decisivo.",
+    5: "El paso por Vicente Lopez materializo la union de los pueblos del norte.",
+    6: "La capitulacion del 12 de agosto volvio realidad la Reconquista de Buenos Aires.",
   };
 
   return impacts[order] || "";
@@ -146,7 +137,7 @@ function createMicroStoryMarkup(lines) {
   ].join("");
 }
 
-function createStoryMarkup(point, index, total, snapshotMarkup) {
+function createStoryMarkup(point, index, total) {
   const microStory = getMicroStory(point.order);
   const impactStory = getImpactStory(point.order);
 
@@ -182,10 +173,9 @@ function createStoryMarkup(point, index, total, snapshotMarkup) {
     "      </div>",
     "    </div>",
     '    <figure class="story-card__figure">',
-    `      <img src="${escapeHtml(point.image)}" alt="Ilustracion de ${escapeHtml(point.place)}" width="1536" height="1024" loading="lazy" decoding="async">`,
+    `      <img src="${escapeHtml(point.imageSet.src880)}" srcset="${escapeHtml(point.imageSet.src560)} 560w, ${escapeHtml(point.imageSet.src880)} 880w, ${escapeHtml(point.imageSet.src)} 1200w" sizes="(max-width: 899px) 92vw, 44vw" alt="Ilustracion de ${escapeHtml(point.place)}" width="1200" height="800" loading="${index === 0 ? "eager" : "lazy"}"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">`,
     "    </figure>",
     "  </div>",
-    `  <div class="story-mobile-map">${snapshotMarkup}</div>`,
     "</article>",
   ].join("");
 }
@@ -247,6 +237,15 @@ function syncAudioButtons(audioState, pointButtons, mobileButton) {
   );
 }
 
+const TIMELINE_FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
 window.addEventListener("DOMContentLoaded", async () => {
   const dom = {
     storySections: document.getElementById("story-sections"),
@@ -259,27 +258,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     progressStatus: document.getElementById("progress-status"),
     routeProgressFill: document.getElementById("route-progress-fill"),
     mapsLink: document.getElementById("maps-link"),
-    mobileMapsLink: document.getElementById("mobile-maps-link"),
-    audioTitle: document.getElementById("audio-title"),
-    audioPointLabel: document.getElementById("audio-point-label"),
-    audioNote: document.getElementById("audio-note"),
-    audioToggle: document.getElementById("audio-toggle"),
-    audioSeek: document.getElementById("audio-seek"),
-    audioCurrent: document.getElementById("audio-current"),
-    audioDuration: document.getElementById("audio-duration"),
-    mobileCount: document.getElementById("mobile-count"),
-    mobileMunicipality: document.getElementById("mobile-municipality"),
-    mobileTitle: document.getElementById("mobile-title"),
-    mobilePlace: document.getElementById("mobile-place"),
-    mobileDescription: document.getElementById("mobile-description"),
-    mobileImage: document.getElementById("mobile-image"),
-    mobileAudioToggle: document.getElementById("mobile-audio-toggle"),
-    mobileAudioNote: document.getElementById("mobile-audio-note"),
-    mobileAudioSeek: document.getElementById("mobile-audio-seek"),
-    mobileAudioCurrent: document.getElementById("mobile-audio-current"),
-    mobileAudioDuration: document.getElementById("mobile-audio-duration"),
-    mobilePrev: document.getElementById("mobile-prev"),
-    mobileNext: document.getElementById("mobile-next"),
     timelinePanel: document.getElementById("timeline-panel"),
     timelineBackdrop: document.getElementById("timeline-backdrop"),
     timelineOpenButtons: [
@@ -294,27 +272,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadExperienceData();
   const totalPoints = data.points.length;
-  const introSnapshot = createMapSnapshotMarkup({
-    points: data.points,
-    route: data.route,
-    activeIndex: 0,
-    progress: 1,
-    idPrefix: "snapshot-intro",
-  });
 
   dom.storySections.innerHTML = [
-    createIntroMarkup(totalPoints, introSnapshot),
-    data.points.map((point, index) => {
-      const snapshot = createMapSnapshotMarkup({
-        points: data.points,
-        route: data.route,
-        activeIndex: index,
-        progress: getSnapshotProgress(index, totalPoints),
-        idPrefix: `snapshot-${index}`,
-      });
-
-      return createStoryMarkup(point, index, totalPoints, snapshot);
-    }).join(""),
+    createIntroMarkup(),
+    data.points
+      .map((point, index) => createStoryMarkup(point, index, totalPoints))
+      .join(""),
   ].join("");
   dom.overviewList.innerHTML = createListMarkup(data.points, "overview-card");
   dom.timelineList.innerHTML = createListMarkup(data.points, "timeline-item");
@@ -346,6 +309,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     activeIndex: -1,
     routeProgress: 0,
   };
+  let lastTimelineTrigger = null;
 
   const storySteps = Array.from(document.querySelectorAll(".story-step[data-index]"));
   const introStep = document.querySelector(".story-step--intro");
@@ -361,45 +325,20 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function syncAudioUi(audioState) {
-    const label = getAudioLabel(audioState);
-    const durationLabel = audioState.duration
-      ? formatTime(audioState.duration)
-      : "--:--";
-    const progressRatio =
-      audioState.duration > 0
-        ? String(Math.round((audioState.currentTime / audioState.duration) * 1000))
-        : "0";
-
-    dom.audioTitle.textContent = audioState.title || "Audio del punto";
-    dom.audioPointLabel.textContent =
-      audioState.pointTitle || "Selecciona un punto del recorrido";
-    dom.audioNote.textContent =
-      audioState.error || audioState.note || "Recurso asociado al punto activo.";
-    dom.audioCurrent.textContent = formatTime(audioState.currentTime);
-    dom.audioDuration.textContent = durationLabel;
-    dom.audioSeek.value = progressRatio;
-    dom.audioSeek.disabled = !audioState.available || audioState.duration <= 0;
-    setButtonBusy(dom.audioToggle, label, !audioState.available);
-
-    dom.mobileAudioNote.textContent =
-      audioState.error || audioState.note || "Recurso asociado al punto activo.";
-    dom.mobileAudioCurrent.textContent = formatTime(audioState.currentTime);
-    dom.mobileAudioDuration.textContent = durationLabel;
-    dom.mobileAudioSeek.value = progressRatio;
-    dom.mobileAudioSeek.disabled =
-      !audioState.available || audioState.duration <= 0;
-
-    syncAudioButtons(audioState, chapterButtons, dom.mobileAudioToggle);
+    syncAudioButtons(audioState, chapterButtons, null);
   }
 
   function updateTimelineState(index) {
     document
       .querySelectorAll("[data-jump-index]")
       .forEach((button) => {
-        button.classList.toggle(
-          "is-active",
-          Number(button.dataset.jumpIndex) === index,
-        );
+        const isActive = Number(button.dataset.jumpIndex) === index;
+        button.classList.toggle("is-active", isActive);
+        if (isActive) {
+          button.setAttribute("aria-current", "step");
+        } else {
+          button.removeAttribute("aria-current");
+        }
       });
   }
 
@@ -411,10 +350,13 @@ window.addEventListener("DOMContentLoaded", async () => {
       ?.classList.remove("is-active");
 
     dom.storySections.querySelectorAll(".story-step").forEach((step) => {
-      step.classList.toggle(
-        "is-active",
-        Number(step.dataset.index) === index,
-      );
+      const isActive = Number(step.dataset.index) === index;
+      step.classList.toggle("is-active", isActive);
+      if (isActive) {
+        step.setAttribute("aria-current", "step");
+      } else {
+        step.removeAttribute("aria-current");
+      }
     });
   }
 
@@ -440,27 +382,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     mapController.setActivePoint(0, { instant: true, progress: 0 });
     mapController.resetOverview();
     updateTimelineState(-1);
-
-    dom.mobileCount.textContent = `0/${totalPoints}`;
-    dom.mobileMunicipality.textContent = "Vista general";
-    dom.mobileTitle.textContent = "Bienvenidos al Camino de la Reconquista";
-    dom.mobilePlace.textContent = "Una lectura guiada por los hitos de 1806";
-    dom.mobileDescription.textContent =
-      "Avanza para recorrer los seis puntos principales de la Reconquista.";
     audioController.setTrack(null);
-  }
-
-  function updateMobileState(point, index) {
-    dom.mobileCount.textContent = getCounterLabel(index, totalPoints);
-    dom.mobileMunicipality.textContent = point.municipality;
-    dom.mobileTitle.textContent = point.title;
-    dom.mobilePlace.textContent = point.place;
-    dom.mobileDescription.textContent = point.description;
-    dom.mobileImage.src = point.image;
-    dom.mobileImage.alt = `Ilustracion de ${point.place}`;
-    dom.mobileMapsLink.href = point.mapUrl;
-    dom.mobilePrev.disabled = index === 0;
-    dom.mobileNext.disabled = index === totalPoints - 1;
   }
 
   function updatePrimaryState(index, options = {}) {
@@ -491,7 +413,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     updateStoryState(index);
     updateTimelineState(index);
-    updateMobileState(point, index);
     updateRouteProgress(nextRouteProgress);
     mapController.setActivePoint(index, {
       instant: options.instantMap,
@@ -500,13 +421,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     audioController.setTrack(point);
   }
 
-  function openTimeline() {
+  function openTimeline(trigger = document.activeElement) {
+    lastTimelineTrigger = trigger instanceof HTMLElement ? trigger : null;
     dom.timelinePanel.hidden = false;
     dom.timelineBackdrop.hidden = false;
     document.body.classList.add("timeline-open");
     dom.timelineOpenButtons.forEach((button) => {
       button.setAttribute("aria-expanded", "true");
     });
+    dom.timelineClose.focus();
   }
 
   function closeTimeline() {
@@ -516,6 +439,37 @@ window.addEventListener("DOMContentLoaded", async () => {
     dom.timelineOpenButtons.forEach((button) => {
       button.setAttribute("aria-expanded", "false");
     });
+    lastTimelineTrigger?.focus();
+    lastTimelineTrigger = null;
+  }
+
+  function trapTimelineFocus(event) {
+    if (event.key !== "Tab" || dom.timelinePanel.hidden) {
+      return;
+    }
+
+    const focusable = Array.from(
+      dom.timelinePanel.querySelectorAll(TIMELINE_FOCUSABLE_SELECTOR),
+    ).filter((element) => element.offsetParent !== null);
+
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+
+    if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   function scrollToStep(index, behavior = "smooth") {
@@ -628,28 +582,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  dom.audioToggle.addEventListener("click", () => {
-    audioController.togglePlayback();
-  });
-  dom.mobileAudioToggle.addEventListener("click", () => {
-    audioController.togglePlayback();
-  });
-  dom.audioSeek.addEventListener("input", () => handleSeek(dom.audioSeek));
-  dom.mobileAudioSeek.addEventListener("input", () =>
-    handleSeek(dom.mobileAudioSeek),
-  );
-
-  dom.mobilePrev.addEventListener("click", () => {
-    handleStepSelection(Math.max(0, state.activeIndex - 1));
-  });
-  dom.mobileNext.addEventListener("click", () => {
-    handleStepSelection(Math.min(totalPoints - 1, state.activeIndex + 1));
-  });
-
   dom.timelineOpenButtons.forEach((button) => {
     button.addEventListener("click", () => {
       if (dom.timelinePanel.hidden) {
-        openTimeline();
+        openTimeline(button);
         return;
       }
 
@@ -664,7 +600,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !dom.timelinePanel.hidden) {
       closeTimeline();
+      return;
     }
+
+    trapTimelineFocus(event);
   });
 
   if ("IntersectionObserver" in window) {
