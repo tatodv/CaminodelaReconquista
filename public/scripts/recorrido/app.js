@@ -73,7 +73,7 @@ function createIntroMarkup() {
     '    <div class="story-card__copy">',
     '      <p class="story-card__kicker">Introduccion</p>',
     '      <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
-    '      <p class="story-card__description">En este recorrido seguimos los pasos de los vecinos que en 1806 decidieron unirse para recuperar su tierra tras la ocupacion inglesa. A lo largo de estos hitos repasamos como se gesto la recuperacion de la capital del Virreinato, cuyo dominio britanico duro desde el 27 de junio hasta el 12 de agosto de ese mismo ano.</p>',
+    '      <p class="story-card__description">Seis paradas para recorrer la Reconquista desde el territorio: chacras, plazas, caminos y lugares de reunion que ayudan a contar como se organizo la marcha hacia Buenos Aires.</p>',
     '      <div class="story-card__actions">',
     '        <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
     "      </div>",
@@ -101,12 +101,12 @@ function createProgressRail(activeIndex, total) {
 
 function getMicroStory(order) {
   const stories = {
-    1: ["Derrota en el campo.", "Victoria moral para la resistencia."],
-    2: ["Una chacra se volvio cuartel.", "La campana sostuvo la marcha."],
-    3: ["La sudestada cambio el plan.", "Las Conchas abrio el camino."],
-    4: ["La lluvia detuvo la columna.", "San Isidro le devolvio fuerzas."],
-    5: ["El Fondo de la Legua unio pueblos.", "La marcha tomo rumbo final."],
-    6: ["Beresford capitula.", "La memoria empieza a caminar."],
+    1: ["Perdriel termino en retirada.", "La resistencia siguio organizada."],
+    2: ["La chacra dio descanso y auxilio.", "La marcha volvio a ordenarse."],
+    3: ["El temporal cambio el desembarco.", "Las Conchas abrio la marcha."],
+    4: ["San Isidro dio abrigo.", "La columna recupero fuerzas."],
+    5: ["El Fondo de la Legua marco el rumbo.", "Buenos Aires quedaba mas cerca."],
+    6: ["El tour vuelve a San Martin.", "La rendicion fue en Buenos Aires."],
   };
 
   return stories[order] || [];
@@ -114,12 +114,12 @@ function getMicroStory(order) {
 
 function getImpactStory(order) {
   const impacts = {
-    1: "Perdriel fue el bautismo de fuego: hizo visible que el pueblo podia organizarse.",
-    2: "La Chacra de los Marquez reunio alimentos, caballos, hombres y plan de marcha.",
-    3: "La casa de Goyechea y el puerto de Las Conchas funcionaron como comando inicial.",
-    4: "San Isidro sostuvo el relevo, el descanso y la moral antes del tramo decisivo.",
-    5: "El paso por Vicente Lopez materializo la union de los pueblos del norte.",
-    6: "La capitulacion del 12 de agosto volvio realidad la Reconquista de Buenos Aires.",
+    1: "Aunque fue una derrota tactica, Perdriel dejo hombres y recursos listos para volver a sumarse.",
+    2: "Sin comida, caballos y descanso, la marcha no podia sostenerse.",
+    3: "El puerto de Las Conchas permitio bajar tropas, ordenar pertrechos y buscar apoyo local.",
+    4: "San Isidro fue una escala para recuperar fuerzas antes de seguir hacia Buenos Aires.",
+    5: "El antiguo camino rural marco la aproximacion desde los pagos del norte.",
+    6: "La Plaza Central cierra el recorrido; la rendicion ocurrio en Buenos Aires.",
   };
 
   return impacts[order] || "";
@@ -163,13 +163,13 @@ function createStoryMarkup(point, index, total) {
     createMicroStoryMarkup(microStory),
     impactStory ? [
       '      <div class="story-card__block story-card__block--impact">',
-      '        <p class="story-card__label">Por qu\u00e9 importa</p>',
+      '        <p class="story-card__label">En el recorrido</p>',
       `        <p class="story-card__impact">${escapeHtml(impactStory)}</p>`,
       "      </div>",
     ].join("") : "",
     '      <div class="story-card__actions">',
-    `        <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar explicacion del punto ${point.order}</button>`,
-    `        <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Como llegar</a>`,
+    `        <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar punto ${point.order}</button>`,
+    `        <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Ubicacion</a>`,
     "      </div>",
     "    </div>",
     '    <figure class="story-card__figure">',
@@ -279,7 +279,9 @@ window.addEventListener("DOMContentLoaded", async () => {
       .map((point, index) => createStoryMarkup(point, index, totalPoints))
       .join(""),
   ].join("");
-  dom.overviewList.innerHTML = createListMarkup(data.points, "overview-card");
+  if (dom.overviewList) {
+    dom.overviewList.innerHTML = createListMarkup(data.points, "overview-card");
+  }
   dom.timelineList.innerHTML = createListMarkup(data.points, "timeline-item");
   document.body.dataset.activeIndex = "intro";
 
@@ -289,7 +291,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   );
   chapterButtons.forEach((button) => {
     const point = data.points[Number(button.dataset.audioPoint)];
-    button.dataset.defaultLabel = `Escuchar explicacion del punto ${point.order}`;
+    button.dataset.defaultLabel = `Escuchar punto ${point.order}`;
     button.dataset.available = String(point.audio.available);
   });
 
@@ -571,7 +573,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  [dom.overviewList, dom.timelineList].forEach((container) => {
+  [dom.overviewList, dom.timelineList].filter(Boolean).forEach((container) => {
     container.addEventListener("click", (event) => {
       const target = event.target.closest("[data-jump-index]");
       if (!target) {

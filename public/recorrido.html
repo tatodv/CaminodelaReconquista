@@ -8,14 +8,26 @@
     <meta http-equiv="Expires" content="0">
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' 'sha256-rcdORQxU/aGQWuLrI3ZDgIuUJ1T1halkel8b52AmqLU='; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     >
-    <title>Camino de la Reconquista | Recorrido interactivo</title>
+    <title>Camino de la Reconquista | Viv&iacute; la historia donde sucedi&oacute;</title>
     <meta
       name="description"
-      content="Experiencia scrollytelling del Camino de la Reconquista: mapa animado, narrativa por hitos y audio contextual para recorrer la historia."
+      content="Recorrido hist&oacute;rico y cultural por seis hitos de la Reconquista de Buenos Aires de 1806 en el antiguo Pago de la Costa y de las Conchas."
     >
     <meta name="theme-color" content="#111111">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_AR">
+    <meta property="og:site_name" content="Camino de la Reconquista">
+    <meta property="og:title" content="Camino de la Reconquista | Viv&iacute; la historia donde sucedi&oacute;">
+    <meta property="og:description" content="Un recorrido hist&oacute;rico y cultural por seis hitos de la Reconquista de Buenos Aires de 1806 en el antiguo Pago de la Costa y de las Conchas.">
+    <meta property="og:image" content="/material/muestra_landing_CdlR-03.avif">
+    <meta property="og:image:alt" content="Camino de la Reconquista, recorrido hist&oacute;rico-cultural por los hitos de 1806.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Camino de la Reconquista | Viv&iacute; la historia donde sucedi&oacute;">
+    <meta name="twitter:description" content="Recorr&eacute; seis escenarios vinculados a la Reconquista de Buenos Aires de 1806 en el antiguo Pago de la Costa y de las Conchas.">
+    <meta name="twitter:image" content="/material/muestra_landing_CdlR-03.avif">
+    <meta name="twitter:image:alt" content="Camino de la Reconquista, recorrido hist&oacute;rico-cultural por los hitos de 1806.">
     <link rel="icon" href="/material/logo-r-cuerpo.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +46,222 @@
       fetchpriority="high"
     >
     <link rel="preload" as="image" href="/material/mapa_sinpuntos.webp" type="image/webp">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TouristTrip",
+  "name": "Camino de la Reconquista",
+  "alternateName": "Camino de la Reconquista de Buenos Aires 1806",
+  "description": "Recorrido historico y cultural por seis hitos vinculados a la Reconquista de Buenos Aires de 1806 en el antiguo Pago de la Costa y de las Conchas.",
+  "inLanguage": "es-AR",
+  "touristType": [
+    "Turismo cultural",
+    "Turismo historico",
+    "Patrimonio local",
+    "Educacion"
+  ],
+  "organizer": {
+    "@type": "GovernmentOrganization",
+    "name": "Municipalidad de General San Martin",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "General San Martin",
+      "addressRegion": "Buenos Aires",
+      "addressCountry": "AR"
+    }
+  },
+  "about": {
+    "@type": "HistoricalEvent",
+    "name": "Reconquista de Buenos Aires",
+    "startDate": "1806-08-04",
+    "endDate": "1806-08-12",
+    "location": {
+      "@type": "Place",
+      "name": "Buenos Aires y antiguo Pago de la Costa y de las Conchas",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "Buenos Aires",
+        "addressCountry": "AR"
+      }
+    },
+    "description": "Proceso de desembarco, organizacion, marcha y recuperacion de Buenos Aires durante la primera invasion inglesa de 1806."
+  },
+  "itinerary": {
+    "@type": "ItemList",
+    "name": "Hitos del Camino de la Reconquista",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@type": "Place",
+          "name": "Los Caserios de Perdriel",
+          "alternateName": "Museo Jose Hernandez - Chacra Pueyrredon",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "San Martin",
+            "addressRegion": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -34.5621147,
+            "longitude": -58.572071
+          },
+          "description": "Sitio asociado al combate de Perdriel del 1 de agosto de 1806, donde fuerzas reunidas por Juan Martin de Pueyrredon enfrentaron a tropas britanicas.",
+          "subjectOf": {
+            "@type": "HistoricalEvent",
+            "name": "Combate de Perdriel",
+            "startDate": "1806-08-01",
+            "endDate": "1806-08-01",
+            "description": "Fuerzas criollas y de la campana enfrentaron a una columna britanica. La derrota tactica tuvo valor simbolico y organizativo para la resistencia."
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "item": {
+          "@type": "Place",
+          "name": "La Chacra de la familia Marquez",
+          "alternateName": "Chacra de los Marquez",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "San Isidro",
+            "addressRegion": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -34.5138382,
+            "longitude": -58.5560961
+          },
+          "description": "Lugar de reunion, descanso y auxilio para tropas, milicias y vecinos antes de la marcha hacia Buenos Aires.",
+          "subjectOf": {
+            "@type": "HistoricalEvent",
+            "name": "Reagrupamiento en la Chacra de los Marquez",
+            "startDate": "1806-08-05",
+            "endDate": "1806-08-09",
+            "description": "La chacra funciono como base de acampe, apoyo logistico y concentracion de fuerzas para continuar hacia Buenos Aires por el Camino del Fondo de la Legua."
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@type": "Place",
+          "name": "El Desembarco en Las Conchas",
+          "alternateName": "Plaza D. M. Cazon y Museo de la Reconquista",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Tigre",
+            "addressRegion": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -34.4172205,
+            "longitude": -58.587582
+          },
+          "description": "Sitio asociado al desembarco de Santiago de Liniers en el Puerto de Las Conchas el 4 de agosto de 1806.",
+          "subjectOf": {
+            "@type": "HistoricalEvent",
+            "name": "Desembarco de Liniers en Las Conchas",
+            "startDate": "1806-08-04",
+            "endDate": "1806-08-04",
+            "description": "Santiago de Liniers desembarco en el Puerto de Las Conchas y organizo desde alli el avance hacia Buenos Aires con apoyo local."
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "item": {
+          "@type": "Place",
+          "name": "La Plaza de San Isidro",
+          "alternateName": "Catedral y Quinta Los Ombues",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "San Isidro",
+            "addressRegion": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -34.4671456,
+            "longitude": -58.5091162
+          },
+          "description": "Anclaje patrimonial para narrar el paso, descanso y apoyo vecinal recibido por las tropas en San Isidro.",
+          "subjectOf": {
+            "@type": "HistoricalEvent",
+            "name": "Paso por San Isidro",
+            "startDate": "1806-08-05",
+            "endDate": "1806-08-09",
+            "description": "San Isidro funciono como escala de descanso, abastecimiento y reorganizacion antes de continuar hacia Buenos Aires."
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "item": {
+          "@type": "Place",
+          "name": "El avance por Vicente Lopez",
+          "alternateName": "Plaza Adolfo Vienni",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Vicente Lopez",
+            "addressRegion": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -34.5460215,
+            "longitude": -58.4999754
+          },
+          "description": "Punto asociado al paso por el antiguo Camino del Fondo de la Legua rumbo a Buenos Aires.",
+          "subjectOf": {
+            "@type": "HistoricalEvent",
+            "name": "Marcha por el Camino del Fondo de la Legua",
+            "startDate": "1806-08-09",
+            "endDate": "1806-08-09",
+            "description": "La columna reconquistadora avanzo por sectores del actual Vicente Lopez hacia Chacarita, Miserere, Retiro y Buenos Aires."
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "item": {
+          "@type": "Place",
+          "name": "La Victoria Final",
+          "alternateName": "Plaza Central de San Martin",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "San Martin",
+            "addressRegion": "Buenos Aires",
+            "addressCountry": "AR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -34.5770261,
+            "longitude": -58.5376772
+          },
+          "description": "Cierre operativo e institucional del recorrido turistico realizado por la Municipalidad de San Martin. La capitulacion de Beresford ocurrio en Buenos Aires, no en esta plaza.",
+          "subjectOf": {
+            "@type": "HistoricalEvent",
+            "name": "Capitulacion de Beresford y cierre institucional del recorrido",
+            "startDate": "1806-08-12",
+            "endDate": "1806-08-12",
+            "description": "El recorrido turistico cierra en Plaza Central de San Martin por criterio operativo e institucional. William Carr Beresford capitulo ante Santiago de Liniers el 12 de agosto de 1806 en Buenos Aires, en el entorno del Fuerte y la antigua Plaza Mayor."
+          }
+        }
+      }
+    ]
+  }
+}
+    </script>
     <script src="/scripts/recorrido/bootstrap.js"></script>
     <script type="module" src="/scripts/recorrido/app.js" defer></script>
   </head>
@@ -51,10 +279,9 @@
 
       <nav class="site-nav" aria-label="Principal">
         <a class="site-nav__link is-active" aria-current="page" href="#experience-shell">El recorrido</a>
-        <a class="site-nav__link" href="#overview">Historia</a>
+        <a class="site-nav__link" href="#contexto-1806">Historia</a>
         <a class="site-nav__link" href="#protagonistas">Personajes</a>
         <a class="site-nav__link" href="#otros-escenarios">Escenarios</a>
-        <a class="site-nav__link" href="#closing">Podcast</a>
       </nav>
 
       <div class="site-bar__actions">
@@ -120,10 +347,38 @@
         </div>
       </section>
 
-      <section class="narrative-passage" aria-label="Introducci&oacute;n narrativa">
+      <section class="narrative-passage" aria-label="Introducci&oacute;n del recorrido">
         <div class="narrative-passage__inner">
-          <p class="narrative-passage__line">El Camino de la Reconquista sigue una decisi&oacute;n colectiva:</p>
-          <p class="narrative-passage__line"><strong>recuperar la ciudad, paso a paso.</strong></p>
+          <p class="narrative-passage__eyebrow">El recorrido</p>
+          <p class="narrative-passage__line">Seis paradas para recorrer la Reconquista desde el territorio.</p>
+          <p class="narrative-passage__detail">Chacras, plazas, caminos y lugares de reuni&oacute;n ayudan a contar c&oacute;mo se organiz&oacute; la marcha hacia Buenos Aires.</p>
+        </div>
+      </section>
+
+      <section class="context-brief" id="contexto-1806" aria-labelledby="context-brief-title">
+        <div class="context-brief__inner">
+          <div class="context-brief__header">
+            <p class="context-brief__eyebrow">Antes de empezar</p>
+            <h2 id="context-brief-title">La Reconquista, en pocas fechas</h2>
+          </div>
+
+          <div class="context-brief__body">
+            <p>
+              En 1806, Buenos Aires qued&oacute; bajo ocupaci&oacute;n brit&aacute;nica. La respuesta no sali&oacute; de un solo lugar: se arm&oacute; con vecinos, milicias, chacareros y autoridades locales en distintos puntos del antiguo Pago de la Costa y de las Conchas.
+            </p>
+            <p>
+              Este Camino pone el foco en esos lugares: donde se reunieron fuerzas, circularon noticias, se prest&oacute; auxilio y se sostuvo la marcha que culmin&oacute; con la recuperaci&oacute;n de Buenos Aires el 12 de agosto de 1806.
+            </p>
+
+            <ol class="context-timeline" aria-label="L&iacute;nea de tiempo compacta">
+              <li><time>1805</time><span>Gran Breta&ntilde;a consolida su poder naval tras Trafalgar.</span></li>
+              <li><time>Junio de 1806</time><span>Buenos Aires cae bajo ocupaci&oacute;n brit&aacute;nica.</span></li>
+              <li><time>1 de agosto</time><span>Combate de Perdriel.</span></li>
+              <li><time>4 de agosto</time><span>Desembarco de Liniers en Las Conchas.</span></li>
+              <li><time>5 al 9 de agosto</time><span>Reorganizaci&oacute;n en San Isidro y Chacra de los M&aacute;rquez.</span></li>
+              <li><time>12 de agosto</time><span>Reconquista de Buenos Aires.</span></li>
+            </ol>
+          </div>
         </div>
       </section>
 
@@ -145,14 +400,14 @@
             <div id="map" class="map-canvas" aria-label="Mapa interactivo del Camino de la Reconquista"></div>
             <div class="map-stage__wash" aria-hidden="true"></div>
             <div class="map-stage__status" id="map-status" data-state="loading">
-              Cargando mapa hist&oacute;rico...
+              Cargando mapa del recorrido...
             </div>
           </div>
 
           <div class="map-stage__overlay map-stage__overlay--bottom">
             <div class="map-panel">
               <div class="map-panel__intro">
-                <span class="map-panel__eyebrow">Recorrido hist&oacute;rico</span>
+                <span class="map-panel__eyebrow">Mapa del tour</span>
                 <h2 id="active-title">San Mart&iacute;n, el punto de partida</h2>
                 <p id="active-place">Museo Hist&oacute;rico Jos&eacute; Hern&aacute;ndez - Chacra Pueyrred&oacute;n</p>
               </div>
@@ -160,7 +415,7 @@
               <div class="route-meter">
                 <div class="route-meter__labels">
                   <span id="progress-status">Inicio del recorrido</span>
-                  <span>1806 &middot; Norte del R&iacute;o de la Plata</span>
+                  <span>6 paradas</span>
                 </div>
                 <div class="route-meter__track">
                   <div class="route-meter__fill" id="route-progress-fill"></div>
@@ -184,7 +439,7 @@
                   aria-controls="timeline-panel"
                   aria-expanded="false"
                 >
-                  L&iacute;nea de tiempo
+                  Seis puntos
                 </button>
               </div>
             </div>
@@ -196,20 +451,20 @@
 
       <section class="other-sites" id="otros-escenarios">
         <div class="other-sites__header">
-          <p class="overview__eyebrow">Contexto adicional</p>
-          <h2>Otros escenarios vinculados</h2>
+          <p class="overview__eyebrow">Fuera del circuito</p>
+          <h2>Otros lugares de la Reconquista</h2>
           <p>
-            Algunos lugares no integran los seis hitos principales, pero ayudan a entender la organizaci&oacute;n, el avance y el desenlace de la Reconquista.
+            Quedan fuera de las seis paradas principales, pero ayudan a ubicar la organizaci&oacute;n, el avance y el desenlace.
           </p>
         </div>
 
         <ul class="other-sites__list" aria-label="Otros lugares vinculados a la Reconquista">
-          <li><strong>Luj&aacute;n</strong><span>Pueyrred&oacute;n sublev&oacute; la campa&ntilde;a y concentr&oacute; gauchos que combatieron en Perdriel.</span></li>
-          <li><strong>Montevideo</strong><span>Liniers y Ruiz Huidobro organizaron la flota y las tropas para expulsar a los brit&aacute;nicos.</span></li>
-          <li><strong>Chacarita</strong><span>Alto final para descansar, mejorar armas, celebrar misa de campa&ntilde;a y preparar el combate.</span></li>
-          <li><strong>Miserere</strong><span>Antesala de la victoria: all&iacute; se reunieron fuerzas militares y vecinos.</span></li>
-          <li><strong>Retiro</strong><span>Combate decisivo del 11 de agosto de 1806 en el avance sobre Buenos Aires.</span></li>
-          <li><strong>Plaza de Mayo</strong><span>Rendici&oacute;n de Beresford ante Santiago de Liniers el 12 de agosto de 1806.</span></li>
+          <li><strong>Montevideo</strong><span>Desde all&iacute;, Santiago de Liniers y Pascual Ruiz Huidobro organizaron la expedici&oacute;n para recuperar Buenos Aires. La Banda Oriental aport&oacute; tropas, embarcaciones, artiller&iacute;a y una base decisiva para la Reconquista.</span></li>
+          <li><strong>Luj&aacute;n</strong><span>Juan Mart&iacute;n de Pueyrred&oacute;n sublev&oacute; la campa&ntilde;a y reuni&oacute; hombres, caballos y recursos para enfrentar a las fuerzas brit&aacute;nicas. Muchos de esos paisanos combatir&iacute;an en Perdriel y luego volver&iacute;an a sumarse a la marcha reconquistadora.</span></li>
+          <li><strong>Chacarita</strong><span>El 9 de agosto de 1806, tras avanzar por el Camino del Fondo de la Legua, las tropas hicieron alto en la Chacarita de los Colegiales. All&iacute; descansaron, reorganizaron fuerzas y prepararon el ingreso final hacia la ciudad ocupada.</span></li>
+          <li><strong>Corrales de Miserere</strong><span>En el entorno de los actuales Once y Plaza Miserere, las fuerzas reconquistadoras reunieron m&aacute;s tropas y evaluaron el avance hacia el centro de Buenos Aires. Desde all&iacute; se decidi&oacute; continuar hacia Retiro y el Fuerte.</span></li>
+          <li><strong>Retiro</strong><span>El 11 de agosto de 1806, Retiro fue escenario de combates decisivos contra las posiciones brit&aacute;nicas. La victoria abri&oacute; el camino para el asalto final sobre el centro de Buenos Aires.</span></li>
+          <li><strong>Plaza de Mayo</strong><span>El 12 de agosto de 1806, en el entorno de la antigua Plaza Mayor y el Fuerte de Buenos Aires, Beresford acept&oacute; la rendici&oacute;n ante las fuerzas de la Reconquista. All&iacute; culmin&oacute; la recuperaci&oacute;n de la ciudad.</span></li>
         </ul>
       </section>
 
@@ -218,7 +473,7 @@
           <p class="overview__eyebrow">Protagonistas</p>
           <h2 id="protagonists-title">Los rostros de la Reconquista</h2>
           <p>
-            La historia tambi&eacute;n se entiende por sus mandos: quienes organizaron la defensa del R&iacute;o de la Plata y quienes condujeron la ofensiva brit&aacute;nica.
+            Algunos nombres permiten seguir la organizaci&oacute;n de la defensa y la ofensiva brit&aacute;nica sobre el R&iacute;o de la Plata.
           </p>
         </div>
 
@@ -279,62 +534,6 @@
         </div>
       </section>
 
-      <section class="overview" id="overview">
-        <div class="overview__header">
-          <p class="overview__eyebrow">Lectura recomendada</p>
-          <h2>L&iacute;nea de tiempo completa para volver sobre cada parada.</h2>
-          <p>
-            Recorre de manera visual y cronologica cada uno de los hitos del recorrido, desde 1806 hasta la Reconquista de Buenos Aires.
-          </p>
-        </div>
-
-        <div class="overview__grid" id="overview-list"></div>
-      </section>
-
-      <section class="closing" id="closing">
-        <div class="closing__intro">
-          <p class="closing__eyebrow">Cierre</p>
-          <h2>El Camino continu&oacute;</h2>
-          <p>
-            El Camino de la Reconquista es el testimonio vivo de un pueblo que forj&oacute; su propio destino. Cada parada conserva una marca del avance, la espera y la victoria que cambi&oacute; la memoria del R&iacute;o de la Plata.
-          </p>
-
-          <div class="closing__actions">
-            <a class="hero-button hero-button--primary" href="#experience-shell">
-              Volver al recorrido
-            </a>
-            <button class="hero-button hero-button--ghost" type="button" disabled aria-disabled="true">
-              Podcast pronto
-            </button>
-          </div>
-        </div>
-
-        <figure class="closing__panorama">
-          <picture>
-            <source
-              type="image/avif"
-              srcset="/material/muestra_landing_CdlR-03-900.avif 900w, /material/muestra_landing_CdlR-03.avif 1600w"
-              sizes="(max-width: 899px) 92vw, 50vw"
-            >
-            <img src="/material/muestra_landing_CdlR-03.jpg" alt="Escena historica panoramica del Camino de la Reconquista" width="1600" height="900" loading="lazy" decoding="async">
-          </picture>
-        </figure>
-
-        <article class="podcast-card">
-          <p class="podcast-card__eyebrow">Podcast completo</p>
-          <h3>Camino de la Reconquista</h3>
-          <p>
-            Un viaje sonoro por los lugares, las batallas y los protagonistas que hicieron posible cada tramo del recorrido.
-          </p>
-          <div class="podcast-card__meta">
-            <span>6 episodios</span>
-            <span>24:19 min</span>
-          </div>
-          <button class="podcast-card__button" type="button" disabled aria-disabled="true">
-            Disponible pronto
-          </button>
-        </article>
-      </section>
     </main>
 
     <footer class="site-footer">
@@ -347,10 +546,9 @@
 
       <nav class="site-footer__nav" aria-label="Pie de pagina">
         <a href="#experience-shell">El recorrido</a>
-        <a href="#overview">Historia</a>
+        <a href="#contexto-1806">Historia</a>
         <a href="#protagonistas">Personajes</a>
         <a href="#otros-escenarios">Escenarios</a>
-        <a href="#closing">Podcast</a>
       </nav>
 
       <p class="site-footer__meta">Municipalidad de San Mart&iacute;n | Educaci&oacute;n | Cultura | Turismo</p>

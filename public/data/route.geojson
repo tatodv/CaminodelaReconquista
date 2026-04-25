@@ -6,8 +6,8 @@
       "properties": {
         "id": "camino-reconquista-route",
         "name": "Camino de la Reconquista",
-        "source": "Generated from uploaded KMZ points in sequence order",
-        "note": "The uploaded KMZ contained 6 point placemarks and no LineString geometry. This route is a fallback polyline connecting the points in order. Replace it with the real route GeoJSON if available."
+        "source": "Touristic narrative line connecting the 6 stops in sequence order",
+        "note": "This LineString supports the Camino de la Reconquista tourist experience as a narrative route between stops. It is not presented as an exact historical trace of the 1806 military campaign."
       },
       "geometry": {
         "type": "LineString",
