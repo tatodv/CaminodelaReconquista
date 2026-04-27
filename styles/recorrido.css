@@ -450,6 +450,7 @@ main,
 }
 
 .context-brief {
+  scroll-margin-top: var(--header-height);
   padding: clamp(2.4rem, 4.4vw, 4rem) var(--page-pad);
   border-bottom: 1px solid rgba(36, 33, 31, 0.1);
   background:
@@ -534,6 +535,27 @@ main,
   color: var(--ink);
   font-size: 0.96rem;
   line-height: 1.42;
+}
+
+.story-strip {
+  width: 100%;
+  padding: 0;
+  border-bottom: 1px solid rgba(36, 33, 31, 0.1);
+  background:
+    linear-gradient(180deg, rgba(232, 222, 210, 0.34), rgba(255, 248, 239, 0.34)),
+    var(--paper);
+  overflow: hidden;
+}
+
+.story-strip img {
+  display: block;
+  width: 100%;
+  height: clamp(132px, 17vw, 230px);
+  object-fit: cover;
+  object-position: center 52%;
+  border-top: 1px solid rgba(36, 33, 31, 0.12);
+  border-bottom: 1px solid rgba(36, 33, 31, 0.12);
+  filter: sepia(0.08) contrast(0.98) saturate(0.84);
 }
 
 .hero-footer {
@@ -1010,14 +1032,14 @@ main,
   z-index: 1;
   background:
     radial-gradient(circle at 29% 26%, rgba(255, 245, 231, 0.22), transparent 23rem),
-    linear-gradient(90deg, #d0c8bd 0%, #bab3aa 55%, #596368 100%);
+    linear-gradient(90deg, #d0c8bd 0%, #bab3aa 55%, #8a9498 100%);
 }
 
 .map-stage__wash {
   z-index: 2;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(232, 224, 212, 0.18), rgba(10, 12, 12, 0.24)),
+    linear-gradient(90deg, rgba(232, 224, 212, 0.18), rgba(10, 12, 12, 0.10)),
     radial-gradient(circle at 68% 42%, rgba(232, 111, 45, 0.09), transparent 17rem);
 }
 
@@ -1911,6 +1933,7 @@ input[type="range"] {
   .site-nav__link {
     font-size: 0.72rem;
   }
+
 }
 
 @media (max-width: 899px) {
@@ -2053,6 +2076,14 @@ input[type="range"] {
 
   .context-timeline span {
     font-size: 0.96rem;
+  }
+
+  .story-strip {
+    padding: 0;
+  }
+
+  .story-strip img {
+    height: clamp(118px, 36vw, 150px);
   }
 
   .experience-shell {
@@ -2271,6 +2302,11 @@ input[type="range"] {
 }
 
 @media (min-width: 900px) {
+  .story-strip {
+    width: min(1120px, calc(100% - (var(--page-pad) * 2)));
+    margin: 0 auto;
+  }
+
   .story-step:not(.story-step--intro) > .story-step__marker {
     display: none;
   }

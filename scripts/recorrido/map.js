@@ -139,7 +139,7 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     : FULL_MAP_VIEWBOX;
   const preserveAspectRatio = options.staticProgress === true
     ? "xMidYMid meet"
-    : "xMinYMid slice";
+    : "xMidYMid slice";
   const dashAttrs =
     options.staticProgress === true
       ? ` stroke-dasharray="1" stroke-dashoffset="${(1 - progress).toFixed(3)}"`
@@ -162,9 +162,9 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     "        </radialGradient>",
     `        <linearGradient id="${idPrefix}-mapDepth" x1="0%" y1="0%" x2="100%" y2="0%">`,
     '          <stop offset="0%" stop-color="#f3eadf" stop-opacity="0.08"></stop>',
-    '          <stop offset="58%" stop-color="#918a80" stop-opacity="0.16"></stop>',
-    '          <stop offset="77%" stop-color="#1f2829" stop-opacity="0.38"></stop>',
-    '          <stop offset="100%" stop-color="#141a1b" stop-opacity="0.78"></stop>',
+    '          <stop offset="58%" stop-color="#918a80" stop-opacity="0.10"></stop>',
+    '          <stop offset="77%" stop-color="#1f2829" stop-opacity="0.18"></stop>',
+    '          <stop offset="100%" stop-color="#141a1b" stop-opacity="0.36"></stop>',
     "        </linearGradient>",
     "      </defs>",
     '      <image class="story-map__base-image" href="/material/mapa_sinpuntos.webp" x="0" y="0" width="1920" height="1080" preserveAspectRatio="xMidYMid slice"></image>',
