@@ -3,7 +3,7 @@ const VIEWBOX = {
   height: 1080,
 };
 
-const FULL_MAP_VIEWBOX = `0 0 ${VIEWBOX.width} ${VIEWBOX.height}`;
+const FULL_MAP_VIEWBOX = `230 0 ${VIEWBOX.width - 230} ${VIEWBOX.height}`;
 const STATIC_MAP_VIEWBOX = "320 36 780 980";
 
 const MAP_ANCHORS = new Map([
@@ -139,7 +139,7 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     : FULL_MAP_VIEWBOX;
   const preserveAspectRatio = options.staticProgress === true
     ? "xMidYMid meet"
-    : "xMidYMid slice";
+    : "xMinYMid slice";
   const dashAttrs =
     options.staticProgress === true
       ? ` stroke-dasharray="1" stroke-dashoffset="${(1 - progress).toFixed(3)}"`
