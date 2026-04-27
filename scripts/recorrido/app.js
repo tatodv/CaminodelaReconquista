@@ -106,7 +106,7 @@ function getMicroStory(order) {
     3: ["El temporal cambio el desembarco.", "Las Conchas abrio la marcha."],
     4: ["San Isidro dio abrigo.", "La columna recupero fuerzas."],
     5: ["El Fondo de la Legua marco el rumbo.", "Buenos Aires quedaba mas cerca."],
-    6: ["El tour vuelve a San Martin.", "La rendicion fue en Buenos Aires."],
+    6: ["El recorrido vuelve a San Martin.", "La rendicion fue en Buenos Aires."],
   };
 
   return stories[order] || [];
