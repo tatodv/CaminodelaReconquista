@@ -269,8 +269,9 @@ export async function createMapController({
     const xPercent = (point.x / VIEWBOX.width) * 100;
     const yPercent = (point.y / VIEWBOX.height) * 100;
     const targetX = compact ? 42 : 34;
+    const targetY = compact ? 41 : 50;
     const pullX = clamp(targetX - xPercent, -12, 2.5);
-    const pullY = clamp(50 - yPercent, -4.4, 4.4);
+    const pullY = clamp(targetY - yPercent, compact ? -16 : -4.4, compact ? 9 : 4.4);
 
     viewport.style.transitionDuration = instant ? "0ms" : "900ms";
     viewport.style.transformOrigin = `${xPercent}% ${yPercent}%`;
