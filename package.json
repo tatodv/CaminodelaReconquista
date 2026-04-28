@@ -5,7 +5,9 @@
   "directories": {
     "doc": "docs"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "node scripts/build-static.mjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
