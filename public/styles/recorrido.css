@@ -1218,9 +1218,9 @@ main,
 }
 
 .story-map__route-glow {
-  stroke: rgba(232, 111, 45, 0.76);
-  stroke-width: 24;
-  opacity: 0.75;
+  stroke: rgba(232, 111, 45, 0.55);
+  stroke-width: 22;
+  opacity: 0.6;
 }
 
 .story-map__route-progress {
@@ -2340,5 +2340,14 @@ input[type="range"] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile-first perf: drop expensive backdrop-filter on small viewports */
+@media (max-width: 899px) {
+  .site-bar,
+  .chapter-chip,
+  .timeline-backdrop {
+    backdrop-filter: none;
   }
 }
