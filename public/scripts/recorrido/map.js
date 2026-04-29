@@ -123,6 +123,10 @@ function getCompletedIndex(progress, total) {
     return 0;
   }
 
+  if (progress <= 0) {
+    return -1;
+  }
+
   return Math.floor(clamp(progress, 0, 1) * (total - 1));
 }
 
@@ -317,7 +321,12 @@ export async function createMapController({
     applyCamera(activeIndex, options.instant);
   }
 
-  function resetOverview() {
+  function resetOverview(options = {}) {
+    if (options.clearActive) {
+      activeIndex = -1;
+      updatePointState();
+    }
+
     userScale = 1;
     viewport.style.transitionDuration = "900ms";
     viewport.style.transformOrigin = "50% 50%";

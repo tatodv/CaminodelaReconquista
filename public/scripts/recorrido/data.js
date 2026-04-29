@@ -34,11 +34,19 @@ function stripPublicPrefix(path) {
   return String(path || "").replace(/^\/public\//, "/");
 }
 
+function getIllustrationVariant(name) {
+  return {
+    avif: `/images/points/${name}.avif`,
+    webp: `/images/points/${name}.webp`,
+    jpg: `/images/points/${name}.jpg`,
+  };
+}
+
 function getPremiumIllustration(order) {
   return {
-    src: `/images/points/punto${order}.avif`,
-    src560: `/images/points/punto${order}-560.avif`,
-    src880: `/images/points/punto${order}-880.avif`,
+    small: getIllustrationVariant(`punto${order}-560`),
+    medium: getIllustrationVariant(`punto${order}-880`),
+    large: getIllustrationVariant(`punto${order}`),
   };
 }
 
@@ -82,8 +90,9 @@ function normalizePoint(feature, podcastIndex) {
     municipality: properties.municipality || "",
     description:
       properties.description?.trim() || "Texto curatorial pendiente de carga.",
-    image: getPremiumIllustration(order).src,
+    image: getPremiumIllustration(order).large.avif,
     imageSet: getPremiumIllustration(order),
+    imageAlt: properties.imageAlt?.trim() || `Ilustracion de ${properties.place || properties.title || `Punto ${order}`}`,
     coordinates,
     mapUrl: `https://www.google.com/maps/search/?api=1&query=${coordinates[1]},${coordinates[0]}`,
     audio: {

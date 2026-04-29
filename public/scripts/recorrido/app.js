@@ -73,7 +73,7 @@ function createIntroMarkup() {
     '    <div class="story-card__copy">',
     '      <p class="story-card__kicker">Introduccion</p>',
     '      <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
-    '      <p class="story-card__description">Seis paradas para recorrer la Reconquista desde el territorio: chacras, plazas, caminos y lugares de reunion que ayudan a contar como se organizo la marcha hacia Buenos Aires.</p>',
+    '      <p class="story-card__description">Seis paradas para recorrer la Reconquista desde el territorio. El orden propone una lectura territorial del Camino y se acompana con una cronologia de referencia para ubicar cada episodio.</p>',
     '      <div class="story-card__actions">',
     '        <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
     "      </div>",
@@ -83,19 +83,21 @@ function createIntroMarkup() {
   ].join("");
 }
 
-function createProgressRail(activeIndex, total) {
+function createStoryNavMarkup(points) {
   return [
-    '<div class="story-step__rail" aria-hidden="true">',
-    ...Array.from({ length: total }, (_, index) => {
-      const classes = [
-        "story-step__rail-dot",
-        index === activeIndex ? "is-active" : "",
-        index < activeIndex ? "is-past" : "",
-      ].filter(Boolean).join(" ");
-
-      return `<span class="${classes}">${index + 1}</span>`;
+    '<nav class="story-nav" aria-label="Navegacion entre puntos del recorrido">',
+    '  <ol class="story-nav__list">',
+    ...points.map((point, index) => {
+      return [
+        '    <li class="story-nav__item">',
+        `      <button class="story-nav__button" type="button" data-jump-index="${index}" aria-label="Ir al punto ${escapeHtml(point.order)}: ${escapeHtml(point.title)}">`,
+        `        <span aria-hidden="true">${point.order}</span>`,
+        "      </button>",
+        "    </li>",
+      ].join("");
     }),
-    "</div>",
+    "  </ol>",
+    "</nav>",
   ].join("");
 }
 
@@ -137,14 +139,25 @@ function createMicroStoryMarkup(lines) {
   ].join("");
 }
 
+function createStoryPictureMarkup(point, index) {
+  const sizes = "(max-width: 899px) 92vw, 44vw";
+  const imageSet = point.imageSet;
+
+  return [
+    "<picture>",
+    `  <source srcset="${escapeHtml(imageSet.small.avif)} 560w, ${escapeHtml(imageSet.medium.avif)} 880w, ${escapeHtml(imageSet.large.avif)} 1200w" sizes="${sizes}" type="image/avif">`,
+    `  <source srcset="${escapeHtml(imageSet.small.webp)} 560w, ${escapeHtml(imageSet.medium.webp)} 880w, ${escapeHtml(imageSet.large.webp)} 1200w" sizes="${sizes}" type="image/webp">`,
+    `  <img src="${escapeHtml(imageSet.medium.jpg)}" srcset="${escapeHtml(imageSet.small.jpg)} 560w, ${escapeHtml(imageSet.medium.jpg)} 880w, ${escapeHtml(imageSet.large.jpg)} 1200w" sizes="${sizes}" alt="${escapeHtml(point.imageAlt)}" width="1200" height="800" loading="${index === 0 ? "eager" : "lazy"}"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">`,
+    "</picture>",
+  ].join("");
+}
+
 function createStoryMarkup(point, index, total) {
   const microStory = getMicroStory(point.order);
   const impactStory = getImpactStory(point.order);
 
   return [
     `<article class="story-step" id="step-${point.order}" data-index="${index}" aria-labelledby="story-title-${point.id}">`,
-    `  <span class="story-step__marker" aria-hidden="true"><span>${point.order}</span></span>`,
-    `  ${createProgressRail(index, total)}`,
     '  <div class="story-card">',
     '    <div class="story-card__copy">',
     '      <div class="story-card__topline">',
@@ -173,7 +186,7 @@ function createStoryMarkup(point, index, total) {
     "      </div>",
     "    </div>",
     '    <figure class="story-card__figure">',
-    `      <img src="${escapeHtml(point.imageSet.src880)}" srcset="${escapeHtml(point.imageSet.src560)} 560w, ${escapeHtml(point.imageSet.src880)} 880w, ${escapeHtml(point.imageSet.src)} 1200w" sizes="(max-width: 899px) 92vw, 44vw" alt="Ilustracion de ${escapeHtml(point.place)}" width="1200" height="800" loading="${index === 0 ? "eager" : "lazy"}"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">`,
+    `      ${createStoryPictureMarkup(point, index)}`,
     "    </figure>",
     "  </div>",
     "</article>",
@@ -274,6 +287,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const totalPoints = data.points.length;
 
   dom.storySections.innerHTML = [
+    createStoryNavMarkup(data.points),
     createIntroMarkup(),
     data.points
       .map((point, index) => createStoryMarkup(point, index, totalPoints))
@@ -371,7 +385,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     document.body.dataset.activeIndex = "intro";
 
     dom.storySections.querySelectorAll(".story-step").forEach((step) => {
-      step.classList.toggle("is-active", step.classList.contains("story-step--intro"));
+      const isIntroStep = step.classList.contains("story-step--intro");
+      step.classList.toggle("is-active", isIntroStep);
+      if (isIntroStep) {
+        step.setAttribute("aria-current", "step");
+      } else {
+        step.removeAttribute("aria-current");
+      }
     });
 
     dom.chapterCount.textContent = `0/${totalPoints}`;
@@ -381,8 +401,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     dom.progressStatus.textContent = "Vista general del recorrido";
     dom.mapsLink.href = "https://www.google.com/maps";
     dom.routeProgressFill.style.transform = "scaleX(0)";
-    mapController.setActivePoint(0, { instant: true, progress: 0 });
-    mapController.resetOverview();
+    mapController.resetOverview({ clearActive: true });
     updateTimelineState(-1);
     audioController.setTrack(null);
   }
@@ -480,7 +499,10 @@ window.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    step.scrollIntoView({ behavior, block: "center" });
+    step.scrollIntoView({
+      behavior,
+      block: window.matchMedia("(max-width: 899px)").matches ? "start" : "center",
+    });
   }
 
   function handleStepSelection(index) {
@@ -562,6 +584,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   dom.storySections.addEventListener("click", (event) => {
+    const jumpButton = event.target.closest("[data-jump-index]");
+    if (jumpButton) {
+      handleStepSelection(Number(jumpButton.dataset.jumpIndex));
+      return;
+    }
+
     const audioButton = event.target.closest("[data-audio-point]");
 
     if (audioButton) {
