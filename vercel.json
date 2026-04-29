@@ -12,10 +12,6 @@
     {
       "source": "/recorrido",
       "destination": "/recorrido.html"
-    },
-    {
-      "source": "/reconquista_v4",
-      "destination": "/reconquista_v4.html"
     }
   ],
   "headers": [
@@ -44,7 +40,7 @@
       ]
     },
     {
-      "source": "/(recorrido|reconquista_v4)\\.html",
+      "source": "/recorrido\\.html",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }
       ]

@@ -1,6 +1,6 @@
-const POINTS_URLS = ["/data/points.geojson", "/public/data/points.geojson"];
-const ROUTE_URLS = ["/data/route.geojson", "/public/data/route.geojson"];
-const PODCAST_URLS = ["/data/podcast.json", "/public/data/podcast.json"];
+const POINTS_URL = "/data/points.geojson";
+const ROUTE_URL = "/data/route.geojson";
+const PODCAST_URL = "/data/podcast.json";
 
 export function padNumber(value) {
   return String(value).padStart(2, "0");
@@ -14,20 +14,6 @@ async function fetchJson(url) {
   }
 
   return response.json();
-}
-
-async function fetchFirstJson(urls) {
-  let lastError;
-
-  for (const url of urls) {
-    try {
-      return await fetchJson(url);
-    } catch (error) {
-      lastError = error;
-    }
-  }
-
-  throw lastError;
 }
 
 function stripPublicPrefix(path) {
@@ -140,9 +126,9 @@ function buildPointsFeatureCollection(points) {
 
 export async function loadExperienceData() {
   const [pointsCollection, routeCollection, podcastCollection] = await Promise.all([
-    fetchFirstJson(POINTS_URLS),
-    fetchFirstJson(ROUTE_URLS),
-    fetchFirstJson(PODCAST_URLS).catch(() => ({ items: [] })),
+    fetchJson(POINTS_URL),
+    fetchJson(ROUTE_URL),
+    fetchJson(PODCAST_URL).catch(() => ({ items: [] })),
   ]);
 
   const podcastIndex = getPodcastIndex(podcastCollection);
