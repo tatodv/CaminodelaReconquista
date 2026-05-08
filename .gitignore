@@ -6,7 +6,11 @@ Thumbs.db
 
 # Claude Code local
 .claude/
+AGENTS.md
+CHANGELOG.md
 SEGUIMIENTO_AGENTES.md
+*.md
+!README.md
 
 # Debug screenshots (prefijo _ en material/)
 material/_*.png
