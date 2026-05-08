@@ -4,15 +4,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/recorrido.html"
-    },
-    {
-      "source": "/recorrido",
-      "destination": "/recorrido.html"
-    }
+  "redirects": [
+    { "source": "/recorrido", "destination": "/", "permanent": true },
+    { "source": "/recorrido.html", "destination": "/", "permanent": true }
   ],
   "headers": [
     {
@@ -40,7 +34,7 @@
       ]
     },
     {
-      "source": "/recorrido\\.html",
+      "source": "/",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }
       ]
