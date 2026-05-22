@@ -34,6 +34,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
     >
+    <link rel="stylesheet" href="/vendor/plyr/plyr.css">
     <link rel="stylesheet" href="/styles/recorrido.css">
     <script type="application/ld+json">
 {
@@ -97,13 +98,13 @@
             "latitude": -34.5621147,
             "longitude": -58.572071
           },
-          "description": "Sitio asociado al combate de Perdriel del 1 de agosto de 1806, donde fuerzas reunidas por Juan Martin de Pueyrredon enfrentaron a tropas britanicas.",
+          "description": "Sitio asociado al combate de Perdriel del 1 de agosto de 1806, donde fuerzas reunidas por Juan Martin de Pueyrredon enfrentaron a una columna britanica vinculada con la movilizacion rural organizada desde Lujan.",
           "subjectOf": {
             "@type": "HistoricalEvent",
             "name": "Combate de Perdriel",
             "startDate": "1806-08-01",
             "endDate": "1806-08-01",
-            "description": "Fuerzas criollas y de la campana enfrentaron a una columna britanica. La derrota tactica tuvo valor simbolico y organizativo para la resistencia."
+            "description": "Fuerzas criollas y de la campana enfrentaron a una columna britanica. La derrota tactica tuvo valor simbolico, organizativo y de memoria como hito en el camino hacia la nacionalidad argentina."
           }
         }
       },
@@ -125,13 +126,13 @@
             "latitude": -34.5138382,
             "longitude": -58.5560961
           },
-          "description": "Lugar de reunion, descanso y auxilio para tropas, milicias y vecinos antes de la marcha hacia Buenos Aires.",
+          "description": "Lugar de reunion, descanso y auxilio para tropas, milicias y vecinos; escala territorial vinculada con la expedicion organizada desde Montevideo.",
           "subjectOf": {
             "@type": "HistoricalEvent",
             "name": "Reagrupamiento en la Chacra de los Marquez",
             "startDate": "1806-08-05",
             "endDate": "1806-08-09",
-            "description": "La chacra funciono como base de acampe, apoyo logistico y concentracion de fuerzas para continuar hacia Buenos Aires por el Camino del Fondo de la Legua."
+            "description": "La chacra funciono como base de acampe, apoyo logistico y concentracion de fuerzas para continuar hacia Buenos Aires por el Camino del Fondo de la Legua, en dialogo con la expedicion preparada desde Montevideo por Santiago de Liniers y Pascual Ruiz Huidobro."
           }
         }
       },
@@ -153,13 +154,13 @@
             "latitude": -34.4172205,
             "longitude": -58.587582
           },
-          "description": "Sitio asociado al desembarco de Santiago de Liniers en el Puerto de Las Conchas el 4 de agosto de 1806.",
+          "description": "Sitio asociado al desembarco de Santiago de Liniers en el Puerto de Las Conchas el 4 de agosto de 1806 y al encuentro con los apoyos locales.",
           "subjectOf": {
             "@type": "HistoricalEvent",
             "name": "Desembarco de Liniers en Las Conchas",
             "startDate": "1806-08-04",
             "endDate": "1806-08-04",
-            "description": "Santiago de Liniers desembarco en el Puerto de Las Conchas y organizo desde alli el avance hacia Buenos Aires con apoyo local."
+            "description": "Santiago de Liniers desembarco en el Puerto de Las Conchas; alli se encontraron con el y se organizo el avance hacia Buenos Aires con apoyo local."
           }
         }
       },
@@ -237,13 +238,13 @@
             "latitude": -34.5770261,
             "longitude": -58.5376772
           },
-          "description": "Cierre operativo e institucional del recorrido turistico realizado por la Municipalidad de San Martin. La capitulacion de Beresford ocurrio en Buenos Aires, no en esta plaza.",
+          "description": "Finalizacion del recorrido turistico realizado por la Municipalidad de San Martin. La capitulacion de Beresford ocurrio en CABA, no en esta plaza.",
           "subjectOf": {
             "@type": "HistoricalEvent",
             "name": "Capitulacion de Beresford y cierre institucional del recorrido",
             "startDate": "1806-08-12",
             "endDate": "1806-08-12",
-            "description": "El recorrido turistico cierra en Plaza Central de San Martin por criterio operativo e institucional. William Carr Beresford capitulo ante Santiago de Liniers el 12 de agosto de 1806 en Buenos Aires, en el entorno del Fuerte y la antigua Plaza Mayor."
+            "description": "El recorrido turistico cierra en Plaza Central de San Martin por criterio operativo e institucional. El desenlace historico paso por Chacarita, Miserere y Retiro, y culmino en el entorno de Plaza de Mayo, donde William Carr Beresford capitulo ante Santiago de Liniers el 12 de agosto de 1806."
           }
         }
       }
@@ -251,6 +252,7 @@
   }
 }
     </script>
+    <script src="/vendor/plyr/plyr.polyfilled.min.js" defer></script>
     <script type="module" src="/scripts/recorrido/app.js" defer></script>
   </head>
   <body>
@@ -318,10 +320,15 @@
             <a href="https://www.tiktok.com/@sanmartingob" target="_blank" rel="noreferrer noopener" aria-label="TikTok">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 6.7a4.8 4.8 0 0 1-3.8-4.3V2h-3.5v13.7a2.9 2.9 0 1 1-2.9-3.3c.3 0 .6 0 .8.1V9a6.4 6.4 0 1 0 5.6 6.3V8.7a8.2 8.2 0 0 0 4.8 1.5V6.8c-.4 0-.7 0-1-.1Z"/></svg>
             </a>
-            <span class="hero-footer__podcast" aria-label="Podcast pronto" role="img">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.6.6 0 0 1-.9.2c-2.3-1.4-5.3-1.8-8.8-1a.6.6 0 0 1-.3-1.2c3.8-.9 7.1-.5 9.7 1.1.3.2.4.6.3.9Zm1.2-2.7a.8.8 0 0 1-1.1.3c-2.7-1.7-6.8-2.1-10-1.2a.8.8 0 0 1-.4-1.5c3.6-1.1 8.1-.6 11.2 1.3.4.2.5.7.3 1.1Zm.1-2.8c-3.2-1.9-8.5-2.1-11.6-1.2a.9.9 0 1 1-.5-1.8c3.5-1.1 9.4-.9 13.1 1.4a.9.9 0 1 1-1 1.6Z"/></svg>
-              <span>Pronto</span>
-            </span>
+            <div class="hero-audio" id="hero-audio-player" data-audio-player="hero-audio-player">
+              <button class="hero-audio__button" type="button" data-audio-action="toggle" aria-label="Reproducir relato sonoro">
+                <span aria-hidden="true"></span>
+                <span data-audio-status aria-live="polite">Escuchar relato</span>
+              </button>
+              <span data-audio-current hidden>00:00</span>
+              <span data-audio-duration hidden>00:00</span>
+              <input type="range" min="0" max="1000" value="0" step="1" data-audio-action="seek" aria-label="Progreso del audio" hidden>
+            </div>
           </div>
         </div>
       </section>
@@ -352,10 +359,10 @@
             <ol class="context-timeline" aria-label="L&iacute;nea de tiempo compacta">
               <li><time>1805</time><span>Gran Breta&ntilde;a consolida su poder naval tras Trafalgar.</span></li>
               <li><time>Junio de 1806</time><span>Buenos Aires cae bajo ocupaci&oacute;n brit&aacute;nica.</span></li>
-              <li><time>1 de agosto</time><span>Combate de Perdriel.</span></li>
-              <li><time>4 de agosto</time><span>Desembarco de Liniers en Las Conchas.</span></li>
-              <li><time>5 al 9 de agosto</time><span>Reorganizaci&oacute;n en San Isidro y Chacra de los M&aacute;rquez.</span></li>
-              <li><time>12 de agosto</time><span>Reconquista de Buenos Aires.</span></li>
+              <li><time>1 de agosto</time><span>En Perdriel, fuerzas reunidas por Pueyrred&oacute;n enfrentan una columna brit&aacute;nica.</span></li>
+              <li><time>4 de agosto</time><span>En Las Conchas se encuentran con Liniers tras el desembarco.</span></li>
+              <li><time>5 al 9 de agosto</time><span>Reorganizaci&oacute;n en San Isidro y Chacra de los M&aacute;rquez, enlazada con la expedici&oacute;n de Montevideo.</span></li>
+              <li><time>12 de agosto</time><span>Beresford acepta la rendici&oacute;n en Buenos Aires, actual CABA.</span></li>
             </ol>
           </div>
         </div>
@@ -382,8 +389,8 @@
             </article>
             <article class="union-brief__seal">
               <span>03</span>
-              <h3>Mucho m&aacute;s que una defensa</h3>
-              <p>La memoria del Camino habla de identidad, soberan&iacute;a local y comunidad organizada.</p>
+              <h3>Un hito de nacionalidad</h3>
+              <p>Perdriel, Luj&aacute;n y la marcha popular anticipan una memoria de identidad, soberan&iacute;a local y comunidad organizada.</p>
             </article>
           </div>
         </div>
@@ -405,10 +412,10 @@
             <p class="historic-plate__eyebrow">12 de agosto de 1806</p>
             <h2 id="historic-plate-title">La ciudad es reconquistada</h2>
             <p>
-              Tras cuarenta y ocho d&iacute;as de ocupaci&oacute;n brit&aacute;nica, las milicias organizadas por Santiago de Liniers y distintos apoyos locales recuperaron Buenos Aires. La rendici&oacute;n de William Carr Beresford marc&oacute; el cierre de la Reconquista y consolid&oacute; su memoria p&uacute;blica.
+              Tras cuarenta y ocho d&iacute;as de ocupaci&oacute;n brit&aacute;nica, las milicias organizadas por Santiago de Liniers y distintos apoyos locales recuperaron Buenos Aires. El avance pas&oacute; por Chacarita, Miserere y Retiro antes de culminar en el entorno de la Plaza de Mayo, donde William Carr Beresford acept&oacute; la rendici&oacute;n.
             </p>
-            <a class="historic-plate__link" href="https://www.argentina.gob.ar/noticias/12-de-agosto-de-1806-la-reconquista-de-buenos-aires" target="_blank" rel="noreferrer noopener">
-              Leer fuente hist&oacute;rica
+            <a class="historic-plate__link" href="https://drive.google.com/file/d/1Vd6Nx5cXY2jG9S-FaA6h6H-mxsCMLiyf/view?usp=sharing" target="_blank" rel="noreferrer noopener" aria-label="Abrir PDF de fuente hist&oacute;rica en Google Drive">
+              Ver fuente hist&oacute;rica en PDF
             </a>
           </div>
         </div>
@@ -487,20 +494,20 @@
 
       <section class="other-sites" id="otros-escenarios">
         <div class="other-sites__header">
-          <p class="overview__eyebrow">Fuera del circuito</p>
-          <h2>Otros lugares de la Reconquista</h2>
+          <p class="overview__eyebrow">Recorrido ampliado</p>
+          <h2>Escenarios que completan el Camino</h2>
           <p>
-            Quedan fuera de las seis paradas principales, pero ayudan a ubicar la organizaci&oacute;n, el avance y el desenlace.
+            Las seis paradas ordenan la visita. Estos escenarios ampl&iacute;an el relato: explican de d&oacute;nde vinieron las fuerzas, c&oacute;mo se sostuvo la marcha y d&oacute;nde termin&oacute; el desenlace hist&oacute;rico.
           </p>
         </div>
 
         <ul class="other-sites__list" aria-label="Otros lugares vinculados a la Reconquista">
-          <li><strong>Montevideo</strong><span>Desde all&iacute;, Santiago de Liniers y Pascual Ruiz Huidobro organizaron la expedici&oacute;n para recuperar Buenos Aires. La Banda Oriental aport&oacute; tropas, embarcaciones, artiller&iacute;a y una base decisiva para la Reconquista.</span></li>
-          <li><strong>Luj&aacute;n</strong><span>Juan Mart&iacute;n de Pueyrred&oacute;n sublev&oacute; la campa&ntilde;a y reuni&oacute; hombres, caballos y recursos para enfrentar a las fuerzas brit&aacute;nicas. Muchos de esos paisanos combatir&iacute;an en Perdriel y luego volver&iacute;an a sumarse a la marcha reconquistadora.</span></li>
+          <li><strong>Montevideo</strong><span>Desde all&iacute;, Santiago de Liniers y Pascual Ruiz Huidobro organizaron la expedici&oacute;n para recuperar Buenos Aires. La Chacra de los M&aacute;rquez permite leer c&oacute;mo esa fuerza preparada al otro lado del R&iacute;o de la Plata encontr&oacute; sost&eacute;n territorial para continuar la marcha.</span></li>
+          <li><strong>Luj&aacute;n</strong><span>Juan Mart&iacute;n de Pueyrred&oacute;n sublev&oacute; la campa&ntilde;a y reuni&oacute; hombres, caballos y recursos para enfrentar a las fuerzas brit&aacute;nicas. Esa movilizaci&oacute;n se enlaza con Perdriel, donde la resistencia rural enfrent&oacute; una columna brit&aacute;nica y dej&oacute; un hito de memoria nacional.</span></li>
           <li><strong>Chacarita</strong><span>El 9 de agosto de 1806, tras avanzar por el Camino del Fondo de la Legua, las tropas hicieron alto en la Chacarita de los Colegiales. All&iacute; descansaron, reorganizaron fuerzas y prepararon el ingreso final hacia la ciudad ocupada.</span></li>
           <li><strong>Corrales de Miserere</strong><span>En el entorno de los actuales Once y Plaza Miserere, las fuerzas reconquistadoras reunieron m&aacute;s tropas y evaluaron el avance hacia el centro de Buenos Aires. Desde all&iacute; se decidi&oacute; continuar hacia Retiro y el Fuerte.</span></li>
           <li><strong>Retiro</strong><span>El 11 de agosto de 1806, Retiro fue escenario de combates decisivos contra las posiciones brit&aacute;nicas. La victoria abri&oacute; el camino para el asalto final sobre el centro de Buenos Aires.</span></li>
-          <li><strong>Plaza de Mayo</strong><span>El 12 de agosto de 1806, en el entorno de la antigua Plaza Mayor y el Fuerte de Buenos Aires, Beresford acept&oacute; la rendici&oacute;n ante las fuerzas de la Reconquista. All&iacute; culmin&oacute; la recuperaci&oacute;n de la ciudad.</span></li>
+          <li><strong>Plaza de Mayo</strong><span>El 12 de agosto de 1806, en el entorno de la antigua Plaza Mayor y el Fuerte de Buenos Aires, actual CABA, Beresford acept&oacute; la rendici&oacute;n ante las fuerzas de la Reconquista. All&iacute; culmin&oacute; la recuperaci&oacute;n de la ciudad.</span></li>
         </ul>
       </section>
 
@@ -576,7 +583,7 @@
             <p class="memory-close__eyebrow">Memoria viva</p>
             <h2 id="memory-close-title">El Camino no termina en los nombres</h2>
             <p>
-              Cada punto, placa y relato vuelve a unir municipios, barrios y memorias. La Reconquista sigue viva cuando el territorio recuerda por qu&eacute; se organiz&oacute;.
+              Cada punto, placa y relato vuelve a unir municipios, barrios y memorias. El Camino termina como visita en San Mart&iacute;n, pero el relato hist&oacute;rico llega hasta CABA, donde la rendici&oacute;n de Beresford cerr&oacute; la Reconquista.
             </p>
           </div>
 
@@ -644,6 +651,8 @@
       <div class="timeline-panel__body" id="timeline-list"></div>
     </aside>
 
-    <audio id="shared-audio" preload="metadata"></audio>
+    <div class="plyr-dock" id="plyr-dock">
+      <audio id="shared-audio" preload="metadata" controls></audio>
+    </div>
   </body>
 </html>

@@ -48,6 +48,60 @@ function clamp(value, minimum, maximum) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
+function escapeSvgText(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function getMapLabelLines(label, maxLength = 28) {
+  const words = String(label || "").trim().split(/\s+/).filter(Boolean);
+  const lines = [];
+
+  words.forEach((word) => {
+    const current = lines[lines.length - 1] || "";
+    const next = current ? `${current} ${word}` : word;
+
+    if (!current) {
+      lines.push(word);
+      return;
+    }
+
+    if (current && next.length > maxLength && lines.length < 2) {
+      lines.push(word);
+      return;
+    }
+
+    lines[lines.length - 1] = next;
+  });
+
+  return lines.length ? lines.slice(0, 2) : [];
+}
+
+function createMapLabelMarkup(label) {
+  const lines = getMapLabelLines(label);
+
+  if (!lines.length) {
+    return "";
+  }
+
+  const bannerHeight = lines.length > 1 ? 70 : 50;
+  const textStartY = lines.length > 1 ? 77 : 82;
+
+  return [
+    '          <g class="story-map__label-banner" aria-hidden="true">',
+    '            <line class="story-map__label-stem" x1="0" y1="38" x2="0" y2="54"></line>',
+    `            <rect class="story-map__label-box" x="-180" y="54" width="360" height="${bannerHeight}" rx="3"></rect>`,
+    `            <text class="story-map__point-label" y="${textStartY}">`,
+    ...lines.map((line, lineIndex) => (
+      `              <tspan x="0"${lineIndex === 0 ? "" : ' dy="21"'}>${escapeSvgText(line)}</tspan>`
+    )),
+    "            </text>",
+    "          </g>",
+  ].join("");
+}
+
 function isCompactViewport() {
   return window.matchMedia("(max-width: 899px)").matches;
 }
@@ -191,6 +245,7 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
         '          <circle class="story-map__point-ring" r="38"></circle>',
         '          <circle class="story-map__point-core" r="28"></circle>',
         `          <text class="story-map__point-number" y="8">${point.order}</text>`,
+        createMapLabelMarkup(point.mapLabel),
         "        </g>",
       ].join("");
     }),

@@ -1,53 +1,66 @@
 {
-  "updatedAt": "2026-04-23",
+  "updatedAt": "2026-05-22",
+  "hero": {
+    "title": "Camino de la Reconquista",
+    "audio": "/audio/camino-reconquista-completo.mp3",
+    "duration": 389,
+    "available": true
+  },
+  "intro": {
+    "title": "Introduccion",
+    "audio": "/audio/introduccion.mp3",
+    "duration": 34,
+    "available": true
+  },
+  "closing": {
+    "title": "Cierre",
+    "audio": "/audio/cierre.mp3",
+    "duration": 43,
+    "available": true
+  },
   "items": [
     {
       "pointId": 1,
       "title": "Audio del punto 1",
       "audio": "/audio/punto-1.mp3",
-      "duration": null,
-      "available": false,
-      "note": "Pendiente de carga del archivo final."
+      "duration": 59,
+      "available": true
     },
     {
       "pointId": 2,
       "title": "Audio del punto 2",
       "audio": "/audio/punto-2.mp3",
-      "duration": null,
-      "available": false,
-      "note": "Pendiente de carga del archivo final."
+      "duration": 33,
+      "available": true
     },
     {
       "pointId": 3,
       "title": "Audio del punto 3",
       "audio": "/audio/punto-3.mp3",
-      "duration": null,
-      "available": false,
-      "note": "Pendiente de carga del archivo final."
+      "duration": 53,
+      "available": true
     },
     {
       "pointId": 4,
       "title": "Audio del punto 4",
       "audio": "/audio/punto-4.mp3",
-      "duration": null,
-      "available": false,
-      "note": "Pendiente de carga del archivo final."
+      "duration": 36,
+      "available": true
     },
     {
       "pointId": 5,
       "title": "Audio del punto 5",
       "audio": "/audio/punto-5.mp3",
-      "duration": null,
-      "available": false,
-      "note": "Pendiente de carga del archivo final."
+      "duration": 38,
+      "available": true
     },
     {
       "pointId": 6,
       "title": "Audio del punto 6",
       "audio": "/audio/punto-6.mp3",
-      "duration": null,
-      "available": false,
-      "note": "Pendiente de carga del archivo final."
+      "duration": 83,
+      "available": true,
+      "includeClosing": true
     }
   ]
 }

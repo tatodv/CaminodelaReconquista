@@ -53,6 +53,27 @@ function getPodcastIndex(podcastData) {
   return index;
 }
 
+function normalizeAudioItem(item, fallbackTitle = "") {
+  const source = stripPublicPrefix(item?.audio || "");
+  const available = Boolean(item?.available && source);
+
+  return {
+    title: item?.title || fallbackTitle,
+    src: source,
+    available,
+    durationSeconds: Number(item?.duration ?? 0) || 0,
+  };
+}
+
+function createSegment(audio, role) {
+  return {
+    role,
+    title: audio.title,
+    src: audio.src,
+    durationSeconds: audio.durationSeconds,
+  };
+}
+
 function normalizePoint(feature, podcastIndex) {
   const properties = feature?.properties ?? {};
   const geometry = feature?.geometry ?? {};
@@ -63,8 +84,24 @@ function normalizePoint(feature, podcastIndex) {
   const order = Number(properties.order ?? properties.id ?? 0);
   const id = Number(properties.id ?? order);
   const podcast = podcastIndex.get(id);
-  const audioSource = stripPublicPrefix(podcast?.audio || properties.audio || "");
-  const audioAvailable = Boolean(podcast?.available ?? properties.hasAudio);
+  const introAudio = podcastIndex.intro;
+  const closingAudio = podcastIndex.closing;
+  const pointAudio = normalizeAudioItem(
+    podcast || {
+      audio: properties.audio,
+      duration: properties.duration,
+      available: properties.hasAudio,
+    },
+    `Audio del punto ${padNumber(order)}`,
+  );
+  const segments = [
+    introAudio?.available ? createSegment(introAudio, "intro") : null,
+    pointAudio.available ? createSegment(pointAudio, "main") : null,
+    podcast?.includeClosing && closingAudio?.available
+      ? createSegment(closingAudio, "closing")
+      : null,
+  ].filter(Boolean);
+  const audioAvailable = segments.length > 0 && pointAudio.available;
 
   return {
     id,
@@ -76,16 +113,26 @@ function normalizePoint(feature, podcastIndex) {
     municipality: properties.municipality || "",
     description:
       properties.description?.trim() || "Texto curatorial pendiente de carga.",
+    connectionLabel: properties.connectionLabel?.trim() || "",
+    connectionText: properties.connectionText?.trim() || "",
+    mapLabel: properties.mapLabel?.trim() || "",
     image: getPremiumIllustration(order).large.avif,
     imageSet: getPremiumIllustration(order),
     imageAlt: properties.imageAlt?.trim() || `Ilustracion de ${properties.place || properties.title || `Punto ${order}`}`,
     coordinates,
     mapUrl: `https://www.google.com/maps/search/?api=1&query=${coordinates[1]},${coordinates[0]}`,
     audio: {
+      id: `point-${id}`,
+      type: "point",
+      pointId: id,
       title: podcast?.title || `Audio del punto ${padNumber(order)}`,
-      src: audioSource,
+      src: pointAudio.src,
       available: audioAvailable,
-      durationSeconds: Number(podcast?.duration ?? properties.duration ?? 0) || 0,
+      segments,
+      durationSeconds: segments.reduce(
+        (total, segment) => total + segment.durationSeconds,
+        0,
+      ),
       note:
         podcast?.note ||
         (audioAvailable ? "" : "Audio disponible proximamente."),
@@ -132,11 +179,24 @@ export async function loadExperienceData() {
   ]);
 
   const podcastIndex = getPodcastIndex(podcastCollection);
+  podcastIndex.hero = normalizeAudioItem(podcastCollection.hero, "Camino de la Reconquista");
+  podcastIndex.intro = normalizeAudioItem(podcastCollection.intro, "Introduccion");
+  podcastIndex.closing = normalizeAudioItem(podcastCollection.closing, "Cierre");
   const points = [...(pointsCollection?.features ?? [])]
     .map((feature) => normalizePoint(feature, podcastIndex))
     .sort((left, right) => left.order - right.order);
 
   return {
+    heroAudio: {
+      id: "hero",
+      type: "hero",
+      title: podcastIndex.hero.title,
+      available: podcastIndex.hero.available,
+      segments: podcastIndex.hero.available
+        ? [createSegment(podcastIndex.hero, "main")]
+        : [],
+      durationSeconds: podcastIndex.hero.durationSeconds,
+    },
     points,
     route: normalizeRoute(routeCollection),
     pointsFeatureCollection: buildPointsFeatureCollection(points),

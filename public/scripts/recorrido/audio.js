@@ -4,17 +4,22 @@ function clamp(value, minimum, maximum) {
 
 function createInitialState() {
   return {
+    trackId: null,
+    trackType: "",
     pointId: null,
-    pointTitle: "",
     title: "",
-    src: "",
     available: false,
-    note: "",
+    segments: [],
+    segmentIndex: 0,
+    segmentRole: "",
     currentTime: 0,
     duration: 0,
+    playbackRate: 1,
+    status: "idle",
     loading: false,
     isPlaying: false,
     error: "",
+    canSkipIntro: false,
   };
 }
 
@@ -31,9 +36,28 @@ export function formatTime(totalSeconds) {
 
 export function createAudioController({ audioElement, onStateChange }) {
   const state = createInitialState();
+  let pendingSeek = 0;
+  let shouldPlayAfterLoad = false;
 
   function emit() {
-    onStateChange?.({ ...state });
+    onStateChange?.({ ...state, segments: [...state.segments] });
+  }
+
+  function getSegmentStart(index) {
+    return state.segments
+      .slice(0, index)
+      .reduce((total, segment) => total + (segment.durationSeconds || 0), 0);
+  }
+
+  function getCurrentSegment() {
+    return state.segments[state.segmentIndex];
+  }
+
+  function syncCurrentTime() {
+    state.currentTime =
+      getSegmentStart(state.segmentIndex) + (Number(audioElement.currentTime) || 0);
+    state.canSkipIntro = state.segments.some((segment) => segment.role === "intro")
+      && state.segmentRole === "intro";
   }
 
   function clearSource() {
@@ -42,129 +66,245 @@ export function createAudioController({ audioElement, onStateChange }) {
     audioElement.load();
   }
 
-  function setTrack(point) {
-    const nextSource = point?.audio?.src || "";
-    const nextAvailable = Boolean(point?.audio?.available && nextSource);
-    const sameTrack =
-      state.pointId === point?.id &&
-      state.src === nextSource &&
-      state.available === nextAvailable;
+  function loadSegment(index, offset = 0, autoplay = false) {
+    const segment = state.segments[index];
 
-    if (sameTrack) {
-      state.pointTitle = point?.title || "";
-      state.title = point?.audio?.title || "";
-      state.note = point?.audio?.note || "";
-      emit();
-      return;
-    }
-
-    state.pointId = point?.id ?? null;
-    state.pointTitle = point?.title || "";
-    state.title = point?.audio?.title || "";
-    state.src = nextSource;
-    state.available = nextAvailable;
-    state.note = point?.audio?.note || "";
-    state.currentTime = 0;
-    state.duration = point?.audio?.durationSeconds || 0;
-    state.loading = nextAvailable;
-    state.isPlaying = false;
-    state.error = "";
-
-    if (!nextAvailable) {
-      clearSource();
+    if (!segment) {
+      state.status = "ended";
       state.loading = false;
+      state.isPlaying = false;
+      syncCurrentTime();
       emit();
       return;
     }
+
+    state.segmentIndex = index;
+    state.segmentRole = segment.role;
+    state.loading = true;
+    state.status = "loading";
+    state.error = "";
+    pendingSeek = Math.max(0, offset);
+    shouldPlayAfterLoad = autoplay;
 
     audioElement.pause();
-    audioElement.src = nextSource;
+    audioElement.src = segment.src;
+    audioElement.playbackRate = state.playbackRate;
     audioElement.load();
+    syncCurrentTime();
     emit();
   }
 
+  function setTrack(track) {
+    const nextSegments = Array.isArray(track?.segments) ? track.segments : [];
+    const nextAvailable = Boolean(track?.available && nextSegments.length);
+    const sameTrack = state.trackId === track?.id && state.available === nextAvailable;
+
+    if (sameTrack) {
+      emit();
+      return;
+    }
+
+    state.trackId = track?.id ?? null;
+    state.trackType = track?.type || "";
+    state.pointId = track?.pointId ?? null;
+    state.title = track?.title || "";
+    state.available = nextAvailable;
+    state.segments = nextAvailable ? nextSegments : [];
+    state.segmentIndex = 0;
+    state.segmentRole = "";
+    state.currentTime = 0;
+    state.duration = Number(track?.durationSeconds ?? 0) || 0;
+    state.status = nextAvailable ? "paused" : "idle";
+    state.loading = false;
+    state.isPlaying = false;
+    state.error = "";
+    state.canSkipIntro = nextSegments.some((segment) => segment.role === "intro");
+
+    if (!nextAvailable) {
+      clearSource();
+      emit();
+      return;
+    }
+
+    loadSegment(0, 0, false);
+  }
+
+  async function play() {
+    if (!state.available || !getCurrentSegment()) {
+      return;
+    }
+
+    try {
+      audioElement.playbackRate = state.playbackRate;
+      await audioElement.play();
+    } catch (error) {
+      state.error = "No se pudo cargar el audio";
+      state.status = "error";
+      state.isPlaying = false;
+      state.loading = false;
+      emit();
+    }
+  }
+
+  function pause() {
+    audioElement.pause();
+  }
+
   async function togglePlayback() {
-    if (!state.available || !state.src) {
+    if (state.status === "ended") {
+      loadSegment(0, 0, true);
       return;
     }
 
     if (audioElement.paused) {
-      try {
-        await audioElement.play();
-      } catch (error) {
-        state.error = "No se pudo iniciar la reproduccion.";
-        state.isPlaying = false;
-        emit();
-      }
-
+      await play();
       return;
     }
 
-    audioElement.pause();
+    pause();
+  }
+
+  function seekTo(totalSeconds, autoplay = state.isPlaying) {
+    if (!state.available || !state.segments.length) {
+      return;
+    }
+
+    const nextTime = clamp(totalSeconds, 0, state.duration);
+    let elapsed = 0;
+
+    for (let index = 0; index < state.segments.length; index += 1) {
+      const segment = state.segments[index];
+      const segmentDuration = segment.durationSeconds || 0;
+
+      if (nextTime <= elapsed + segmentDuration || index === state.segments.length - 1) {
+        loadSegment(index, nextTime - elapsed, autoplay);
+        return;
+      }
+
+      elapsed += segmentDuration;
+    }
   }
 
   function seekByRatio(ratio) {
-    if (!Number.isFinite(audioElement.duration) || audioElement.duration <= 0) {
-      return;
-    }
+    seekTo(clamp(ratio, 0, 1) * state.duration);
+  }
 
-    audioElement.currentTime =
-      clamp(ratio, 0, 1) * Number(audioElement.duration);
+  function seekBySeconds(delta) {
+    seekTo(state.currentTime + delta);
+  }
+
+  function skipIntro() {
+    const mainIndex = state.segments.findIndex((segment) => segment.role === "main");
+
+    if (mainIndex >= 0) {
+      loadSegment(mainIndex, 0, true);
+    }
+  }
+
+  function setPlaybackRate(rate) {
+    state.playbackRate = Number(rate) || 1;
+    audioElement.playbackRate = state.playbackRate;
+    emit();
   }
 
   audioElement.addEventListener("loadedmetadata", () => {
-    state.duration = Number(audioElement.duration) || state.duration;
+    if (pendingSeek > 0) {
+      audioElement.currentTime = Math.min(
+        pendingSeek,
+        Number(audioElement.duration) || pendingSeek,
+      );
+    }
+
+    pendingSeek = 0;
     state.loading = false;
-    state.error = "";
+    state.status = audioElement.paused ? "paused" : "playing";
+    syncCurrentTime();
     emit();
+
+    if (shouldPlayAfterLoad) {
+      shouldPlayAfterLoad = false;
+      play();
+    }
   });
 
   audioElement.addEventListener("canplay", () => {
     state.loading = false;
+    if (state.status === "loading") {
+      state.status = audioElement.paused ? "paused" : "playing";
+    }
+    syncCurrentTime();
     emit();
   });
 
   audioElement.addEventListener("play", () => {
     state.isPlaying = true;
+    state.status = "playing";
     state.error = "";
+    syncCurrentTime();
     emit();
   });
 
   audioElement.addEventListener("pause", () => {
     state.isPlaying = false;
+    if (state.status !== "ended" && state.status !== "error") {
+      state.status = "paused";
+    }
+    syncCurrentTime();
     emit();
   });
 
   audioElement.addEventListener("timeupdate", () => {
-    state.currentTime = Number(audioElement.currentTime) || 0;
+    syncCurrentTime();
+    emit();
+  });
+
+  audioElement.addEventListener("ratechange", () => {
+    state.playbackRate = Number(audioElement.playbackRate) || state.playbackRate;
     emit();
   });
 
   audioElement.addEventListener("ended", () => {
+    const nextIndex = state.segmentIndex + 1;
+
+    if (nextIndex < state.segments.length) {
+      loadSegment(nextIndex, 0, true);
+      return;
+    }
+
     state.isPlaying = false;
-    state.currentTime = Number(audioElement.duration) || state.currentTime;
+    state.loading = false;
+    state.status = "ended";
+    state.currentTime = state.duration;
+    state.canSkipIntro = false;
     emit();
   });
 
   audioElement.addEventListener("waiting", () => {
     state.loading = true;
+    if (state.status !== "ended") {
+      state.status = "loading";
+    }
     emit();
   });
 
   audioElement.addEventListener("error", () => {
-    state.available = false;
     state.loading = false;
     state.isPlaying = false;
-    state.error = "El audio aun no esta disponible en el repositorio.";
+    state.status = "error";
+    state.error = "No se pudo cargar el audio";
     emit();
   });
 
   return {
     getState() {
-      return { ...state };
+      return { ...state, segments: [...state.segments] };
     },
     setTrack,
+    pause,
     togglePlayback,
     seekByRatio,
+    seekBySeconds,
+    skipIntro,
+    setPlaybackRate,
   };
 }

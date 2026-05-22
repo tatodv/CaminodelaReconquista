@@ -55,14 +55,23 @@ function getStepLocalProgress(step) {
 
 function getProgressStatus(index, total) {
   if (index === 0) {
-    return "Primer tramo del recorrido";
+    return "Perdriel y Lujan";
   }
 
   if (index === total - 1) {
-    return "Llegada y cierre del recorrido";
+    return "Cierre turistico";
   }
 
-  return `Tramo ${index + 1} de ${total}`;
+  const labels = [
+    "Perdriel y Lujan",
+    "Montevideo y la marcha",
+    "Encuentro con Liniers",
+    "Descanso y auxilio",
+    "Rumbo a CABA",
+    "Cierre turistico",
+  ];
+
+  return labels[index] || `Tramo ${index + 1} de ${total}`;
 }
 
 function createIntroMarkup() {
@@ -103,12 +112,12 @@ function createStoryNavMarkup(points) {
 
 function getMicroStory(order) {
   const stories = {
-    1: ["Perdriel termino en retirada.", "La resistencia siguio organizada."],
-    2: ["La chacra dio descanso y auxilio.", "La marcha volvio a ordenarse."],
-    3: ["El temporal cambio el desembarco.", "Las Conchas abrio la marcha."],
+    1: ["Enfrentaron una columna britanica.", "Perdriel queda unido a Lujan."],
+    2: ["La chacra sostuvo la marcha.", "Montevideo habia preparado la expedicion."],
+    3: ["Aqui se encontraron con Liniers.", "Las Conchas ordeno el avance."],
     4: ["San Isidro dio abrigo.", "La columna recupero fuerzas."],
-    5: ["El Fondo de la Legua marco el rumbo.", "Buenos Aires quedaba mas cerca."],
-    6: ["El recorrido vuelve a San Martin.", "La rendicion fue en Buenos Aires."],
+    5: ["El Fondo de la Legua marco el rumbo.", "La marcha entraba hacia CABA."],
+    6: ["San Martin cierra el recorrido turistico.", "Beresford se rindio en CABA."],
   };
 
   return stories[order] || [];
@@ -116,12 +125,12 @@ function getMicroStory(order) {
 
 function getImpactStory(order) {
   const impacts = {
-    1: "Aunque fue una derrota tactica, Perdriel dejo hombres y recursos listos para volver a sumarse.",
-    2: "Sin comida, caballos y descanso, la marcha no podia sostenerse.",
-    3: "El puerto de Las Conchas permitio bajar tropas, ordenar pertrechos y buscar apoyo local.",
+    1: "Perdriel condensa la resistencia rural: una derrota tactica que se vuelve hito de organizacion y memoria nacional.",
+    2: "La escala territorial conecto el auxilio local con la fuerza expedicionaria organizada desde Montevideo.",
+    3: "Las Conchas fue el encuentro decisivo con Liniers antes de ordenar el avance hacia Buenos Aires.",
     4: "San Isidro fue una escala para recuperar fuerzas antes de seguir hacia Buenos Aires.",
-    5: "El antiguo camino rural marco la aproximacion desde los pagos del norte.",
-    6: "La Plaza Central cierra el recorrido; la rendicion ocurrio en Buenos Aires.",
+    5: "El antiguo camino rural prepara el tramo urbano: Chacarita, Miserere, Retiro y Plaza de Mayo.",
+    6: "La Plaza Central cierra la visita municipal; el cierre historico ocurre con Beresford en Plaza de Mayo.",
   };
 
   return impacts[order] || "";
@@ -139,6 +148,19 @@ function createMicroStoryMarkup(lines) {
   ].join("");
 }
 
+function createConnectionMarkup(point) {
+  if (!point.connectionLabel && !point.connectionText) {
+    return "";
+  }
+
+  return [
+    '      <aside class="story-card__connection" aria-label="Conexion historica">',
+    `        <p class="story-card__connection-label">${escapeHtml(point.connectionLabel || "Conecta con")}</p>`,
+    `        <p class="story-card__connection-text">${escapeHtml(point.connectionText)}</p>`,
+    "      </aside>",
+  ].join("");
+}
+
 function createStoryPictureMarkup(point, index) {
   const sizes = "(max-width: 899px) 92vw, 44vw";
   const imageSet = point.imageSet;
@@ -149,6 +171,26 @@ function createStoryPictureMarkup(point, index) {
     `  <source srcset="${escapeHtml(imageSet.small.webp)} 560w, ${escapeHtml(imageSet.medium.webp)} 880w, ${escapeHtml(imageSet.large.webp)} 1200w" sizes="${sizes}" type="image/webp">`,
     `  <img src="${escapeHtml(imageSet.medium.jpg)}" srcset="${escapeHtml(imageSet.small.jpg)} 560w, ${escapeHtml(imageSet.medium.jpg)} 880w, ${escapeHtml(imageSet.large.jpg)} 1200w" sizes="${sizes}" alt="${escapeHtml(point.imageAlt)}" width="1200" height="800" loading="${index === 0 ? "eager" : "lazy"}"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">`,
     "</picture>",
+  ].join("");
+}
+
+function createAudioPlayerMarkup(id, options = {}) {
+  const skipIntroButton = options.canSkipIntro
+    ? '<button class="audio-player__skip" type="button" data-audio-action="skip-intro" aria-label="Saltar introduccion">Saltar intro</button>'
+    : "";
+
+  return [
+    `<div class="audio-player${options.compact ? " audio-player--compact" : ""}" id="${id}" data-audio-player="${id}"${options.hidden ? " hidden" : ""}>`,
+    '  <div class="audio-player__topline">',
+    `    <p class="audio-player__eyebrow">${escapeHtml(options.eyebrow || "Audio")}</p>`,
+    '    <p class="audio-player__status" data-audio-status aria-live="polite">Listo para escuchar</p>',
+    "  </div>",
+    '  <div class="audio-player__body" data-audio-slot></div>',
+    '  <div class="audio-player__actions">',
+    skipIntroButton,
+    '    <button class="audio-player__close" type="button" data-audio-action="close" aria-label="Cerrar reproductor de audio">Cerrar audio</button>',
+    "  </div>",
+    "</div>",
   ].join("");
 }
 
@@ -173,6 +215,7 @@ function createStoryMarkup(point, index, total) {
     '        <p class="story-card__label">Qu\u00e9 ocurri\u00f3</p>',
     `        <p class="story-card__description">${escapeHtml(point.description)}</p>`,
     "      </div>",
+    createConnectionMarkup(point),
     createMicroStoryMarkup(microStory),
     impactStory ? [
       '      <div class="story-card__block story-card__block--impact">',
@@ -181,9 +224,10 @@ function createStoryMarkup(point, index, total) {
       "      </div>",
     ].join("") : "",
     '      <div class="story-card__actions">',
-    `        <button class="chapter-button" type="button" data-audio-point="${index}">Escuchar punto ${point.order}</button>`,
-    `        <a class="chapter-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Ubicacion</a>`,
+    `        <button class="chapter-button" type="button" data-audio-point="${index}" aria-expanded="false" aria-controls="audio-point-${point.order}">Escuchar punto ${point.order}</button>`,
     "      </div>",
+    `      ${createAudioPlayerMarkup(`audio-point-${point.order}`, { eyebrow: `Punto ${point.order}`, canSkipIntro: true, hidden: true })}`,
+    `      <a class="chapter-link story-card__location-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Ubicacion</a>`,
     "    </div>",
     '    <figure class="story-card__figure">',
     `      ${createStoryPictureMarkup(point, index)}`,
@@ -207,47 +251,6 @@ function createListMarkup(points, className) {
       ].join("");
     })
     .join("");
-}
-
-function setButtonBusy(button, label, disabled) {
-  if (!button) {
-    return;
-  }
-
-  button.textContent = label;
-  button.disabled = disabled;
-}
-
-function getAudioLabel(audioState) {
-  if (!audioState.available) {
-    return "Audio pronto";
-  }
-
-  if (audioState.loading) {
-    return "Cargando audio";
-  }
-
-  return audioState.isPlaying ? "Pausar audio" : "Escuchar punto";
-}
-
-function syncAudioButtons(audioState, pointButtons, mobileButton) {
-  pointButtons.forEach((button) => {
-    const pointIndex = Number(button.dataset.audioPoint);
-    const isActiveTrack = pointIndex === Number(document.body.dataset.activeIndex || 0);
-    const label =
-      isActiveTrack && audioState.available
-        ? getAudioLabel(audioState)
-        : button.dataset.defaultLabel;
-
-    button.disabled = button.dataset.available !== "true";
-    button.textContent = label;
-  });
-
-  setButtonBusy(
-    mobileButton,
-    getAudioLabel(audioState),
-    !audioState.available,
-  );
 }
 
 const TIMELINE_FOCUSABLE_SELECTOR = [
@@ -280,6 +283,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     timelineClose: document.getElementById("timeline-close"),
     mapStatus: document.getElementById("map-status"),
     mapReset: document.getElementById("map-reset"),
+    heroPlayer: document.getElementById("hero-audio-player"),
+    plyrDock: document.getElementById("plyr-dock"),
     audioElement: document.getElementById("shared-audio"),
   };
 
@@ -313,6 +318,29 @@ window.addEventListener("DOMContentLoaded", async () => {
     audioElement: dom.audioElement,
     onStateChange: syncAudioUi,
   });
+  const plyrPlayer = window.Plyr
+    ? new window.Plyr(dom.audioElement, {
+        controls: ["play", "progress", "current-time", "duration", "settings"],
+        settings: ["speed"],
+        speed: { selected: 1, options: [1, 1.25, 1.5] },
+        invertTime: false,
+        displayDuration: true,
+        iconUrl: "/vendor/plyr/plyr.svg",
+        storage: { enabled: false },
+        tooltips: { controls: true, seek: true },
+        keyboard: { focused: true, global: false },
+        i18n: {
+          play: "Reproducir",
+          pause: "Pausar",
+          mute: "Silenciar",
+          unmute: "Activar sonido",
+          settings: "Ajustes",
+          speed: "Velocidad",
+          normal: "Normal",
+        },
+      })
+    : null;
+  const plyrElement = dom.plyrDock.querySelector(".plyr") || dom.audioElement;
 
   const mapController = await createMapController({
     containerId: "map",
@@ -324,6 +352,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const state = {
     activeIndex: -1,
     routeProgress: 0,
+    openPlayerId: null,
   };
   let lastTimelineTrigger = null;
 
@@ -341,7 +370,154 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   function syncAudioUi(audioState) {
-    syncAudioButtons(audioState, chapterButtons, null);
+    const activeTrackId = audioState.trackId;
+    document.body.classList.toggle(
+      "audio-point-open",
+      Boolean(state.openPlayerId && state.openPlayerId !== data.heroAudio.id),
+    );
+
+    chapterButtons.forEach((button) => {
+      const point = data.points[Number(button.dataset.audioPoint)];
+      const isActiveTrack = activeTrackId === point.audio.id;
+      const panel = document.getElementById(button.getAttribute("aria-controls"));
+      const isOpen = state.openPlayerId === point.audio.id;
+      const locationLink = panel?.nextElementSibling;
+
+      button.disabled = button.dataset.available !== "true";
+      button.textContent = isActiveTrack && audioState.isPlaying
+        ? "Pausar audio"
+        : button.dataset.defaultLabel;
+      button.setAttribute("aria-expanded", String(isOpen));
+      button.classList.toggle("is-audio-open", isOpen);
+      button.tabIndex = isOpen ? -1 : 0;
+      button.setAttribute("aria-hidden", String(isOpen));
+      if (panel) {
+        panel.hidden = false;
+        panel.classList.toggle("is-open", isOpen);
+      }
+      if (locationLink?.classList.contains("story-card__location-link")) {
+        locationLink.classList.toggle("is-audio-open", isOpen);
+      }
+    });
+
+    document.querySelectorAll("[data-audio-player]").forEach((player) => {
+      const isHero = player.id === "hero-audio-player";
+      const isActivePlayer =
+        (isHero && activeTrackId === data.heroAudio.id)
+        || (!isHero && player.id === `audio-point-${audioState.pointId}`);
+
+      syncAudioPlayer(player, isActivePlayer ? audioState : null);
+    });
+  }
+
+  function syncAudioPlayer(player, audioState) {
+    const stateForPlayer = audioState || createEmptyAudioState();
+    const isPlaying = stateForPlayer.isPlaying;
+    const status = getAudioStatusLabel(stateForPlayer);
+
+    player.querySelector("[data-audio-status]").textContent = status;
+
+    const toggle = player.querySelector('[data-audio-action="toggle"]');
+    if (player.id === "hero-audio-player") {
+      const statusText = toggle.querySelector("[data-audio-status]");
+      if (statusText) {
+        statusText.textContent = isPlaying ? "Pausar relato" : "Escuchar relato";
+      }
+      toggle.setAttribute(
+        "aria-label",
+        isPlaying ? "Pausar relato sonoro" : "Reproducir relato sonoro",
+      );
+      toggle.classList.toggle("is-playing", isPlaying);
+      toggle.disabled = !data.heroAudio.available;
+    }
+
+    const skipIntro = player.querySelector('[data-audio-action="skip-intro"]');
+    if (skipIntro) {
+      skipIntro.hidden = !stateForPlayer.canSkipIntro;
+      skipIntro.disabled = !audioState;
+    }
+
+    const closeAudio = player.querySelector('[data-audio-action="close"]');
+    if (closeAudio) {
+      closeAudio.disabled = !audioState;
+    }
+  }
+
+  function createEmptyAudioState() {
+    return {
+      currentTime: 0,
+      duration: 0,
+      playbackRate: 1,
+      status: "idle",
+      loading: false,
+      isPlaying: false,
+      error: "",
+      canSkipIntro: false,
+    };
+  }
+
+  function getAudioStatusLabel(audioState) {
+    if (audioState.error) {
+      return audioState.error;
+    }
+
+    if (audioState.loading || audioState.status === "loading") {
+      return "Cargando audio";
+    }
+
+    if (audioState.status === "ended") {
+      return "Audio finalizado";
+    }
+
+    if (audioState.isPlaying) {
+      return "Reproduciendo";
+    }
+
+    return "Listo para escuchar";
+  }
+
+  function openPointPlayer(index) {
+    const point = data.points[index];
+
+    if (!point?.audio?.available) {
+      return;
+    }
+
+    state.openPlayerId = point.audio.id;
+    audioController.setTrack(point.audio);
+    mountPlyrForPoint(point);
+    audioController.togglePlayback();
+    syncAudioUi(audioController.getState());
+
+    if (window.matchMedia("(max-width: 899px)").matches) {
+      window.setTimeout(() => {
+        const panel = document.getElementById(`audio-point-${point.order}`);
+        const mapStage = document.querySelector(".map-stage");
+        const mapBottom = mapStage?.getBoundingClientRect().bottom || 0;
+        const targetTop = Math.min(mapBottom + 12, window.innerHeight - 260);
+
+        if (panel) {
+          window.scrollBy({
+            top: panel.getBoundingClientRect().top - targetTop,
+            behavior: "smooth",
+          });
+        }
+      }, 80);
+    }
+  }
+
+  function closePointPlayer() {
+    audioController.pause();
+    state.openPlayerId = null;
+    syncAudioUi(audioController.getState());
+  }
+
+  function mountPlyrForPoint(point) {
+    const slot = document.querySelector(`#audio-point-${point.order} [data-audio-slot]`);
+
+    if (slot && plyrElement.parentElement !== slot) {
+      slot.appendChild(plyrElement);
+    }
   }
 
   function updateTimelineState(index) {
@@ -403,7 +579,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     dom.routeProgressFill.style.transform = "scaleX(0)";
     mapController.resetOverview({ clearActive: true });
     updateTimelineState(-1);
-    audioController.setTrack(null);
   }
 
   function updatePrimaryState(index, options = {}) {
@@ -439,7 +614,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       instant: options.instantMap,
       progress: nextRouteProgress,
     });
-    audioController.setTrack(point);
   }
 
   function openTimeline(trigger = document.activeElement) {
@@ -515,6 +689,58 @@ window.addEventListener("DOMContentLoaded", async () => {
     audioController.seekByRatio(Number(inputElement.value) / 1000);
   }
 
+  function getTrackForPlayer(player) {
+    if (player.id === "hero-audio-player") {
+      return data.heroAudio;
+    }
+
+    const point = data.points.find(
+      (item) => player.id === `audio-point-${item.order}`,
+    );
+
+    return point?.audio || null;
+  }
+
+  function handleAudioAction(event) {
+    const actionControl = event.target.closest("[data-audio-action], [data-audio-rate]");
+    const player = event.target.closest("[data-audio-player]");
+
+    if (!actionControl || !player) {
+      return false;
+    }
+
+    const track = getTrackForPlayer(player);
+    if (track && audioController.getState().trackId !== track.id) {
+      state.openPlayerId = track.id;
+      audioController.setTrack(track);
+    }
+
+    if (actionControl.dataset.audioRate) {
+      audioController.setPlaybackRate(Number(actionControl.dataset.audioRate));
+      return true;
+    }
+
+    switch (actionControl.dataset.audioAction) {
+      case "toggle":
+        state.openPlayerId = data.heroAudio.id;
+        audioController.togglePlayback();
+        break;
+      case "skip-intro":
+        audioController.skipIntro();
+        break;
+      case "close":
+        closePointPlayer();
+        break;
+      case "seek":
+        handleSeek(actionControl);
+        break;
+      default:
+        return false;
+    }
+
+    return true;
+  }
+
   function syncRouteProgressToScroll() {
     if (state.activeIndex < 0) {
       return;
@@ -584,6 +810,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   dom.storySections.addEventListener("click", (event) => {
+    if (handleAudioAction(event)) {
+      return;
+    }
+
     const jumpButton = event.target.closest("[data-jump-index]");
     if (jumpButton) {
       handleStepSelection(Number(jumpButton.dataset.jumpIndex));
@@ -597,7 +827,23 @@ window.addEventListener("DOMContentLoaded", async () => {
       if (index !== state.activeIndex) {
         updatePrimaryState(index);
       }
-      audioController.togglePlayback();
+      openPointPlayer(index);
+    }
+  });
+
+  dom.storySections.addEventListener("input", (event) => {
+    if (event.target.matches('[data-audio-action="seek"]')) {
+      handleSeek(event.target);
+    }
+  });
+
+  dom.heroPlayer?.addEventListener("click", (event) => {
+    handleAudioAction(event);
+  });
+
+  dom.heroPlayer?.addEventListener("input", (event) => {
+    if (event.target.matches('[data-audio-action="seek"]')) {
+      handleSeek(event.target);
     }
   });
 
@@ -678,6 +924,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   window.addEventListener("resize", handleResize);
 
+  audioController.setTrack(data.heroAudio);
   updatePrimaryState(0, { force: true, instantMap: true, routeProgress: 0 });
   updateIntroState();
   syncAudioUi(audioController.getState());
