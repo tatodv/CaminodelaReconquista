@@ -90,7 +90,7 @@ function createIntroMarkup() {
     '    <div class="story-card__copy">',
     '      <p class="story-card__kicker">Introduccion</p>',
     '      <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
-    '      <p class="story-card__description">5 paradas del recorrido + continuidad hist&oacute;rica hacia CABA. El orden propone una lectura territorial del Camino y se acompa&ntilde;a con una cronolog&iacute;a de referencia para ubicar cada episodio.</p>',
+    '      <p class="story-card__description">5 paradas del recorrido + continuidad hist&oacute;rica hacia CABA. Los n&uacute;meros 1-5 indican el orden del recorrido tur&iacute;stico; la cronolog&iacute;a hist&oacute;rica aparece en la l&iacute;nea de tiempo.</p>',
     '      <div class="story-card__actions">',
     '        <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
     "      </div>",
@@ -125,7 +125,7 @@ function getMicroStory(order) {
     3: ["Aqui se encontraron con Liniers.", "Las Conchas ordeno el avance."],
     4: ["San Isidro dio abrigo.", "La columna recupero fuerzas."],
     5: ["El Fondo de la Legua marco el rumbo.", "La marcha entraba hacia CABA."],
-    6: ["Continuidad historica hacia CABA.", "Beresford se rindio en la Plaza Mayor."],
+    6: ["Continuidad historica hacia CABA.", "Beresford termino capitulando cerca del Fuerte."],
   };
 
   return stories[order] || [];
@@ -137,8 +137,8 @@ function getImpactStory(order) {
     2: "La escala territorial conecto el auxilio local con la fuerza expedicionaria organizada desde Montevideo.",
     3: "Las Conchas fue el encuentro decisivo con Liniers antes de ordenar el avance hacia Buenos Aires.",
     4: "San Isidro fue una escala para recuperar fuerzas antes de seguir hacia Buenos Aires.",
-    5: "El antiguo camino rural prepara el tramo urbano: Chacarita, Miserere, Retiro y Plaza de Mayo.",
-    6: "El desenlace ocurrio en Buenos Aires: tras Chacarita, Miserere y Retiro, las fuerzas llegaron al entorno de la Plaza Mayor, donde Beresford termino rindiendose.",
+    5: "Ultimo tramo turistico: desde aqui el relato sigue hacia Chacarita, Miserere, Retiro, la Plaza Mayor y el Fuerte.",
+    6: "El desenlace ocurrio en Buenos Aires: tras Chacarita, Miserere y Retiro, las fuerzas llegaron al entorno de la Plaza Mayor y el Fuerte, donde Beresford termino capitulando.",
   };
 
   return impacts[order] || "";
@@ -215,7 +215,7 @@ function createStoryMarkup(point, index, total) {
     ? "Referencia en mapas"
     : "Ubicacion";
   const actionLabel = point.isHistoricalContinuation
-    ? "Escuchar continuidad 06"
+    ? "Escuchar relato de continuidad"
     : `Escuchar punto ${point.order}`;
   const audioEyebrow = point.isHistoricalContinuation
     ? "Continuidad 06"
@@ -256,7 +256,7 @@ function createStoryMarkup(point, index, total) {
     `        <button class="chapter-button" type="button" data-audio-point="${index}" aria-expanded="false" aria-controls="audio-point-${point.order}">${actionLabel}</button>`,
     "      </div>",
     `      ${createAudioPlayerMarkup(`audio-point-${point.order}`, { eyebrow: audioEyebrow, canSkipIntro: true, hidden: true })}`,
-    `      <a class="chapter-link story-card__location-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">${locationLabel}</a>`,
+    `      <a class="chapter-link story-card__location-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener"${point.isHistoricalContinuation ? ' aria-label="Ver referencia territorial actual de Chacarita en mapas"' : ""}>${locationLabel}</a>`,
     "    </div>",
     '    <figure class="story-card__figure">',
     `      ${createStoryPictureMarkup(point, index)}`,
@@ -341,7 +341,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   chapterButtons.forEach((button) => {
     const point = data.points[Number(button.dataset.audioPoint)];
     button.dataset.defaultLabel = point.isHistoricalContinuation
-      ? "Escuchar continuidad 06"
+      ? "Escuchar relato de continuidad"
       : `Escuchar punto ${point.order}`;
     button.dataset.available = String(point.audio.available);
   });
@@ -602,12 +602,15 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    dom.chapterCount.textContent = `0/${tourStopCount}`;
+    dom.chapterCount.textContent = "Vista general";
     dom.chapterMunicipality.textContent = "Vista general";
     dom.activeTitle.textContent = "Bienvenidos al Camino de la Reconquista";
     dom.activePlace.textContent = "Una lectura guiada por los hitos de 1806";
+    document.getElementById("map-panel-label").textContent = "Mapa del Camino";
     dom.progressStatus.textContent = "Vista general del recorrido";
     dom.mapsLink.href = "https://www.google.com/maps";
+    dom.mapsLink.textContent = "Ubicaci\u00f3n";
+    dom.mapsLink.removeAttribute("aria-label");
     dom.routeProgressFill.style.transform = "scaleX(0)";
     mapController.resetOverview({ clearActive: true });
     updateTimelineState(-1);
@@ -636,8 +639,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     dom.chapterMunicipality.textContent = point.municipality;
     dom.activeTitle.textContent = point.title;
     dom.activePlace.textContent = point.place;
+    document.getElementById("map-panel-label").textContent = point.isHistoricalContinuation
+      ? "Continuidad hist\u00f3rica"
+      : "Mapa del Camino";
     dom.progressStatus.textContent = getProgressStatus(index, totalPoints);
     dom.mapsLink.href = point.mapUrl;
+    dom.mapsLink.textContent = point.isHistoricalContinuation ? "Referencia en mapas" : "Ubicaci\u00f3n";
+    if (point.isHistoricalContinuation) {
+      dom.mapsLink.setAttribute("aria-label", "Ver referencia territorial actual de Chacarita en mapas");
+    } else {
+      dom.mapsLink.removeAttribute("aria-label");
+    }
 
     updateStoryState(index);
     updateTimelineState(index);

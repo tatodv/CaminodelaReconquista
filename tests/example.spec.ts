@@ -15,11 +15,22 @@ test('incorpora las correcciones historicas principales', async ({ page }) => {
   await expect(page.getByText(/Conecta con Luj/i).first()).toBeVisible();
   await expect(page.getByText(/Conecta con Montevideo/i).first()).toBeVisible();
   await expect(page.getByText(/se encontraron con Liniers/i).first()).toBeVisible();
-  await expect(page.getByText(/Beresford acept/i).first()).toBeVisible();
+  await expect(page.getByText(/Beresford termin/i).first()).toBeVisible();
   await expect(page.getByText('5 paradas del recorrido + continuidad histórica hacia CABA').first()).toBeVisible();
   await expect(page.getByText('Fuera del recorrido turístico').first()).toBeVisible();
   await expect(page.getByText('Referencia territorial actual').first()).toBeVisible();
+  await expect(page.getByText('Continuidad histórica').first()).toBeVisible();
+  await expect(page.getByText('Plaza Mayor').first()).toBeVisible();
+  await expect(page.getByText('Fuerte').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Chacarita' }).first()).toBeVisible();
+  await expect(page.getByText('0/5')).toHaveCount(0);
+  await expect(page.getByText('Mapa del tour')).toHaveCount(0);
+  await expect(page.getByText('48 días')).toHaveCount(0);
+  await expect(page.getByText(/cuarenta y ocho/i)).toHaveCount(0);
+  await expect(page.getByText(/sexta parada/i)).toHaveCount(0);
+  await expect(page.getByText(/aceptó la rendición/i)).toHaveCount(0);
+  await expect(page.getByText(/combates decisivos/i)).toHaveCount(0);
+  await expect(page.getByText(/regreso a San Martín/i)).toHaveCount(0);
   await expect(page.getByText(new RegExp(`San Mart${'í'}n cierra el recorrido`, 'i'))).toHaveCount(0);
 });
 
@@ -50,7 +61,7 @@ test('no emite errores de consola al cargar', async ({ page }) => {
 test('muestra reproductor completo en el hero sin spotify pronto', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByText('Escuchar relato')).toBeVisible();
+  await expect(page.locator('#hero-audio-player').getByRole('button', { name: 'Reproducir relato sonoro' })).toBeVisible();
   await expect(page.getByLabel('Podcast pronto')).toHaveCount(0);
   await expect(page.locator('#hero-audio-player').getByLabel('Progreso del audio')).toBeHidden();
 });

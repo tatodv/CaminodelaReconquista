@@ -274,7 +274,7 @@ function createMapMarkup(points, displayPoints, geometry, options = {}) {
         `        <g class="story-map__point ${stateClasses}" data-map-point="${index}" transform="translate(${projected.x.toFixed(1)} ${projected.y.toFixed(1)})">`,
           '          <circle class="story-map__point-ring" r="38"></circle>',
           '          <circle class="story-map__point-core" r="28"></circle>',
-          `          <text class="story-map__point-number" y="8">${point.order}</text>`,
+          `          <text class="story-map__point-number" y="8">${point.isHistoricalContinuation ? String(point.order).padStart(2, "0") : point.order}</text>`,
         createMapLabelMarkup(point.mapLabel),
         "        </g>",
       ].join("");
@@ -290,7 +290,7 @@ function createMapMarkup(points, displayPoints, geometry, options = {}) {
           "  </div>",
           '  <div class="story-map__legend" aria-hidden="true">',
           '    <span><i class="story-map__legend-line story-map__legend-line--solid"></i>Recorrido turistico</span>',
-          '    <span><i class="story-map__legend-line story-map__legend-line--dashed"></i>Continuidad historica fuera del recorrido</span>',
+          '    <span><i class="story-map__legend-line story-map__legend-line--dashed"></i>Continuidad historica</span>',
           "  </div>",
           '  <div class="story-map__dots" aria-hidden="true">',
           ...points.map((_, index) => `<span data-map-dot="${index}" class="${index === activeIndex ? "is-active" : ""}"></span>`),
@@ -347,6 +347,10 @@ export async function createMapController({
     path.style.strokeDasharray = tourRouteLength;
     path.style.strokeDashoffset = tourRouteLength;
   });
+  if (continuationProgressPath) {
+    continuationProgressPath.style.strokeDasharray = continuationRouteLength;
+    continuationProgressPath.style.strokeDashoffset = continuationRouteLength;
+  }
 
   if (statusElement) {
     statusElement.textContent = "Mapa listo";
@@ -360,14 +364,15 @@ export async function createMapController({
   function applyCamera(index, instant = false) {
     const point = geometry.displayPoints[index] || geometry.displayPoints[0];
     const compact = isCompactViewport();
-    const baseScale = compact ? 1.02 : 1.08;
+    const isContinuation = points[index]?.isHistoricalContinuation;
+    const baseScale = isContinuation ? (compact ? 0.96 : 1) : (compact ? 1.02 : 1.08);
     const scale = baseScale * userScale;
     const xPercent = (point.x / VIEWBOX.width) * 100;
     const yPercent = (point.y / VIEWBOX.height) * 100;
-    const targetX = compact ? 42 : 34;
-    const targetY = compact ? 41 : 50;
-    const pullX = clamp(targetX - xPercent, -12, 2.5);
-    const pullY = clamp(targetY - yPercent, compact ? -16 : -4.4, compact ? 9 : 4.4);
+    const targetX = isContinuation ? (compact ? 48 : 46) : (compact ? 42 : 34);
+    const targetY = isContinuation ? (compact ? 24 : 56) : (compact ? 41 : 50);
+    const pullX = clamp(targetX - xPercent, isContinuation ? -18 : -12, isContinuation ? 8 : 2.5);
+    const pullY = clamp(targetY - yPercent, compact ? -30 : -6, compact ? 10 : 8);
 
     viewport.style.transitionDuration = instant ? "0ms" : "900ms";
     viewport.style.transformOrigin = `${xPercent}% ${yPercent}%`;
@@ -396,9 +401,13 @@ export async function createMapController({
     progress = clamp(nextProgress, 0, 1);
     const visibleLength = routeLength * progress;
     const tourVisibleLength = Math.min(visibleLength, tourRouteLength);
+    const continuationVisibleLength = Math.max(0, visibleLength - tourRouteLength);
 
     progressPath.style.strokeDashoffset = tourRouteLength - tourVisibleLength;
     glowPath.style.strokeDashoffset = tourRouteLength - tourVisibleLength;
+    if (continuationProgressPath) {
+      continuationProgressPath.style.strokeDashoffset = continuationRouteLength - Math.min(continuationVisibleLength, continuationRouteLength);
+    }
     updatePointState();
   }
 

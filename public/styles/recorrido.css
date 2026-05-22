@@ -2009,6 +2009,7 @@ main,
 
 .story-map__point--continuation .story-map__point-number {
   fill: #5d3a26;
+  font-size: 21px;
 }
 
 .story-map__point--continuation.is-complete .story-map__point-core,
@@ -3283,7 +3284,7 @@ input[type="range"] {
     left: 0.9rem;
     max-width: min(310px, calc(100% - 1.8rem));
     padding: 0.48rem 0.55rem;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
   }
 
   .story-map__point-label {
