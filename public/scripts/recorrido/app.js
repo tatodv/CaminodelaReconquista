@@ -28,6 +28,14 @@ function getCounterLabel(index, total) {
   return `${index + 1}/${total}`;
 }
 
+function getChapterLabel(point, tourStopCount) {
+  if (point?.isHistoricalContinuation) {
+    return `${padNumber(point.order)} / continuidad`;
+  }
+
+  return getCounterLabel(point.order - 1, tourStopCount);
+}
+
 function getRouteProgressForStep(index, total, localProgress = 0.5) {
   if (total <= 1) {
     return 1;
@@ -59,7 +67,7 @@ function getProgressStatus(index, total) {
   }
 
   if (index === total - 1) {
-    return "Cierre turistico";
+    return "Continuidad hacia CABA";
   }
 
   const labels = [
@@ -68,7 +76,7 @@ function getProgressStatus(index, total) {
     "Encuentro con Liniers",
     "Descanso y auxilio",
     "Rumbo a CABA",
-    "Cierre turistico",
+    "Continuidad hacia CABA",
   ];
 
   return labels[index] || `Tramo ${index + 1} de ${total}`;
@@ -82,7 +90,7 @@ function createIntroMarkup() {
     '    <div class="story-card__copy">',
     '      <p class="story-card__kicker">Introduccion</p>',
     '      <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
-    '      <p class="story-card__description">Seis paradas para recorrer la Reconquista desde el territorio. El orden propone una lectura territorial del Camino y se acompana con una cronologia de referencia para ubicar cada episodio.</p>',
+    '      <p class="story-card__description">5 paradas del recorrido + continuidad hist&oacute;rica hacia CABA. El orden propone una lectura territorial del Camino y se acompa&ntilde;a con una cronolog&iacute;a de referencia para ubicar cada episodio.</p>',
     '      <div class="story-card__actions">',
     '        <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
     "      </div>",
@@ -98,8 +106,8 @@ function createStoryNavMarkup(points) {
     '  <ol class="story-nav__list">',
     ...points.map((point, index) => {
       return [
-        '    <li class="story-nav__item">',
-        `      <button class="story-nav__button" type="button" data-jump-index="${index}" aria-label="Ir al punto ${escapeHtml(point.order)}: ${escapeHtml(point.title)}">`,
+        `    <li class="story-nav__item${point.isHistoricalContinuation ? " story-nav__item--continuation" : ""}">`,
+        `      <button class="story-nav__button" type="button" data-jump-index="${index}" aria-label="Ir a ${point.isHistoricalContinuation ? "continuidad historica" : "punto"} ${escapeHtml(point.order)}: ${escapeHtml(point.title)}">`,
         `        <span aria-hidden="true">${point.order}</span>`,
         "      </button>",
         "    </li>",
@@ -117,7 +125,7 @@ function getMicroStory(order) {
     3: ["Aqui se encontraron con Liniers.", "Las Conchas ordeno el avance."],
     4: ["San Isidro dio abrigo.", "La columna recupero fuerzas."],
     5: ["El Fondo de la Legua marco el rumbo.", "La marcha entraba hacia CABA."],
-    6: ["San Martin cierra el recorrido turistico.", "Beresford se rindio en CABA."],
+    6: ["Continuidad historica hacia CABA.", "Beresford se rindio en la Plaza Mayor."],
   };
 
   return stories[order] || [];
@@ -130,7 +138,7 @@ function getImpactStory(order) {
     3: "Las Conchas fue el encuentro decisivo con Liniers antes de ordenar el avance hacia Buenos Aires.",
     4: "San Isidro fue una escala para recuperar fuerzas antes de seguir hacia Buenos Aires.",
     5: "El antiguo camino rural prepara el tramo urbano: Chacarita, Miserere, Retiro y Plaza de Mayo.",
-    6: "La Plaza Central cierra la visita municipal; el cierre historico ocurre con Beresford en Plaza de Mayo.",
+    6: "El desenlace ocurrio en Buenos Aires: tras Chacarita, Miserere y Retiro, las fuerzas llegaron al entorno de la Plaza Mayor, donde Beresford termino rindiendose.",
   };
 
   return impacts[order] || "";
@@ -164,10 +172,13 @@ function createConnectionMarkup(point) {
 function createStoryPictureMarkup(point, index) {
   const sizes = "(max-width: 899px) 92vw, 44vw";
   const imageSet = point.imageSet;
+  const avifSource = imageSet.small.avif
+    ? `  <source srcset="${escapeHtml(imageSet.small.avif)} 560w, ${escapeHtml(imageSet.medium.avif)} 880w, ${escapeHtml(imageSet.large.avif)} 1200w" sizes="${sizes}" type="image/avif">`
+    : "";
 
   return [
     "<picture>",
-    `  <source srcset="${escapeHtml(imageSet.small.avif)} 560w, ${escapeHtml(imageSet.medium.avif)} 880w, ${escapeHtml(imageSet.large.avif)} 1200w" sizes="${sizes}" type="image/avif">`,
+    avifSource,
     `  <source srcset="${escapeHtml(imageSet.small.webp)} 560w, ${escapeHtml(imageSet.medium.webp)} 880w, ${escapeHtml(imageSet.large.webp)} 1200w" sizes="${sizes}" type="image/webp">`,
     `  <img src="${escapeHtml(imageSet.medium.jpg)}" srcset="${escapeHtml(imageSet.small.jpg)} 560w, ${escapeHtml(imageSet.medium.jpg)} 880w, ${escapeHtml(imageSet.large.jpg)} 1200w" sizes="${sizes}" alt="${escapeHtml(point.imageAlt)}" width="1200" height="800" loading="${index === 0 ? "eager" : "lazy"}"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">`,
     "</picture>",
@@ -197,15 +208,28 @@ function createAudioPlayerMarkup(id, options = {}) {
 function createStoryMarkup(point, index, total) {
   const microStory = getMicroStory(point.order);
   const impactStory = getImpactStory(point.order);
+  const pointRole = point.isHistoricalContinuation
+    ? "Continuidad historica hacia CABA"
+    : `Punto ${point.order}`;
+  const locationLabel = point.isHistoricalContinuation
+    ? "Referencia en mapas"
+    : "Ubicacion";
+  const actionLabel = point.isHistoricalContinuation
+    ? "Escuchar continuidad 06"
+    : `Escuchar punto ${point.order}`;
+  const audioEyebrow = point.isHistoricalContinuation
+    ? "Continuidad 06"
+    : `Punto ${point.order}`;
 
   return [
-    `<article class="story-step" id="step-${point.order}" data-index="${index}" aria-labelledby="story-title-${point.id}">`,
+    `<article class="story-step${point.isHistoricalContinuation ? " story-step--continuation" : ""}" id="step-${point.order}" data-index="${index}" data-point-type="${escapeHtml(point.type)}" aria-labelledby="story-title-${point.id}">`,
     '  <div class="story-card">',
     '    <div class="story-card__copy">',
     '      <div class="story-card__topline">',
     `        <span class="story-card__ordinal">${padNumber(point.order)}</span>`,
-    `        <span class="story-card__kicker">Punto ${point.order}</span>`,
+    `        <span class="story-card__kicker">${escapeHtml(pointRole)}</span>`,
     "      </div>",
+    point.badge ? `      <p class="story-card__badge">${escapeHtml(point.badge)}</p>` : "",
     `      <h2 class="story-card__title" id="story-title-${point.id}">${escapeHtml(point.title)}</h2>`,
     '      <div class="story-card__block story-card__block--place">',
     '        <p class="story-card__label">Lugar</p>',
@@ -216,18 +240,23 @@ function createStoryMarkup(point, index, total) {
     `        <p class="story-card__description">${escapeHtml(point.description)}</p>`,
     "      </div>",
     createConnectionMarkup(point),
+    point.mapReference ? [
+      '      <aside class="story-card__reference" aria-label="Referencia cartografica">',
+      `        <p>${escapeHtml(point.mapReference)}</p>`,
+      "      </aside>",
+    ].join("") : "",
     createMicroStoryMarkup(microStory),
     impactStory ? [
       '      <div class="story-card__block story-card__block--impact">',
-      '        <p class="story-card__label">En el recorrido</p>',
+      `        <p class="story-card__label">${point.isHistoricalContinuation ? "Hito de continuidad" : "En el recorrido"}</p>`,
       `        <p class="story-card__impact">${escapeHtml(impactStory)}</p>`,
       "      </div>",
     ].join("") : "",
     '      <div class="story-card__actions">',
-    `        <button class="chapter-button" type="button" data-audio-point="${index}" aria-expanded="false" aria-controls="audio-point-${point.order}">Escuchar punto ${point.order}</button>`,
+    `        <button class="chapter-button" type="button" data-audio-point="${index}" aria-expanded="false" aria-controls="audio-point-${point.order}">${actionLabel}</button>`,
     "      </div>",
-    `      ${createAudioPlayerMarkup(`audio-point-${point.order}`, { eyebrow: `Punto ${point.order}`, canSkipIntro: true, hidden: true })}`,
-    `      <a class="chapter-link story-card__location-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">Ubicacion</a>`,
+    `      ${createAudioPlayerMarkup(`audio-point-${point.order}`, { eyebrow: audioEyebrow, canSkipIntro: true, hidden: true })}`,
+    `      <a class="chapter-link story-card__location-link" href="${escapeHtml(point.mapUrl)}" target="_blank" rel="noreferrer noopener">${locationLabel}</a>`,
     "    </div>",
     '    <figure class="story-card__figure">',
     `      ${createStoryPictureMarkup(point, index)}`,
@@ -241,11 +270,11 @@ function createListMarkup(points, className) {
   return points
     .map((point, index) => {
       return [
-        `<button class="${className}" type="button" data-jump-index="${index}">`,
+        `<button class="${className}${point.isHistoricalContinuation ? ` ${className}--continuation` : ""}" type="button" data-jump-index="${index}">`,
         `  <span class="${className}__count">${padNumber(point.order)}</span>`,
         `  <span class="${className}__body">`,
         `    <strong class="${className}__title">${escapeHtml(point.title)}</strong>`,
-        `    <span class="${className}__meta">${escapeHtml(point.place)} | ${escapeHtml(point.municipality)}</span>`,
+        `    <span class="${className}__meta">${escapeHtml(point.isHistoricalContinuation ? "Continuidad historica hacia CABA | Fuera del recorrido turistico" : `${point.place} | ${point.municipality}`)}</span>`,
         "  </span>",
         "</button>",
       ].join("");
@@ -290,6 +319,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const data = await loadExperienceData();
   const totalPoints = data.points.length;
+  const tourStopCount = data.points.filter((point) => point.isTourStop).length;
 
   dom.storySections.innerHTML = [
     createStoryNavMarkup(data.points),
@@ -310,7 +340,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   );
   chapterButtons.forEach((button) => {
     const point = data.points[Number(button.dataset.audioPoint)];
-    button.dataset.defaultLabel = `Escuchar punto ${point.order}`;
+    button.dataset.defaultLabel = point.isHistoricalContinuation
+      ? "Escuchar continuidad 06"
+      : `Escuchar punto ${point.order}`;
     button.dataset.available = String(point.audio.available);
   });
 
@@ -570,7 +602,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    dom.chapterCount.textContent = `0/${totalPoints}`;
+    dom.chapterCount.textContent = `0/${tourStopCount}`;
     dom.chapterMunicipality.textContent = "Vista general";
     dom.activeTitle.textContent = "Bienvenidos al Camino de la Reconquista";
     dom.activePlace.textContent = "Una lectura guiada por los hitos de 1806";
@@ -600,7 +632,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         ? options.routeProgress
         : getRouteProgressForStep(index, totalPoints, localProgress);
 
-    dom.chapterCount.textContent = getCounterLabel(index, totalPoints);
+    dom.chapterCount.textContent = getChapterLabel(point, tourStopCount);
     dom.chapterMunicipality.textContent = point.municipality;
     dom.activeTitle.textContent = point.title;
     dom.activePlace.textContent = point.place;

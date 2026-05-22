@@ -16,7 +16,11 @@ test('incorpora las correcciones historicas principales', async ({ page }) => {
   await expect(page.getByText(/Conecta con Montevideo/i).first()).toBeVisible();
   await expect(page.getByText(/se encontraron con Liniers/i).first()).toBeVisible();
   await expect(page.getByText(/Beresford acept/i).first()).toBeVisible();
-  await expect(page.getByText(/finalizaci/i).first()).toBeVisible();
+  await expect(page.getByText('5 paradas del recorrido + continuidad histórica hacia CABA').first()).toBeVisible();
+  await expect(page.getByText('Fuera del recorrido turístico').first()).toBeVisible();
+  await expect(page.getByText('Referencia territorial actual').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Chacarita' }).first()).toBeVisible();
+  await expect(page.getByText(new RegExp(`San Mart${'í'}n cierra el recorrido`, 'i'))).toHaveCount(0);
 });
 
 test('enlaza la fuente historica al PDF de Google Drive', async ({ page }) => {
@@ -51,7 +55,7 @@ test('muestra reproductor completo en el hero sin spotify pronto', async ({ page
   await expect(page.locator('#hero-audio-player').getByLabel('Progreso del audio')).toBeHidden();
 });
 
-test('despliega audio compuesto del punto 6 con salto de introduccion', async ({ page }) => {
+test('despliega audio compuesto de la continuidad 06 con salto de introduccion', async ({ page }) => {
   await page.goto('/');
 
   await page.locator('[data-audio-point="5"]').scrollIntoViewIfNeeded();

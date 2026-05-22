@@ -36,6 +36,23 @@ function getPremiumIllustration(order) {
   };
 }
 
+function getContinuationIllustration() {
+  return {
+    small: {
+      webp: "/images/storytelling/la-reconquista-buenos-aires.webp",
+      jpg: "/images/storytelling/la-reconquista-buenos-aires.jpg",
+    },
+    medium: {
+      webp: "/images/storytelling/la-reconquista-buenos-aires.webp",
+      jpg: "/images/storytelling/la-reconquista-buenos-aires.jpg",
+    },
+    large: {
+      webp: "/images/storytelling/la-reconquista-buenos-aires.webp",
+      jpg: "/images/storytelling/la-reconquista-buenos-aires.jpg",
+    },
+  };
+}
+
 function getPodcastIndex(podcastData) {
   const index = new Map();
   const items = Array.isArray(podcastData?.items) ? podcastData.items : [];
@@ -83,6 +100,7 @@ function normalizePoint(feature, podcastIndex) {
 
   const order = Number(properties.order ?? properties.id ?? 0);
   const id = Number(properties.id ?? order);
+  const type = properties.type || "tour-stop";
   const podcast = podcastIndex.get(id);
   const introAudio = podcastIndex.intro;
   const closingAudio = podcastIndex.closing;
@@ -107,6 +125,12 @@ function normalizePoint(feature, podcastIndex) {
     id,
     order,
     slug: properties.slug || `punto-${order}`,
+    type,
+    isTourStop: type === "tour-stop",
+    isHistoricalContinuation: type === "historical-continuation",
+    badge: properties.badge?.trim() || "",
+    mapReference: properties.mapReference?.trim() || "",
+    isApproximateHistoricalLocation: Boolean(properties.isApproximateHistoricalLocation),
     rawName: properties.rawName || properties.title || `Punto ${order}`,
     title: properties.title || properties.place || `Punto ${order}`,
     place: properties.place || properties.title || "",
@@ -116,8 +140,12 @@ function normalizePoint(feature, podcastIndex) {
     connectionLabel: properties.connectionLabel?.trim() || "",
     connectionText: properties.connectionText?.trim() || "",
     mapLabel: properties.mapLabel?.trim() || "",
-    image: getPremiumIllustration(order).large.avif,
-    imageSet: getPremiumIllustration(order),
+    image: type === "historical-continuation"
+      ? getContinuationIllustration().large.jpg
+      : getPremiumIllustration(order).large.avif,
+    imageSet: type === "historical-continuation"
+      ? getContinuationIllustration()
+      : getPremiumIllustration(order),
     imageAlt: properties.imageAlt?.trim() || `Ilustracion de ${properties.place || properties.title || `Punto ${order}`}`,
     coordinates,
     mapUrl: `https://www.google.com/maps/search/?api=1&query=${coordinates[1]},${coordinates[0]}`,
@@ -141,15 +169,29 @@ function normalizePoint(feature, podcastIndex) {
 }
 
 function normalizeRoute(routeCollection) {
-  const feature = routeCollection?.features?.find(
+  const features = routeCollection?.features ?? [];
+  const touristic = features.find(
+    (candidate) =>
+      candidate?.geometry?.type === "LineString" &&
+      candidate?.properties?.routeType === "touristic-route",
+  );
+  const continuation = features.find(
+    (candidate) =>
+      candidate?.geometry?.type === "LineString" &&
+      candidate?.properties?.routeType === "historical-continuation",
+  );
+  const fallback = features.find(
     (candidate) => candidate?.geometry?.type === "LineString",
   );
 
-  if (!feature) {
+  if (!touristic && !fallback) {
     throw new Error("No se encontro una geometria de ruta valida.");
   }
 
-  return feature;
+  return {
+    touristic: touristic || fallback,
+    continuation: continuation || null,
+  };
 }
 
 function buildPointsFeatureCollection(points) {
@@ -162,6 +204,7 @@ function buildPointsFeatureCollection(points) {
         order: point.order,
         title: point.title,
         municipality: point.municipality,
+        type: point.type,
       },
       geometry: {
         type: "Point",

@@ -6,7 +6,8 @@
       "properties": {
         "id": "camino-reconquista-route",
         "name": "Camino de la Reconquista",
-        "source": "Touristic narrative line connecting the 6 stops in sequence order",
+        "routeType": "touristic-route",
+        "source": "Touristic narrative line connecting the 5 visited stops in sequence order",
         "note": "This LineString supports the Camino de la Reconquista tourist experience as a narrative route between stops. It is not presented as an exact historical trace of the 1806 military campaign."
       },
       "geometry": {
@@ -31,10 +32,29 @@
           [
             -58.4999754,
             -34.5460215
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "camino-reconquista-continuidad",
+        "name": "Continuidad historica hacia Chacarita",
+        "routeType": "historical-continuation",
+        "source": "Approximate contemporary reference line from the visited route toward Chacarita/CABA",
+        "note": "This dashed line shows historical continuity outside the tourist route; it is not an exact trace."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -58.4999754,
+            -34.5460215
           ],
           [
-            -58.5376772,
-            -34.5770261
+            -58.449583,
+            -34.590944
           ]
         ]
       }

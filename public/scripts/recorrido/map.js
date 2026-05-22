@@ -12,10 +12,10 @@ const MAP_ANCHORS = new Map([
   [3, { x: 496.8, y: 113.17 }],
   [4, { x: 797.3, y: 346.11 }],
   [5, { x: 821.25, y: 685 }],
-  [6, { x: 682.05, y: 843.52 }],
+  [6, { x: 934.4, y: 810.8 }],
 ]);
 
-const MAP_ROUTE_POINTS = [
+const MAP_TOUR_ROUTE_POINTS = [
   { x: 552.3, y: 759.3 },
   { x: 485.9, y: 709.4 },
   { x: 526.1, y: 596.9 },
@@ -39,9 +39,13 @@ const MAP_ROUTE_POINTS = [
   { x: 894.9, y: 649.6 },
   { x: 923.9, y: 667.8 },
   { x: 821.3, y: 685 },
-  { x: 791.1, y: 803.9 },
-  { x: 759.1, y: 923.1 },
-  { x: 682, y: 843.5 },
+];
+
+const MAP_CONTINUATION_ROUTE_POINTS = [
+  { x: 821.3, y: 685 },
+  { x: 867.4, y: 735.6 },
+  { x: 910.2, y: 776.4 },
+  { x: 934.4, y: 810.8 },
 ];
 
 function clamp(value, minimum, maximum) {
@@ -112,6 +116,17 @@ function getRouteCoordinates(route) {
     : [];
 }
 
+function getAllRouteCoordinates(route) {
+  if (route?.touristic || route?.continuation) {
+    return [
+      ...getRouteCoordinates(route.touristic),
+      ...getRouteCoordinates(route.continuation),
+    ];
+  }
+
+  return getRouteCoordinates(route);
+}
+
 function getCoordinateBounds(points, routeCoordinates) {
   const coordinates = [
     ...points.map((point) => point.coordinates),
@@ -151,9 +166,14 @@ function getDisplayPoint(point, fallbackPoint) {
 }
 
 function buildGeometry(points, route) {
-  const routeCoordinates = getRouteCoordinates(route);
+  const routeCoordinates = getAllRouteCoordinates(route);
+  const tourRouteCoordinates = getRouteCoordinates(route?.touristic || route);
+  const continuationRouteCoordinates = getRouteCoordinates(route?.continuation);
   const bounds = getCoordinateBounds(points, routeCoordinates);
-  const projectedRoute = routeCoordinates.map((coordinate) =>
+  const projectedTourRoute = tourRouteCoordinates.map((coordinate) =>
+    projectCoordinate(coordinate, bounds),
+  );
+  const projectedContinuationRoute = continuationRouteCoordinates.map((coordinate) =>
     projectCoordinate(coordinate, bounds),
   );
   const projectedPoints = points.map((point) =>
@@ -162,13 +182,19 @@ function buildGeometry(points, route) {
   const displayPoints = points.map((point, index) =>
     getDisplayPoint(point, projectedPoints[index]),
   );
-  const routePath = createRoutePath(
-    MAP_ROUTE_POINTS.length > 0 ? MAP_ROUTE_POINTS : projectedRoute,
+  const tourRoutePath = createRoutePath(
+    MAP_TOUR_ROUTE_POINTS.length > 0 ? MAP_TOUR_ROUTE_POINTS : projectedTourRoute,
+  );
+  const continuationRoutePath = createRoutePath(
+    MAP_CONTINUATION_ROUTE_POINTS.length > 0
+      ? MAP_CONTINUATION_ROUTE_POINTS
+      : projectedContinuationRoute,
   );
 
   return {
     displayPoints,
-    routePath,
+    tourRoutePath,
+    continuationRoutePath,
   };
 }
 
@@ -184,7 +210,7 @@ function getCompletedIndex(progress, total) {
   return Math.floor(clamp(progress, 0, 1) * (total - 1));
 }
 
-function createMapMarkup(points, displayPoints, routePath, options = {}) {
+function createMapMarkup(points, displayPoints, geometry, options = {}) {
   const activeIndex = Number.isFinite(options.activeIndex)
     ? options.activeIndex
     : 0;
@@ -203,9 +229,10 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
       ? ` stroke-dasharray="1" stroke-dashoffset="${(1 - progress).toFixed(3)}"`
       : "";
   const pathLengthAttribute = options.staticProgress === true ? ' pathLength="1"' : "";
+  const continuationPath = geometry.continuationRoutePath || "";
 
   return [
-    `<div class="story-map${interactive ? "" : " story-map--static"}" role="img" aria-label="Mapa animado del Camino de la Reconquista">`,
+    `<div class="story-map${interactive ? "" : " story-map--static"}" role="img" aria-label="Mapa del Camino de la Reconquista: recorrido turistico continuo y continuidad historica punteada hacia Chacarita">`,
     '  <div class="story-map__viewport">',
     `    <svg class="story-map__svg" viewBox="${svgViewBox}" preserveAspectRatio="${preserveAspectRatio}" aria-hidden="true">`,
     "      <defs>",
@@ -224,9 +251,11 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     '      <image class="story-map__base-image" href="/material/mapa_sinpuntos.webp" x="0" y="0" width="1920" height="1080" preserveAspectRatio="xMidYMid slice"></image>',
     '      <rect class="story-map__paper-wash" width="1920" height="1080"></rect>',
     `      <rect class="story-map__depth" width="1920" height="1080" fill="url(#${idPrefix}-mapDepth)"></rect>`,
-    `      <path class="story-map__route-base" d="${routePath}"></path>`,
-    `      <path class="story-map__route-glow" d="${routePath}"${pathLengthAttribute}${dashAttrs}></path>`,
-    `      <path class="story-map__route-progress" d="${routePath}"${pathLengthAttribute}${dashAttrs}></path>`,
+    `      <path class="story-map__route-base" d="${geometry.tourRoutePath}"></path>`,
+    `      <path class="story-map__route-glow" d="${geometry.tourRoutePath}"${pathLengthAttribute}${dashAttrs}></path>`,
+    `      <path class="story-map__route-progress" d="${geometry.tourRoutePath}"${pathLengthAttribute}${dashAttrs}></path>`,
+    continuationPath ? `      <path class="story-map__route-continuation-base" d="${continuationPath}"></path>` : "",
+    continuationPath ? `      <path class="story-map__route-continuation-progress" d="${continuationPath}"${pathLengthAttribute}${dashAttrs}></path>` : "",
     '      <g class="story-map__focuses">',
     ...displayPoints.map((point, index) => (
       `        <circle class="story-map__focus${index === activeIndex ? " is-active" : ""}" data-map-focus="${index}" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="94" fill="url(#${idPrefix}-focusGradient)"></circle>`
@@ -236,15 +265,16 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
     ...points.map((point, index) => {
       const projected = displayPoints[index];
       const stateClasses = [
+        point.isHistoricalContinuation ? "story-map__point--continuation" : "",
         index === activeIndex ? "is-active" : "",
         index <= completedIndex ? "is-complete" : "",
       ].filter(Boolean).join(" ");
 
       return [
         `        <g class="story-map__point ${stateClasses}" data-map-point="${index}" transform="translate(${projected.x.toFixed(1)} ${projected.y.toFixed(1)})">`,
-        '          <circle class="story-map__point-ring" r="38"></circle>',
-        '          <circle class="story-map__point-core" r="28"></circle>',
-        `          <text class="story-map__point-number" y="8">${point.order}</text>`,
+          '          <circle class="story-map__point-ring" r="38"></circle>',
+          '          <circle class="story-map__point-core" r="28"></circle>',
+          `          <text class="story-map__point-number" y="8">${point.order}</text>`,
         createMapLabelMarkup(point.mapLabel),
         "        </g>",
       ].join("");
@@ -258,6 +288,10 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
           '    <button class="story-map__control" type="button" data-map-zoom="in" aria-label="Acercar mapa">+</button>',
           '    <button class="story-map__control" type="button" data-map-zoom="out" aria-label="Alejar mapa">-</button>',
           "  </div>",
+          '  <div class="story-map__legend" aria-hidden="true">',
+          '    <span><i class="story-map__legend-line story-map__legend-line--solid"></i>Recorrido turistico</span>',
+          '    <span><i class="story-map__legend-line story-map__legend-line--dashed"></i>Continuidad historica fuera del recorrido</span>',
+          "  </div>",
           '  <div class="story-map__dots" aria-hidden="true">',
           ...points.map((_, index) => `<span data-map-dot="${index}" class="${index === activeIndex ? "is-active" : ""}"></span>`),
           "  </div>",
@@ -270,7 +304,7 @@ function createMapMarkup(points, displayPoints, routePath, options = {}) {
 export function createMapSnapshotMarkup({ points, route, activeIndex = 0, progress = 0, idPrefix = "snapshot" }) {
   const geometry = buildGeometry(points, route);
 
-  return createMapMarkup(points, geometry.displayPoints, geometry.routePath, {
+  return createMapMarkup(points, geometry.displayPoints, geometry, {
     activeIndex,
     progress,
     idPrefix,
@@ -291,7 +325,7 @@ export async function createMapController({
   container.innerHTML = createMapMarkup(
     points,
     geometry.displayPoints,
-    geometry.routePath,
+    geometry,
     {
       idPrefix: "mainStoryMap",
       interactive: true,
@@ -301,14 +335,17 @@ export async function createMapController({
   const viewport = container.querySelector(".story-map__viewport");
   const progressPath = container.querySelector(".story-map__route-progress");
   const glowPath = container.querySelector(".story-map__route-glow");
+  const continuationProgressPath = container.querySelector(".story-map__route-continuation-progress");
   const pointNodes = Array.from(container.querySelectorAll("[data-map-point]"));
   const focusNodes = Array.from(container.querySelectorAll("[data-map-focus]"));
   const dotNodes = Array.from(container.querySelectorAll("[data-map-dot]"));
-  const routeLength = progressPath.getTotalLength();
+  const tourRouteLength = progressPath.getTotalLength();
+  const continuationRouteLength = continuationProgressPath?.getTotalLength() || 0;
+  const routeLength = tourRouteLength + continuationRouteLength;
 
   [progressPath, glowPath].forEach((path) => {
-    path.style.strokeDasharray = routeLength;
-    path.style.strokeDashoffset = routeLength;
+    path.style.strokeDasharray = tourRouteLength;
+    path.style.strokeDashoffset = tourRouteLength;
   });
 
   if (statusElement) {
@@ -358,10 +395,10 @@ export async function createMapController({
   function setRouteProgress(nextProgress) {
     progress = clamp(nextProgress, 0, 1);
     const visibleLength = routeLength * progress;
-    const offset = routeLength - visibleLength;
+    const tourVisibleLength = Math.min(visibleLength, tourRouteLength);
 
-    progressPath.style.strokeDashoffset = offset;
-    glowPath.style.strokeDashoffset = offset;
+    progressPath.style.strokeDashoffset = tourRouteLength - tourVisibleLength;
+    glowPath.style.strokeDashoffset = tourRouteLength - tourVisibleLength;
     updatePointState();
   }
 

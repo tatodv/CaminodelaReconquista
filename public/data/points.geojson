@@ -5,6 +5,7 @@
       "type": "Feature",
       "properties": {
         "id": 1,
+        "type": "tour-stop",
         "order": 1,
         "slug": "1-los-caserios-de-perdriel",
         "rawName": "Punto 1. Los Caserios de Perdriel",
@@ -29,6 +30,7 @@
       "type": "Feature",
       "properties": {
         "id": 2,
+        "type": "tour-stop",
         "order": 2,
         "slug": "2-chacra-de-la-familia-marquez",
         "rawName": "Punto 2. Chacra de la familia Marquez",
@@ -53,6 +55,7 @@
       "type": "Feature",
       "properties": {
         "id": 3,
+        "type": "tour-stop",
         "order": 3,
         "slug": "3-el-desembarco-en-las-conchas",
         "rawName": "Punto 3. El Desembarco en Las Conchas",
@@ -77,6 +80,7 @@
       "type": "Feature",
       "properties": {
         "id": 4,
+        "type": "tour-stop",
         "order": 4,
         "slug": "4-la-plaza-de-san-isidro",
         "rawName": "Punto 4. La Plaza de San Isidro",
@@ -101,6 +105,7 @@
       "type": "Feature",
       "properties": {
         "id": 5,
+        "type": "tour-stop",
         "order": 5,
         "slug": "5-el-avance-por-vicente-lopez",
         "rawName": "Punto 5. El avance por Vicente Lopez",
@@ -125,16 +130,21 @@
       "type": "Feature",
       "properties": {
         "id": 6,
+        "type": "historical-continuation",
         "order": 6,
-        "slug": "6-la-victoria-final",
-        "rawName": "Punto 6. La Victoria Final",
-        "title": "La Victoria Final",
-        "place": "Plaza Central",
-        "municipality": "San Mart\u00edn",
-        "description": "La Plaza Central de San Mart\u00edn marca la finalizaci\u00f3n del recorrido tur\u00edstico realizado por la Municipalidad de San Mart\u00edn. El desenlace hist\u00f3rico ocurri\u00f3 en CABA: tras pasar por Chacarita, Miserere y Retiro, la Reconquista culmin\u00f3 en el entorno de la Plaza de Mayo, donde Beresford acept\u00f3 la rendici\u00f3n el 12 de agosto de 1806.",
-        "connectionLabel": "Cierre en CABA",
-        "connectionText": "San Mart\u00edn cierra el recorrido tur\u00edstico; la rendici\u00f3n de Beresford pertenece al tramo final urbano que llega a Plaza de Mayo.",
-        "mapLabel": "Finaliza el recorrido tur\u00edstico",
+        "slug": "6-chacarita-continuidad-historica",
+        "rawName": "06. Chacarita",
+        "title": "Chacarita",
+        "place": "Chacarita de los Colegiales, CABA",
+        "municipality": "CABA",
+        "badge": "Fuera del recorrido tur\u00edstico",
+        "mapReference": "Referencia territorial actual: Parque Los Andes",
+        "isApproximateHistoricalLocation": true,
+        "description": "Desde este tramo, la marcha continu\u00f3 hacia la Chacarita de los Colegiales antes de avanzar hacia Miserere, Retiro y la Plaza Mayor, donde culmin\u00f3 la Reconquista de Buenos Aires.",
+        "connectionLabel": "Continuidad hist\u00f3rica",
+        "connectionText": "Chacarita funciona como hito de continuidad hacia CABA: no forma parte del recorrido tur\u00edstico, pero ayuda a leer el avance final hacia Miserere, Retiro y la Plaza Mayor.",
+        "mapLabel": "Continuidad hist\u00f3rica hacia CABA",
+        "imageAlt": "Pintura La Reconquista de Buenos Aires, usada como imagen de continuidad hist\u00f3rica hacia CABA.",
         "image": "/images/points/punto6.svg",
         "audio": "/audio/punto-6.mp3",
         "duration": null,
@@ -142,7 +152,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [-58.5376772, -34.5770261]
+        "coordinates": [-58.449583, -34.590944]
       }
     }
   ]
