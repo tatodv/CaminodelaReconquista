@@ -12,8 +12,8 @@ test('incorpora las correcciones historicas principales', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByText(/enfrentaron una columna brit/i).first()).toBeVisible();
-  await expect(page.getByText(/Conecta con Luj/i).first()).toBeVisible();
-  await expect(page.getByText(/Conecta con Montevideo/i).first()).toBeVisible();
+  await expect(page.getByText(/Conexi.*Luj/i).first()).toBeVisible();
+  await expect(page.getByText(/Conexi.*Montevideo/i).first()).toBeVisible();
   await expect(page.getByText(/se encontraron con Liniers/i).first()).toBeVisible();
   await expect(page.getByText(/Beresford termin/i).first()).toBeVisible();
   await expect(page.getByText('5 paradas del recorrido + continuidad histórica hacia CABA').first()).toBeVisible();
@@ -61,7 +61,9 @@ test('no emite errores de consola al cargar', async ({ page }) => {
 test('muestra reproductor completo en el hero sin spotify pronto', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.locator('#hero-audio-player').getByRole('button', { name: 'Reproducir relato sonoro' })).toBeVisible();
+  await expect(page.locator('#hero-audio-player').getByRole('button', { name: 'Reproducir relato completo' })).toBeVisible();
+  await expect(page.getByText('Escuchar relato completo')).toBeVisible();
+  await expect(page.getByText(/Escuchar introducci/i)).toHaveCount(0);
   await expect(page.getByLabel('Podcast pronto')).toHaveCount(0);
   await expect(page.locator('#hero-audio-player').getByLabel('Progreso del audio')).toBeHidden();
 });
@@ -74,6 +76,8 @@ test('despliega audio compuesto de la continuidad 06 con salto de introduccion',
 
   const player = page.locator('#audio-point-6');
   await expect(player).toBeVisible();
+  await expect(page.locator('#audio-sticky')).toBeVisible();
+  await expect(page.locator('#audio-sticky')).toContainText('Continuidad');
   await expect(player.getByLabel('Saltar introduccion')).toBeVisible();
   await expect(player.locator('.plyr')).toBeVisible();
   await expect(player.getByRole('button', { name: 'Ajustes' }).first()).toBeVisible();
@@ -86,6 +90,7 @@ test('mantiene tocables los controles del reproductor al abrir un punto', async 
   await page.locator('[data-audio-point="0"]').click();
 
   const player = page.locator('#audio-point-1');
+  await expect(page.locator('#audio-sticky')).toBeVisible();
   await expect(player.getByLabel(/Pausar|Reproducir/)).toBeEnabled();
   await expect(player.getByLabel('Saltar introduccion')).toBeEnabled();
   await expect(player.getByRole('button', { name: 'Ajustes' }).first()).toBeEnabled();
@@ -115,6 +120,22 @@ test('cierra el reproductor y vuelve a mostrar escuchar punto', async ({ page })
   await expect(page.locator('#audio-point-1')).toBeHidden();
   await expect(listenButton).toBeVisible();
   await expect(listenButton).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('el reproductor sticky cierra y restaura el audio activo', async ({ page }) => {
+  await page.goto('/');
+
+  const listenButton = page.locator('[data-audio-point="0"]');
+  await listenButton.scrollIntoViewIfNeeded();
+  await listenButton.click();
+
+  const sticky = page.locator('#audio-sticky');
+  await expect(sticky).toBeVisible();
+  await sticky.getByLabel('Cerrar reproductor y pausar audio').click();
+
+  await expect(sticky).toBeHidden();
+  await expect(page.locator('#audio-point-1')).toBeHidden();
+  await expect(listenButton).toBeVisible();
 });
 
 test('el hero cierra el reproductor de punto activo', async ({ page }) => {

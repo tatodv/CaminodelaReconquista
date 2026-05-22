@@ -323,7 +323,7 @@
             <div class="hero-audio" id="hero-audio-player" data-audio-player="hero-audio-player">
               <button class="hero-audio__button" type="button" data-audio-action="toggle" aria-label="Reproducir relato sonoro">
                 <span aria-hidden="true"></span>
-                <span data-audio-status aria-live="polite">Escuchar relato</span>
+                <span data-audio-status aria-live="polite">Escuchar relato completo</span>
               </button>
               <span data-audio-current hidden>00:00</span>
               <span data-audio-duration hidden>00:00</span>
@@ -336,8 +336,8 @@
       <section class="narrative-passage" aria-label="Introducci&oacute;n del recorrido">
         <div class="narrative-passage__inner">
           <p class="narrative-passage__eyebrow">El recorrido</p>
-          <p class="narrative-passage__line">5 paradas del recorrido + continuidad hist&oacute;rica hacia CABA.</p>
-          <p class="narrative-passage__detail">El orden propone una lectura territorial del Camino; la cronolog&iacute;a de referencia aparece antes del mapa para acompa&ntilde;ar la visita.</p>
+          <p class="narrative-passage__line">Cinco paradas para seguir la organizaci&oacute;n de la Reconquista y un tramo final que explica c&oacute;mo la historia continu&oacute; hacia CABA.</p>
+          <p class="narrative-passage__detail">El tour recorre puntos del norte bonaerense; la l&iacute;nea punteada muestra la continuidad hist&oacute;rica hacia Chacarita, Miserere, Retiro y Plaza Mayor.</p>
         </div>
       </section>
 
@@ -350,10 +350,10 @@
 
           <div class="context-brief__body">
             <p>
-              En 1806, Buenos Aires qued&oacute; bajo ocupaci&oacute;n brit&aacute;nica. La respuesta no sali&oacute; de un solo lugar: se arm&oacute; con vecinos, milicias, chacareros y autoridades locales en distintos puntos del antiguo Pago de la Costa y de las Conchas.
+              Este Camino recorre cinco paradas donde se organizaron fuerzas, circularon noticias y se sostuvo la marcha de la Reconquista.
             </p>
             <p>
-              Este Camino pone el foco en esos lugares: donde se reunieron fuerzas, circularon noticias, se prest&oacute; auxilio y se sostuvo la marcha que culmin&oacute; con la recuperaci&oacute;n de Buenos Aires el 12 de agosto de 1806.
+              La visita termina en el territorio del tour, pero el relato hist&oacute;rico contin&uacute;a hacia CABA hasta el entorno de la Plaza Mayor y el Fuerte.
             </p>
 
             <ol class="context-timeline" aria-label="L&iacute;nea de tiempo compacta">
@@ -373,24 +373,24 @@
           <div class="union-brief__intro">
             <p class="union-brief__eyebrow">Clave del Camino</p>
             <h2 id="union-brief-title">La fuerza de la uni&oacute;n</h2>
-            <p>La Reconquista no fue una respuesta aislada: se sostuvo con vecinos, chacareros, milicias y autoridades locales que convirtieron el territorio en organizaci&oacute;n.</p>
+            <p>Una gu&iacute;a breve para leer la experiencia: paradas tur&iacute;sticas, conexiones previas, continuidad hist&oacute;rica y cierre en CABA.</p>
           </div>
 
           <div class="union-brief__grid" aria-label="Tres claves para leer la Reconquista">
             <article class="union-brief__seal">
               <span>01</span>
-              <h3>Un virreinato desorganizado</h3>
-              <p>El poder formal no alcanzaba para responder solo; la defensa empez&oacute; a tomar forma desde abajo.</p>
+              <h3>5 paradas del tour</h3>
+              <p>Los puntos 1-5 ordenan el recorrido tur&iacute;stico por los hitos del norte bonaerense.</p>
             </article>
             <article class="union-brief__seal">
               <span>02</span>
-              <h3>El norte se levanta</h3>
-              <p>San Mart&iacute;n, San Isidro, Tigre y Vicente L&oacute;pez aparecen como una red de auxilio y marcha.</p>
+              <h3>Conexiones previas</h3>
+              <p>Luj&aacute;n y Montevideo ayudan a entender de d&oacute;nde vinieron recursos, apoyos y organizaci&oacute;n.</p>
             </article>
             <article class="union-brief__seal">
               <span>03</span>
-              <h3>Un hito de nacionalidad</h3>
-              <p>Perdriel, Luj&aacute;n y la marcha popular anticipan una memoria de identidad, soberan&iacute;a local y comunidad organizada.</p>
+              <h3>Continuidad a CABA</h3>
+              <p>Chacarita no es parada del tour: marca el avance hacia Miserere, Retiro, Plaza Mayor y el Fuerte.</p>
             </article>
           </div>
         </div>
@@ -655,6 +655,19 @@
 
     <div class="plyr-dock" id="plyr-dock">
       <audio id="shared-audio" preload="metadata" controls></audio>
+    </div>
+    <div class="audio-sticky" id="audio-sticky" hidden aria-live="polite">
+      <button class="audio-sticky__toggle" type="button" data-sticky-audio-toggle aria-label="Pausar audio">
+        <span aria-hidden="true"></span>
+      </button>
+      <div class="audio-sticky__body">
+        <p class="audio-sticky__eyebrow">Reproduciendo</p>
+        <p class="audio-sticky__title" id="audio-sticky-title">Relato completo</p>
+        <div class="audio-sticky__progress" aria-hidden="true">
+          <span id="audio-sticky-progress"></span>
+        </div>
+      </div>
+      <button class="audio-sticky__close" type="button" data-sticky-audio-close aria-label="Cerrar reproductor y pausar audio">Cerrar</button>
     </div>
   </body>
 </html>

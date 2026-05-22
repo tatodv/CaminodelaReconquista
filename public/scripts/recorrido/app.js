@@ -91,9 +91,6 @@ function createIntroMarkup() {
     '      <p class="story-card__kicker">Introduccion</p>',
     '      <h2 class="story-card__title" id="story-title-intro">Bienvenidos al Camino de la Reconquista</h2>',
     '      <p class="story-card__description">5 paradas del recorrido + continuidad hist&oacute;rica hacia CABA. Los n&uacute;meros 1-5 indican el orden del recorrido tur&iacute;stico; la cronolog&iacute;a hist&oacute;rica aparece en la l&iacute;nea de tiempo.</p>',
-    '      <div class="story-card__actions">',
-    '        <button class="chapter-button" type="button" disabled>Escuchar introduccion</button>',
-    "      </div>",
     "    </div>",
     "  </div>",
     "</article>",
@@ -160,10 +157,13 @@ function createConnectionMarkup(point) {
   if (!point.connectionLabel && !point.connectionText) {
     return "";
   }
+  const connectionLabel = point.connectionLabel
+    ? point.connectionLabel.replace(/^Conecta con\s+/i, "Conexi\u00f3n hist\u00f3rica · ")
+    : "Conexi\u00f3n hist\u00f3rica";
 
   return [
     '      <aside class="story-card__connection" aria-label="Conexion historica">',
-    `        <p class="story-card__connection-label">${escapeHtml(point.connectionLabel || "Conecta con")}</p>`,
+    `        <p class="story-card__connection-label">${escapeHtml(connectionLabel)}</p>`,
     `        <p class="story-card__connection-text">${escapeHtml(point.connectionText)}</p>`,
     "      </aside>",
   ].join("");
@@ -315,6 +315,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     heroPlayer: document.getElementById("hero-audio-player"),
     plyrDock: document.getElementById("plyr-dock"),
     audioElement: document.getElementById("shared-audio"),
+    audioSticky: document.getElementById("audio-sticky"),
+    audioStickyTitle: document.getElementById("audio-sticky-title"),
+    audioStickyProgress: document.getElementById("audio-sticky-progress"),
+    audioStickyToggle: document.querySelector("[data-sticky-audio-toggle]"),
+    audioStickyClose: document.querySelector("[data-sticky-audio-close]"),
   };
 
   const data = await loadExperienceData();
@@ -403,10 +408,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   function syncAudioUi(audioState) {
     const activeTrackId = audioState.trackId;
+    const hasOpenAudio = Boolean(state.openPlayerId && activeTrackId);
     document.body.classList.toggle(
       "audio-point-open",
       Boolean(state.openPlayerId && state.openPlayerId !== data.heroAudio.id),
     );
+    document.body.classList.toggle("audio-sticky-open", hasOpenAudio);
 
     chapterButtons.forEach((button) => {
       const point = data.points[Number(button.dataset.audioPoint)];
@@ -440,6 +447,46 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       syncAudioPlayer(player, isActivePlayer ? audioState : null);
     });
+
+    syncStickyAudio(audioState, hasOpenAudio);
+  }
+
+  function getStickyAudioTitle(audioState) {
+    if (audioState.trackId === data.heroAudio.id) {
+      return "Relato completo";
+    }
+
+    const point = data.points.find((item) => item.audio.id === audioState.trackId);
+    if (!point) {
+      return "Relato";
+    }
+
+    return point.isHistoricalContinuation
+      ? `Continuidad hist\u00f3rica - ${point.title}`
+      : `Punto ${point.order} - ${point.title}`;
+  }
+
+  function syncStickyAudio(audioState, hasOpenAudio) {
+    if (!dom.audioSticky) {
+      return;
+    }
+
+    dom.audioSticky.hidden = !hasOpenAudio;
+    if (!hasOpenAudio) {
+      return;
+    }
+
+    const progress = audioState.duration > 0
+      ? Math.min(1, Math.max(0, audioState.currentTime / audioState.duration))
+      : 0;
+
+    dom.audioStickyTitle.textContent = getStickyAudioTitle(audioState);
+    dom.audioStickyProgress.style.transform = `scaleX(${progress})`;
+    dom.audioStickyToggle.classList.toggle("is-playing", audioState.isPlaying);
+    dom.audioStickyToggle.setAttribute(
+      "aria-label",
+      audioState.isPlaying ? "Pausar audio" : "Reproducir audio",
+    );
   }
 
   function syncAudioPlayer(player, audioState) {
@@ -453,11 +500,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (player.id === "hero-audio-player") {
       const statusText = toggle.querySelector("[data-audio-status]");
       if (statusText) {
-        statusText.textContent = isPlaying ? "Pausar relato" : "Escuchar relato";
+        statusText.textContent = isPlaying ? "Pausar relato completo" : "Escuchar relato completo";
       }
       toggle.setAttribute(
         "aria-label",
-        isPlaying ? "Pausar relato sonoro" : "Reproducir relato sonoro",
+        isPlaying ? "Pausar relato completo" : "Reproducir relato completo",
       );
       toggle.classList.toggle("is-playing", isPlaying);
       toggle.disabled = !data.heroAudio.available;
@@ -602,8 +649,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    dom.chapterCount.textContent = "Vista general";
-    dom.chapterMunicipality.textContent = "Vista general";
+    dom.chapterCount.textContent = "Recorrido";
+    dom.chapterMunicipality.textContent = "continuidad";
     dom.activeTitle.textContent = "Bienvenidos al Camino de la Reconquista";
     dom.activePlace.textContent = "Una lectura guiada por los hitos de 1806";
     document.getElementById("map-panel-label").textContent = "Mapa del Camino";
@@ -889,6 +936,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (event.target.matches('[data-audio-action="seek"]')) {
       handleSeek(event.target);
     }
+  });
+
+  dom.audioStickyToggle?.addEventListener("click", () => {
+    audioController.togglePlayback();
+  });
+
+  dom.audioStickyClose?.addEventListener("click", () => {
+    closePointPlayer();
   });
 
   [dom.overviewList, dom.timelineList].filter(Boolean).forEach((container) => {
