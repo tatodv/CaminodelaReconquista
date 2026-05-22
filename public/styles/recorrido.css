@@ -2775,12 +2775,13 @@ main,
 
 .memory-close {
   scroll-margin-top: var(--header-height);
-  padding: clamp(2.8rem, 5vw, 4.8rem) var(--page-pad);
-  border-top: 1px solid rgba(95, 56, 34, 0.12);
+  padding: clamp(3rem, 5.4vw, 5.2rem) var(--page-pad);
+  border-top: 1px solid rgba(0, 0, 0, 0.35);
+  color: #f1e7d8;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='0.11'/%3E%3C/svg%3E"),
-    linear-gradient(180deg, rgba(255, 248, 239, 0.54), rgba(226, 209, 184, 0.38)),
-    #eadcc9;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 22% 18%, rgba(169, 68, 25, 0.2), transparent 46%),
+    linear-gradient(180deg, #241e19 0%, #1d1813 100%);
 }
 
 .memory-close__inner {
@@ -2794,15 +2795,15 @@ main,
   width: min(1120px, 100%);
   margin: 0 auto;
   padding: clamp(1.35rem, 3vw, 2.5rem);
-  border-top: 1px solid rgba(95, 56, 34, 0.22);
-  border-bottom: 1px solid rgba(95, 56, 34, 0.22);
+  border-top: 1px solid rgba(241, 231, 216, 0.16);
+  border-bottom: 1px solid rgba(241, 231, 216, 0.16);
 }
 
 .memory-close__inner::before {
   content: "";
   position: absolute;
   inset: 0.55rem;
-  border: 1px solid rgba(169, 68, 25, 0.12);
+  border: 1px solid rgba(224, 145, 95, 0.24);
   pointer-events: none;
 }
 
@@ -2827,10 +2828,14 @@ main,
   text-transform: uppercase;
 }
 
+.memory-close__eyebrow {
+  color: #e0915f;
+}
+
 .memory-close h2 {
   max-width: 13ch;
   margin: 0.48rem 0 0;
-  color: var(--ink-strong);
+  color: #f8f1e8;
   font-family: var(--serif);
   font-size: clamp(2.15rem, 3.6vw, 4rem);
   font-weight: 800;
@@ -2841,9 +2846,9 @@ main,
 .memory-close__copy p:not(.memory-close__eyebrow) {
   max-width: 44ch;
   margin: 1rem 0 0;
-  color: var(--ink-soft);
+  color: rgba(241, 231, 216, 0.8);
   font-size: clamp(1rem, 1.08vw, 1.12rem);
-  line-height: 1.58;
+  line-height: 1.6;
 }
 
 .memory-close__seals {
@@ -2860,11 +2865,11 @@ main,
 .memory-close__seal {
   min-height: 100%;
   padding: 0.95rem 0.85rem 1rem;
-  border: 1px solid rgba(95, 56, 34, 0.16);
-  border-top: 2px solid rgba(169, 68, 25, 0.42);
+  border: 1px solid rgba(241, 231, 216, 0.12);
+  border-top: 2px solid rgba(224, 145, 95, 0.6);
   border-radius: var(--radius);
-  background: rgba(255, 249, 239, 0.34);
-  box-shadow: var(--shadow-card);
+  background: rgba(241, 231, 216, 0.05);
+  box-shadow: 0 18px 36px -22px rgba(0, 0, 0, 0.7);
   transition:
     transform var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease),
@@ -2873,13 +2878,13 @@ main,
 
 .memory-close__seal:hover {
   transform: translateY(-2px);
-  border-top-color: var(--accent);
-  box-shadow: var(--shadow-card-hover);
+  border-top-color: #e0915f;
+  box-shadow: 0 26px 48px -22px rgba(0, 0, 0, 0.8);
 }
 
 .memory-close__seal span {
   display: inline-block;
-  color: var(--ink);
+  color: #f5ede1;
   font-family: var(--serif);
   font-size: clamp(1.18rem, 1.35vw, 1.42rem);
   font-weight: 800;
@@ -2888,7 +2893,7 @@ main,
 
 .memory-close__seal p {
   margin: 0.58rem 0 0;
-  color: var(--ink-soft);
+  color: rgba(241, 231, 216, 0.66);
   font-size: 0.94rem;
   line-height: 1.48;
 }
@@ -2908,10 +2913,10 @@ main,
   justify-content: center;
   min-height: 42px;
   padding: 0.62rem 0.9rem;
-  border: 1px solid rgba(95, 56, 34, 0.24);
+  border: 1px solid rgba(241, 231, 216, 0.3);
   border-radius: 2px;
-  background: rgba(255, 249, 239, 0.42);
-  color: var(--ink);
+  background: rgba(241, 231, 216, 0.06);
+  color: #f5ede1;
   font-size: 0.84rem;
   font-weight: 900;
   text-decoration: none;
@@ -2923,7 +2928,7 @@ main,
 
 .memory-close__link:hover {
   transform: translateY(-1px);
-  border-color: rgba(169, 68, 25, 0.4);
+  border-color: #e0915f;
 }
 
 .memory-close__link:active {
@@ -2931,9 +2936,14 @@ main,
 }
 
 .memory-close__link--primary {
-  border-color: rgba(143, 53, 16, 0.36);
-  background: rgba(169, 68, 25, 0.1);
-  color: var(--accent-deep);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fdf6ec;
+}
+
+.memory-close__link--primary:hover {
+  border-color: var(--accent-deep);
+  background: var(--accent-deep);
 }
 
 .overview {
