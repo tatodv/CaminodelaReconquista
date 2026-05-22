@@ -112,9 +112,9 @@
         "title": "El avance por Vicente L\u00f3pez",
         "place": "Plaza Adolfo Vienni",
         "municipality": "Vicente L\u00f3pez",
-        "description": "La columna avanz\u00f3 por el antiguo Camino del Fondo de la Legua, atravesando sectores del actual Vicente L\u00f3pez. Este es el \u00faltimo tramo del recorrido tur\u00edstico; desde aqu\u00ed, el relato hist\u00f3rico contin\u00faa hacia Chacarita, Miserere, Retiro y el entorno de la Plaza Mayor y el Fuerte.",
+        "description": "La columna avanz\u00f3 por el antiguo Camino del Fondo de la Legua, atravesando sectores del actual Vicente L\u00f3pez. Este es el \u00faltimo tramo del recorrido tur\u00edstico; desde aqu\u00ed, el relato hist\u00f3rico contin\u00faa hacia Chacarita, Corrales de Miserere, Retiro y el entorno de la Plaza Mayor, el Fuerte y el Cabildo.",
         "connectionLabel": "Rumbo a CABA",
-        "connectionText": "Desde este tramo el relato empieza a entrar en la ciudad: Chacarita, Miserere, Retiro y el entorno de la Plaza Mayor y el Fuerte completan el desenlace fuera del circuito principal.",
+        "connectionText": "Desde este tramo el relato empieza a entrar en la ciudad: Chacarita, Corrales de Miserere, Retiro y el entorno de la Plaza Mayor, el Fuerte y el Cabildo completan el desenlace fuera del circuito principal.",
         "mapLabel": "Camino hacia Chacarita y CABA",
         "image": "/images/points/punto5.svg",
         "audio": "/audio/punto-5.mp3",
@@ -138,11 +138,11 @@
         "place": "Chacarita de los Colegiales, CABA",
         "municipality": "CABA",
         "badge": "Fuera del recorrido tur\u00edstico",
-        "mapReference": "Referencia territorial actual: Parque Los Andes",
+        "mapReference": "Referencia territorial actual aproximada: entorno del actual Cementerio de la Chacarita",
         "isApproximateHistoricalLocation": true,
-        "description": "Desde este tramo, la marcha continu\u00f3 hacia la Chacarita de los Colegiales antes de avanzar hacia Miserere, Retiro y el entorno de la Plaza Mayor y el Fuerte, donde culmin\u00f3 la Reconquista de Buenos Aires.",
+        "description": "Desde el Camino del Fondo de la Legua, la marcha lleg\u00f3 a la Chacarita de los Colegiales. All\u00ed las tropas hicieron alto y se reagruparon antes de continuar hacia los Corrales de Miserere, Retiro y el centro de Buenos Aires.",
         "connectionLabel": "Continuidad hist\u00f3rica",
-        "connectionText": "Chacarita funciona como hito de continuidad hacia CABA: no forma parte del recorrido tur\u00edstico, pero ayuda a leer el avance final hacia Miserere, Retiro y el entorno de la Plaza Mayor y el Fuerte.",
+        "connectionText": "Chacarita funciona como hito de continuidad hacia CABA: no forma parte del recorrido tur\u00edstico, pero permite leer el avance final hacia Corrales de Miserere, Retiro, el Fuerte, el Cabildo y la Plaza Mayor.",
         "mapLabel": "Continuidad hist\u00f3rica",
         "imageAlt": "Pintura La Reconquista de Buenos Aires, usada como imagen de continuidad hist\u00f3rica hacia CABA.",
         "image": "/images/points/punto6.svg",
@@ -152,7 +152,7 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [-58.449583, -34.590944]
+        "coordinates": [-58.4527, -34.5935]
       }
     }
   ]

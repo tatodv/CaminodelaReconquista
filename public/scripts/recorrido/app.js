@@ -122,7 +122,7 @@ function getMicroStory(order) {
     3: ["Aqui se encontraron con Liniers.", "Las Conchas ordeno el avance."],
     4: ["San Isidro dio abrigo.", "La columna recupero fuerzas."],
     5: ["El Fondo de la Legua marco el rumbo.", "La marcha entraba hacia CABA."],
-    6: ["Continuidad historica hacia CABA.", "Beresford termino capitulando cerca del Fuerte."],
+    6: ["Continuidad historica hacia CABA.", "Beresford termino capitulando en el entorno de la Plaza Mayor, el Fuerte y el Cabildo."],
   };
 
   return stories[order] || [];
@@ -134,8 +134,8 @@ function getImpactStory(order) {
     2: "La escala territorial conecto el auxilio local con la fuerza expedicionaria organizada desde Montevideo.",
     3: "Las Conchas fue el encuentro decisivo con Liniers antes de ordenar el avance hacia Buenos Aires.",
     4: "San Isidro fue una escala para recuperar fuerzas antes de seguir hacia Buenos Aires.",
-    5: "Ultimo tramo turistico: desde aqui el relato sigue hacia Chacarita, Miserere, Retiro, la Plaza Mayor y el Fuerte.",
-    6: "El desenlace ocurrio en Buenos Aires: tras Chacarita, Miserere y Retiro, las fuerzas llegaron al entorno de la Plaza Mayor y el Fuerte, donde Beresford termino capitulando.",
+    5: "Ultimo tramo turistico: desde aqui el relato sigue hacia Chacarita, Corrales de Miserere, Retiro y el entorno de la Plaza Mayor, el Fuerte y el Cabildo.",
+    6: "El desenlace ocurrio en Buenos Aires: tras Chacarita, Corrales de Miserere y Retiro, las fuerzas llegaron al entorno de la Plaza Mayor, el Fuerte y el Cabildo, donde Beresford termino capitulando.",
   };
 
   return impacts[order] || "";
