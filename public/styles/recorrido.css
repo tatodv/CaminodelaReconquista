@@ -533,6 +533,15 @@ main,
   text-align: center;
 }
 
+.narrative-passage__inner::before {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 2px;
+  margin: 0 auto 1.15rem;
+  background: var(--accent);
+}
+
 .narrative-passage__eyebrow {
   margin: 0 0 0.65rem;
   color: var(--accent);
@@ -950,6 +959,7 @@ main,
 }
 
 .story-strip {
+  position: relative;
   width: 100%;
   padding: 0;
   border-bottom: 1px solid rgba(36, 33, 31, 0.1);
@@ -957,6 +967,16 @@ main,
     linear-gradient(180deg, rgba(232, 222, 210, 0.34), rgba(255, 248, 239, 0.34)),
     var(--paper);
   overflow: hidden;
+}
+
+.story-strip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(22, 19, 17, 0.32), transparent 26%, transparent 74%, rgba(22, 19, 17, 0.32)),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(22, 19, 17, 0.28));
 }
 
 .story-strip img {
