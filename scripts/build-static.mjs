@@ -60,6 +60,27 @@ function minifyTree(dir) {
 
 minifyTree(target);
 
+// Vercel Web Analytics: solo en el build de produccion (dist/), via script
+// estatico same-origin. No se toca public/ (los tests sirven public/ y
+// /_vercel/insights/script.js solo existe en Vercel -> evitamos un 404 local).
+const indexPath = join(target, "index.html");
+let indexHtml = readFileSync(indexPath, "utf8");
+const cspScript =
+  "script-src 'self' 'sha256-rcdORQxU/aGQWuLrI3ZDgIuUJ1T1halkel8b52AmqLU='";
+const analyticsTag =
+  '    <script defer src="/_vercel/insights/script.js"></script>\n  </head>';
+
+if (indexHtml.includes("/_vercel/insights/script.js")) {
+  console.warn("build: Vercel Analytics ya presente en index.html, no se reinyecta.");
+} else {
+  indexHtml = indexHtml
+    .replace(cspScript, `${cspScript} https://va.vercel-scripts.com`)
+    .replace("connect-src 'self'", "connect-src 'self' https://*.vercel-insights.com")
+    .replace("</head>", analyticsTag);
+  writeFileSync(indexPath, indexHtml);
+  console.log("build: Vercel Web Analytics inyectado en dist/index.html.");
+}
+
 const saved = before - after;
 const pct = before ? Math.round((saved / before) * 100) : 0;
 console.log(
