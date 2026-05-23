@@ -286,8 +286,8 @@
       <section class="hero hero--minimal" aria-labelledby="hero-title">
         <div class="hero-logo">
           <div class="hero-logo__mark" aria-hidden="true">
-            <img class="hero-logo__r" src="/material/logo-r-cuerpo.svg" alt="">
-            <img class="hero-logo__s" src="/material/logo-s-camino.svg" alt="">
+            <img class="hero-logo__r" src="/material/logo-r-cuerpo.svg" alt="" fetchpriority="high" decoding="async">
+            <img class="hero-logo__s" src="/material/logo-s-camino.svg" alt="" fetchpriority="high" decoding="async">
           </div>
           <h1 class="hero-logo__title" id="hero-title">
             Camino de la
@@ -656,7 +656,7 @@
     </aside>
 
     <div class="plyr-dock" id="plyr-dock">
-      <audio id="shared-audio" preload="metadata" controls></audio>
+      <audio id="shared-audio" preload="none" controls></audio>
     </div>
     <div class="audio-sticky" id="audio-sticky" hidden aria-live="polite">
       <button class="audio-sticky__toggle" type="button" data-sticky-audio-toggle aria-label="Pausar audio">
