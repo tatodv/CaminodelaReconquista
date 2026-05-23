@@ -4015,11 +4015,19 @@ input[type="range"] {
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 420px) {
   .site-nav__link {
-    padding: 0 0.24rem;
-    font-size: 0.56rem;
-    letter-spacing: 0.01em;
+    padding: 0 0.26rem;
+    font-size: 0.57rem;
+    letter-spacing: 0.012em;
+  }
+}
+
+@media (max-width: 345px) {
+  .site-nav__link {
+    padding: 0 0.22rem;
+    font-size: 0.54rem;
+    letter-spacing: 0.008em;
   }
 }
 
