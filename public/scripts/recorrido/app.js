@@ -172,13 +172,12 @@ function createConnectionMarkup(point) {
 function createStoryPictureMarkup(point, index) {
   const sizes = "(max-width: 899px) 92vw, 44vw";
   const imageSet = point.imageSet;
-  const avifSource = imageSet.small.avif
-    ? `  <source srcset="${escapeHtml(imageSet.small.avif)} 560w, ${escapeHtml(imageSet.medium.avif)} 880w, ${escapeHtml(imageSet.large.avif)} 1200w" sizes="${sizes}" type="image/avif">`
-    : "";
+  // Nota: se omite la fuente AVIF a proposito. Solo el avif base (1200) conserva
+  // transparencia; las variantes resize quedaron aplanadas en negro. El webp
+  // regenerado es transparente en todos los tamanos, asi que servimos webp + jpg.
 
   return [
     "<picture>",
-    avifSource,
     `  <source srcset="${escapeHtml(imageSet.small.webp)} 560w, ${escapeHtml(imageSet.medium.webp)} 880w, ${escapeHtml(imageSet.large.webp)} 1200w" sizes="${sizes}" type="image/webp">`,
     `  <img src="${escapeHtml(imageSet.medium.jpg)}" srcset="${escapeHtml(imageSet.small.jpg)} 560w, ${escapeHtml(imageSet.medium.jpg)} 880w, ${escapeHtml(imageSet.large.jpg)} 1200w" sizes="${sizes}" alt="${escapeHtml(point.imageAlt)}" width="1200" height="800" loading="${index === 0 ? "eager" : "lazy"}"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">`,
     "</picture>",
