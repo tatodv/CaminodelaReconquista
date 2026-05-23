@@ -1,6 +1,7 @@
 import { loadExperienceData, padNumber } from "./data.js";
 import { createAudioController } from "./audio.js";
 import { createMapController } from "./map.js";
+import "../analytics.js";
 
 function escapeHtml(value) {
   return String(value)
